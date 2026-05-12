@@ -1,0 +1,49 @@
+<h2 mat-dialog-title class="dlg-title">Registrar Vacuna</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dlg-form">
+    <div class="dlg-field">
+      <label>Paciente *</label>
+      <select formControlName="mascotaId">
+        <option value="">Seleccionar paciente...</option>
+        @for (p of store.patients(); track p.id) {
+          <option [value]="p.id">{{ p.name }} ({{ p.owner }})</option>
+        }
+      </select>
+    </div>
+    <div class="dlg-field">
+      <label>Tipo de Vacuna *</label>
+      <select formControlName="tipoVacunaId">
+        <option value="">Seleccionar vacuna...</option>
+        @for (t of store.rawTiposVacuna(); track t.id) {
+          <option [value]="t.id">{{ t.nombre }}</option>
+        }
+      </select>
+    </div>
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>Fecha de Aplicación *</label>
+        <input type="date" formControlName="fechaAplicacion" />
+      </div>
+      <div class="dlg-field">
+        <label>Próxima Dosis *</label>
+        <input type="date" formControlName="proximaDosis" />
+      </div>
+    </div>
+    <div class="dlg-field">
+      <label>Número de Lote</label>
+      <input type="text" formControlName="lote" placeholder="Ej: LOT-2025-001" />
+    </div>
+    <div class="dlg-field">
+      <label>Observaciones</label>
+      <textarea formControlName="observaciones" placeholder="Reacciones adversas, notas..."></textarea>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancelar</button>
+  <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting">
+    <mat-icon>vaccines</mat-icon> Registrar Vacuna
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,332 @@
+<div class="clinical">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1>Gestión Clínica</h1>
+      <p>Administra pacientes, consultas e historial médico</p>
+    </div>
+    <div class="header-search">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input placeholder="Buscar paciente o cliente..." class="header-search-input" />
+      <mat-icon class="notif-icon">notifications</mat-icon>
+    </div>
+  </div>
+
+  <mat-tab-group class="clinical-tabs" animationDuration="0ms" [(selectedIndex)]="activeTab">
+
+    <!-- ===== PACIENTES ===== -->
+    <mat-tab>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">pets</mat-icon> Pacientes</ng-template>
+      <div class="tab-content">
+        <div class="section-header">
+          <div><h2>Pacientes Registrados</h2><p>Gestiona la información de las mascotas</p></div>
+          <button mat-raised-button class="btn-primary" (click)="openRegistrarPaciente()">
+            <mat-icon>add</mat-icon> Registrar Paciente
+          </button>
+        </div>
+        <div class="filters-row">
+          <div class="search-wrap">
+            <mat-icon>search</mat-icon>
+            <input [(ngModel)]="patientSearch" placeholder="Buscar por nombre, ID o propietario..." class="filter-input" />
+          </div>
+          <div class="species-wrap">
+            <mat-select [(value)]="speciesFilter" class="species-select">
+              <mat-option value="Todas">Todas las especies</mat-option>
+              <mat-option value="Perro">Perro</mat-option>
+              <mat-option value="Gato">Gato</mat-option>
+              <mat-option value="Ave">Ave</mat-option>
+            </mat-select>
+          </div>
+        </div>
+        @if (store.loading()) {
+          <div class="loading-msg">Cargando pacientes...</div>
+        } @else {
+          <div class="patients-grid">
+            @for (p of filteredPatients; track p.id) {
+              <div class="patient-card">
+                <div class="pc-top">
+                  <div class="pc-avatar" [style.background]="p.avatarColor"><mat-icon>pets</mat-icon></div>
+                  <div class="pc-title">
+                    <div class="pc-name">{{ p.name }}</div>
+                    <div class="pc-id">ID: {{ p.id }}</div>
+                  </div>
+                  <span class="badge badge-activo">{{ p.status }}</span>
+                </div>
+                <div class="pc-details">
+                  <div class="pc-row"><mat-icon>pets</mat-icon><span>Especie:</span> {{ p.species }} - {{ p.breed }}</div>
+                  <div class="pc-row"><mat-icon>cake</mat-icon><span>Edad:</span> {{ p.age }}</div>
+                  <div class="pc-row"><mat-icon>monitor_weight</mat-icon><span>Peso:</span> {{ p.weight }}</div>
+                  <div class="pc-row"><mat-icon>person</mat-icon><span>Propietario:</span> {{ p.owner }}</div>
+                </div>
+                <div class="pc-actions">
+                  <button mat-button class="btn-ver-ficha" (click)="verFicha(p.id)">
+                    <mat-icon>visibility</mat-icon> Ver Ficha
+                  </button>
+                  <button mat-icon-button (click)="openRegistrarPaciente(p)" title="Editar">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="deletePatient(p)" title="Eliminar">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            } @empty {
+              <p class="empty-msg">No se encontraron pacientes.</p>
+            }
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- ===== CLIENTES ===== -->
+    <mat-tab>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">people</mat-icon> Clientes</ng-template>
+      <div class="tab-content empty-tab">
+        <mat-icon>people_outline</mat-icon>
+        <h3>Módulo de Clientes</h3>
+        <p>Gestiona la información de los propietarios</p>
+        <button mat-raised-button class="btn-primary" (click)="openRegistrarCliente()">
+          <mat-icon>add</mat-icon> Registrar Cliente
+        </button>
+      </div>
+    </mat-tab>
+
+    <!-- ===== CONSULTAS ===== -->
+    <mat-tab>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">medical_services</mat-icon> Consultas</ng-template>
+      <div class="tab-content">
+        <div class="section-header">
+          <div><h2>Consultas Médicas</h2><p>Registra y gestiona consultas veterinarias</p></div>
+          <button mat-raised-button class="btn-primary" (click)="openNuevaConsulta()">
+            <mat-icon>add</mat-icon> Nueva Consulta
+          </button>
+        </div>
+        <div class="card table-card">
+          <div class="table-top">
+            <h3>Consultas Recientes</h3>
+            <div class="table-actions">
+              <button mat-stroked-button class="btn-sm" [class.btn-sm-active]="consultDateFilter === 'all'"   (click)="setConsultFilter('all')">Todas</button>
+              <button mat-stroked-button class="btn-sm" [class.btn-sm-active]="consultDateFilter === 'today'" (click)="setConsultFilter('today')">Hoy</button>
+              <button mat-stroked-button class="btn-sm" [class.btn-sm-active]="consultDateFilter === 'week'"  (click)="setConsultFilter('week')">Esta semana</button>
+            </div>
+          </div>
+          <table class="data-table">
+            <thead><tr>
+              <th>ID</th><th>Paciente</th><th>Cliente</th><th>Tipo</th><th>Diagnóstico</th><th>Fecha</th><th>Estado</th>
+            </tr></thead>
+            <tbody>
+              @for (c of pagedConsultations; track c.id) {
+                <tr>
+                  <td class="td-id">{{ c.id }}</td>
+                  <td><div class="td-patient">
+                    <div class="td-avatar" [style.background]="c.patientAvatarColor"><mat-icon>pets</mat-icon></div>
+                    <div><div class="td-name">{{ c.patientName }}</div><div class="td-sub">{{ c.patientBreed }}</div></div>
+                  </div></td>
+                  <td><div class="td-name">{{ c.clientName }}</div><div class="td-sub">{{ c.clientPhone }}</div></td>
+                  <td>{{ c.type }}</td>
+                  <td>{{ c.diagnosis }}</td>
+                  <td><div class="td-name">{{ c.date }}</div><div class="td-sub">{{ c.time }}</div></td>
+                  <td><span class="badge" [ngClass]="getConsultBadge(c.status)">{{ c.status }}</span></td>
+                </tr>
+              } @empty {
+                <tr><td colspan="7" class="empty-msg">No hay consultas.</td></tr>
+              }
+            </tbody>
+          </table>
+          <div class="table-footer">
+            <span>Mostrando {{ pagedConsultations.length }} de {{ filteredConsultations.length }} consultas</span>
+            <div class="pagination">
+              <button mat-icon-button [disabled]="consultPage <= 1" (click)="consultPage = consultPage - 1">
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              @for (pg of consultPageNumbers; track pg) {
+                <button class="pg-btn" [class.active]="consultPage === pg" (click)="consultPage = pg">{{ pg }}</button>
+              }
+              <button mat-icon-button [disabled]="consultPage >= consultTotalPages" (click)="consultPage = consultPage + 1">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- ===== HISTORIAL CLÍNICO ===== -->
+    <mat-tab>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">assignment</mat-icon> Historial Clínico</ng-template>
+      <div class="tab-content">
+        @if (!historyPatient) {
+          <div class="empty-tab">
+            <mat-icon>assignment_ind</mat-icon>
+            <h3>Selecciona un paciente</h3>
+            <p>Haz clic en "Ver Ficha" desde la pestaña de Pacientes</p>
+            <button mat-stroked-button (click)="activeTab = 0">Ir a Pacientes</button>
+          </div>
+        } @else {
+          <div class="history-header">
+            <div class="hist-avatar" [style.background]="historyPatient.avatarColor"><mat-icon>pets</mat-icon></div>
+            <div class="hist-info">
+              <h2>{{ historyPatient.name }}</h2>
+              <p>{{ historyPatient.breed }} · {{ historyPatient.age }} · Propietario: {{ historyPatient.owner }}</p>
+            </div>
+            <div class="hist-actions">
+              <button mat-raised-button class="btn-primary" (click)="openNuevaConsulta(store.selectedPatientId()!)">
+                <mat-icon>add</mat-icon> Nueva Consulta
+              </button>
+              <button mat-icon-button><mat-icon>bookmark_border</mat-icon></button>
+            </div>
+          </div>
+          <div class="hist-stats">
+            @for (s of historyPatient.stats; track s.label) {
+              <div class="hist-stat"><div class="hs-val">{{ s.value }}</div><div class="hs-lbl">{{ s.label }}</div></div>
+            }
+          </div>
+          <div class="hist-section-title">Historial Médico Completo</div>
+          @if (historyRecords.length === 0) {
+            <p class="empty-msg">No hay consultas registradas para este paciente.</p>
+          } @else {
+            <div class="timeline">
+              @for (r of historyRecords; track r.date) {
+                <div class="tl-card" [style.border-left]="'4px solid ' + r.borderColor">
+                  <div class="tl-header" [style.background]="r.bg">
+                    <mat-icon [style.color]="r.color">{{ r.icon }}</mat-icon>
+                    <span class="tl-type" [style.color]="r.color">{{ r.type }}</span>
+                    <span class="tl-date">{{ r.date }}</span>
+                    <span class="tl-doc">{{ r.doctor }}</span>
+                  </div>
+                  <div class="tl-body">
+                    @for (sec of r.sections; track sec.label) {
+                      <div class="tl-section">
+                        <div class="tl-label">{{ sec.label }}</div>
+                        <p class="tl-text">{{ sec['content'] }}</p>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
+    </mat-tab>
+
+    <!-- ===== VACUNAS ===== -->
+    <mat-tab>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">vaccines</mat-icon> Vacunas</ng-template>
+      <div class="tab-content">
+        <div class="section-header">
+          <div class="chips-row">
+            @for (f of ['Todas','Próximas','Vencidas']; track f) {
+              <button class="chip" [class.chip-active]="vaccineFilter === f" (click)="vaccineFilter = f">{{ f }}</button>
+            }
+          </div>
+          <button mat-raised-button class="btn-primary" (click)="openRegistrarVacuna()">
+            <mat-icon>add</mat-icon> Registrar Vacuna
+          </button>
+        </div>
+        <div class="vsummary-grid">
+          @for (s of vaccineSummary; track s.label) {
+            <div class="vsummary" [style.background]="s.bg">
+              <mat-icon [style.color]="s.color" class="vs-icon">{{ s.icon }}</mat-icon>
+              <div class="vs-val" [style.color]="s.color">{{ s.value }}</div>
+              <div class="vs-label" [style.color]="s.color">{{ s.label }}</div>
+              <div class="vs-sub">{{ s.sublabel }}</div>
+            </div>
+          }
+        </div>
+        <div class="card table-card">
+          <table class="data-table">
+            <thead><tr>
+              <th>Paciente</th><th>Vacuna</th><th>Última Aplicación</th><th>Próxima Dosis</th><th>Estado</th><th>Acciones</th>
+            </tr></thead>
+            <tbody>
+              @for (v of filteredVaccines; track v.id) {
+                <tr>
+                  <td><div class="td-patient">
+                    <div class="td-avatar" [style.background]="v.patientAvatarColor"><mat-icon>pets</mat-icon></div>
+                    <div><div class="td-name">{{ v.patientName }}</div><div class="td-sub">{{ v.patientBreed }}</div></div>
+                  </div></td>
+                  <td><div class="td-name">{{ v.vaccineName }}</div><div class="td-sub">{{ v.vaccineDesc }}</div></td>
+                  <td>{{ v.lastApplied }}</td>
+                  <td [class.text-danger]="v.nextDoseHighlight">{{ v.nextDose }}</td>
+                  <td><span class="badge" [ngClass]="getVaccineBadge(v.status)">{{ v.status }}</span></td>
+                  <td>
+                    <button mat-button class="action-link" (click)="openRegistrarVacuna(v.mascotaId)">
+                      @if (v.status === 'Al Día') { Ver Detalles }
+                      @else if (v.status === 'Próxima') { Programar }
+                      @else { Aplicar Ya }
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr><td colspan="6" class="empty-msg">No hay vacunas.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- ===== HOSPITALIZACIÓN ===== -->
+    <mat-tab>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">local_hospital</mat-icon> Hospitalización</ng-template>
+      <div class="tab-content">
+        <div class="section-header">
+          <div><h2>Pacientes Hospitalizados</h2><p>Gestión y seguimiento de pacientes en hospitalización</p></div>
+          <button mat-raised-button class="btn-primary" (click)="openRegistrarIngreso()">
+            <mat-icon>add</mat-icon> Registrar Ingreso
+          </button>
+        </div>
+        <div class="hosp-stats-row">
+          @for (s of hospitalStats; track s.label) {
+            <div class="hosp-stat-card">
+              <div><div class="hosp-stat-label">{{ s.label }}</div><div class="hosp-stat-val" [style.color]="s.color">{{ s.value }}</div><div class="hosp-stat-sub">{{ s.sublabel }}</div></div>
+              <div class="hosp-stat-icon" [style.background]="s.bg"><mat-icon [style.color]="s.color">{{ s.icon }}</mat-icon></div>
+            </div>
+          }
+        </div>
+        <div class="chips-row">
+          @for (f of ['Todos','Crítico','Estable','Recuperación']; track f) {
+            <button class="chip" [class.chip-active]="hospitalizationFilter === f" (click)="hospitalizationFilter = f">
+              {{ f }} ({{ getHospCount(f) }})
+            </button>
+          }
+        </div>
+        <div class="card table-card">
+          <h3 class="table-title">Lista de Pacientes</h3>
+          <table class="data-table">
+            <thead><tr>
+              <th>Paciente</th><th>Propietario</th><th>Estado</th><th>Fecha Ingreso</th><th>Diagnóstico</th><th>Tratamiento</th><th>Acciones</th>
+            </tr></thead>
+            <tbody>
+              @for (h of filteredHospitalizations; track h.id) {
+                <tr>
+                  <td><div class="td-patient">
+                    <div class="td-avatar" [style.background]="h.patientAvatarColor"><mat-icon>pets</mat-icon></div>
+                    <div><div class="td-name">{{ h.patientName }}</div><div class="td-sub">{{ h.patientBreed }} · {{ h.patientAge }}</div></div>
+                  </div></td>
+                  <td><div class="td-name">{{ h.ownerName }}</div><div class="td-sub">{{ h.ownerPhone }}</div></td>
+                  <td><span class="badge" [ngClass]="getHospBadge(h.status)">• {{ h.status }}</span></td>
+                  <td><div class="td-name">{{ h.admissionDate }}</div><div class="td-sub">{{ h.daysAgo }}</div></td>
+                  <td>{{ h.diagnosis }}</td>
+                  <td><ul class="treat-list">@for(t of h.treatments; track t){<li>• {{ t }}</li>}</ul></td>
+                  <td><div class="td-actions">
+                    <button mat-icon-button (click)="verFicha(h.mascotaId)" title="Ver ficha">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="openRegistrarIngreso(h.mascotaId)" title="Editar ingreso">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  </div></td>
+                </tr>
+              } @empty {
+                <tr><td colspan="7" class="empty-msg">No hay pacientes hospitalizados.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>

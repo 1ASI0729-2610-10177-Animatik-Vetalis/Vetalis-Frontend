@@ -1,0 +1,38 @@
+<aside class="sidebar">
+  <!-- Logo -->
+  <div class="sidebar-logo">
+    <div class="logo-icon">
+      <mat-icon>pets</mat-icon>
+    </div>
+    <div class="logo-text">
+      <span class="logo-title">Vetalis Pro</span>
+      <span class="logo-subtitle">Sistema Veterinario</span>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    @for (item of navItems; track item.path) {
+      <a
+        [routerLink]="item.path"
+        routerLinkActive="nav-item--active"
+        class="nav-item"
+        matRipple>
+        <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <!-- User profile -->
+  <div class="sidebar-user">
+    <div class="user-avatar">
+      <mat-icon>person</mat-icon>
+    </div>
+    <div class="user-info">
+      <span class="user-name">Dr. Carlos Méndez</span>
+      <span class="user-role">Veterinario</span>
+    </div>
+    <mat-icon class="user-menu">more_vert</mat-icon>
+  </div>
+</aside>

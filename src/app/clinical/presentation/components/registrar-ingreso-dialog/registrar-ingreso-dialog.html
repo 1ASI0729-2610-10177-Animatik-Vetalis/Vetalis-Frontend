@@ -1,0 +1,46 @@
+<h2 mat-dialog-title class="dlg-title">Registrar Ingreso Hospitalario</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dlg-form">
+    <div class="dlg-field">
+      <label>Paciente *</label>
+      <select formControlName="mascotaId">
+        <option value="">Seleccionar paciente...</option>
+        @for (p of store.patients(); track p.id) {
+          <option [value]="p.id">{{ p.name }} ({{ p.owner }})</option>
+        }
+      </select>
+    </div>
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>Fecha de Ingreso *</label>
+        <input type="date" formControlName="fechaIngreso" />
+      </div>
+      <div class="dlg-field">
+        <label>Estado *</label>
+        <select formControlName="estado">
+          @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
+        </select>
+      </div>
+    </div>
+    <div class="dlg-field">
+      <label>Diagnóstico *</label>
+      <textarea formControlName="diagnostico" placeholder="Diagnóstico de ingreso..."></textarea>
+    </div>
+    <div class="dlg-field">
+      <label>Tratamiento Inicial *</label>
+      <textarea formControlName="tratamiento" placeholder="Medicamentos, procedimientos..."></textarea>
+    </div>
+    <div class="dlg-field">
+      <label>Observaciones</label>
+      <textarea formControlName="observaciones" placeholder="Notas adicionales..."></textarea>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancelar</button>
+  <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting">
+    <mat-icon>local_hospital</mat-icon> Registrar Ingreso
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,64 @@
+<h2 mat-dialog-title class="dlg-title">{{ isEdit ? 'Editar Paciente' : 'Registrar Paciente' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dlg-form">
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>Nombre *</label>
+        <input type="text" formControlName="nombre" placeholder="Nombre de la mascota" />
+      </div>
+      <div class="dlg-field">
+        <label>Sexo *</label>
+        <select formControlName="sexo">
+          <option value="Macho">Macho</option>
+          <option value="Hembra">Hembra</option>
+        </select>
+      </div>
+    </div>
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>Fecha de Nacimiento *</label>
+        <input type="date" formControlName="fechaNacimiento" />
+      </div>
+      <div class="dlg-field">
+        <label>Peso (kg) *</label>
+        <input type="number" formControlName="peso" step="0.1" min="0.1" />
+      </div>
+    </div>
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>Especie *</label>
+        <select formControlName="especieId">
+          @for (e of store.rawEspecies(); track e.id) {
+            <option [value]="e.id">{{ e.nombre }}</option>
+          }
+        </select>
+      </div>
+      <div class="dlg-field">
+        <label>Raza *</label>
+        <select formControlName="razaId">
+          <option value="">Seleccionar raza...</option>
+          @for (r of razasFiltradas(); track r.id) {
+            <option [value]="r.id">{{ r.nombre }}</option>
+          }
+        </select>
+      </div>
+    </div>
+    <div class="dlg-field">
+      <label>Propietario *</label>
+      <select formControlName="clienteId">
+        <option value="">Seleccionar propietario...</option>
+        @for (c of store.rawClientes(); track c.id) {
+          <option [value]="c.id">{{ c.nombre }}</option>
+        }
+      </select>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancelar</button>
+  <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting">
+    <mat-icon>pets</mat-icon> {{ isEdit ? 'Actualizar' : 'Registrar' }}
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,208 @@
+import { Component, inject } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatSelectModule } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ClinicalStore } from '../../../application/clinical.store';
+import { ClinicalService } from '../../../infrastructure/services/clinical.service';
+import { Patient } from '../../../domain/model/patient.model';
+import { NuevaCitaDialog } from '../../components/nueva-cita-dialog/nueva-cita-dialog';
+import { NuevaConsultaDialog } from '../../components/nueva-consulta-dialog/nueva-consulta-dialog';
+import { RegistrarPacienteDialog } from '../../components/registrar-paciente-dialog/registrar-paciente-dialog';
+import { RegistrarVacunaDialog } from '../../components/registrar-vacuna-dialog/registrar-vacuna-dialog';
+import { RegistrarIngresoDialog } from '../../components/registrar-ingreso-dialog/registrar-ingreso-dialog';
+import { RegistrarClienteDialog } from '../../components/registrar-cliente-dialog/registrar-cliente-dialog';
+
+const PAGE_SIZE = 5;
+
+@Component({
+  selector: 'app-clinical-management',
+  imports: [NgClass, MatIconModule, MatButtonModule, MatTabsModule, MatSelectModule, FormsModule, MatDialogModule],
+  templateUrl: './clinical-management.html',
+  styleUrl: './clinical-management.css'
+})
+export class ClinicalManagement {
+  store          = inject(ClinicalStore);
+  private svc    = inject(ClinicalService);
+  private dialog = inject(MatDialog);
+  private snack  = inject(MatSnackBar);
+
+  activeTab = 0;
+
+  // ── Filters ───────────────────────────────────────────────────
+  patientSearch         = '';
+  speciesFilter         = 'Todas';
+  vaccineFilter         = 'Todas';
+  hospitalizationFilter = 'Todos';
+  consultDateFilter: 'all' | 'today' | 'week' = 'all';
+
+  // ── Pagination ────────────────────────────────────────────────
+  consultPage = 1;
+
+  // ── Patients ──────────────────────────────────────────────────
+  get filteredPatients() {
+    const s = this.patientSearch.toLowerCase();
+    return this.store.patients().filter(p =>
+      (s === '' || p.name.toLowerCase().includes(s) || p.owner.toLowerCase().includes(s) || p.id.includes(s)) &&
+      (this.speciesFilter === 'Todas' || p.species === this.speciesFilter)
+    );
+  }
+
+  // ── Consultations ─────────────────────────────────────────────
+  get filteredConsultations() {
+    const today   = new Date().toISOString().split('T')[0];
+    const weekAgo = new Date(Date.now() - 7 * 864e5).toISOString().split('T')[0];
+    return this.store.consultations().filter(c => {
+      if (this.consultDateFilter === 'today') return c.rawDate === today;
+      if (this.consultDateFilter === 'week')  return c.rawDate >= weekAgo;
+      return true;
+    });
+  }
+
+  get consultTotalPages() { return Math.max(1, Math.ceil(this.filteredConsultations.length / PAGE_SIZE)); }
+
+  get pagedConsultations() {
+    const start = (this.consultPage - 1) * PAGE_SIZE;
+    return this.filteredConsultations.slice(start, start + PAGE_SIZE);
+  }
+
+  get consultPageNumbers() { return Array.from({ length: this.consultTotalPages }, (_, i) => i + 1); }
+
+  setConsultFilter(f: 'all' | 'today' | 'week') { this.consultDateFilter = f; this.consultPage = 1; }
+
+  // ── Vaccines ─────────────────────────────────────────────────
+  get filteredVaccines() {
+    if (this.vaccineFilter === 'Próximas') return this.store.vaccines().filter(v => v.status === 'Próxima');
+    if (this.vaccineFilter === 'Vencidas') return this.store.vaccines().filter(v => v.status === 'Vencida');
+    return this.store.vaccines();
+  }
+
+  get vaccineSummary() {
+    const vs = this.store.vaccines();
+    return [
+      { label: 'Vacunas Vencidas',  sublabel: 'Requieren atención inmediata', value: vs.filter(v => v.status === 'Vencida').length,  color: '#EF4444', bg: '#FEF2F2', icon: 'error' },
+      { label: 'Próximas 7 días',   sublabel: 'Programar citas pronto',        value: vs.filter(v => v.status === 'Próxima').length,  color: '#F59E0B', bg: '#FFFBEB', icon: 'schedule' },
+      { label: 'Al Día',            sublabel: 'Vacunación completa',            value: vs.filter(v => v.status === 'Al Día').length,   color: '#22C55E', bg: '#F0FDF4', icon: 'check_circle' },
+    ];
+  }
+
+  // ── Hospitalizations ─────────────────────────────────────────
+  get filteredHospitalizations() {
+    if (this.hospitalizationFilter === 'Todos') return this.store.hospitalizations();
+    return this.store.hospitalizations().filter(h => h.status === this.hospitalizationFilter);
+  }
+
+  getHospCount(status: string): number {
+    if (status === 'Todos') return this.store.hospitalizations().length;
+    return this.store.hospitalizations().filter(h => h.status === status).length;
+  }
+
+  get hospitalStats() {
+    const hs = this.store.hospitalizations();
+    return [
+      { label: 'Total Hospitalizados', sublabel: 'Pacientes activos',             value: hs.length,                                      icon: 'local_hospital', color: '#3B82F6', bg: '#EFF6FF' },
+      { label: 'Estado Crítico',        sublabel: 'Requieren atención inmediata', value: hs.filter(h => h.status === 'Crítico').length,   icon: 'favorite',       color: '#EF4444', bg: '#FEF2F2' },
+      { label: 'En Recuperación',       sublabel: 'Progreso favorable',           value: hs.filter(h => h.status === 'Recuperación').length, icon: 'person',      color: '#F59E0B', bg: '#FFFBEB' },
+    ];
+  }
+
+  // ── Historial ─────────────────────────────────────────────────
+  get selectedConsultations() {
+    const p = this.store.selectedPatient();
+    if (!p) return [];
+    return this.store.consultations().filter(c => c.mascotaId === p.id);
+  }
+
+  get historyPatient() {
+    const p = this.store.selectedPatient();
+    if (!p) return null;
+    const sc = this.selectedConsultations;
+    return {
+      name: p.name, breed: p.breed, age: p.age, owner: p.owner, avatarColor: p.avatarColor,
+      stats: [
+        { label: 'Total Consultas',    value: String(sc.length) },
+        { label: 'Vacunas Aplicadas',  value: String(this.store.vaccines().filter(v => v.mascotaId === p.id).length) },
+        { label: 'Hospitalizaciones',  value: String(this.store.hospitalizations().filter(h => h.mascotaId === p.id).length) },
+        { label: 'Última Visita',      value: sc.length > 0 ? sc[0].date : '—' },
+      ]
+    };
+  }
+
+  get historyRecords() {
+    return this.selectedConsultations.map(c => ({
+      type: c.type, date: c.date, doctor: c.veterinario ?? 'Veterinario',
+      color: '#22C55E', bg: '#F0FDF4', borderColor: '#22C55E', icon: 'medical_services',
+      sections: [
+        ...(c.subjetivo  ? [{ label: 'Subjetivo (S)',   type: 'text', content: c.subjetivo  }] : []),
+        ...(c.objetivo   ? [{ label: 'Objetivo (O)',    type: 'text', content: c.objetivo   }] : []),
+        ...(c.diagnosis  ? [{ label: 'Evaluación (A)',  type: 'text', content: c.diagnosis  }] : []),
+        ...(c.plan       ? [{ label: 'Plan (P)',        type: 'text', content: c.plan       }] : []),
+      ],
+    }));
+  }
+
+  // ── Badge helpers ─────────────────────────────────────────────
+  getConsultBadge(status: string): string {
+    const map: Record<string, string> = { 'Completada': 'badge-completada', 'En Proceso': 'badge-en-proceso', 'Crítico': 'badge-critico', 'Pendiente': 'badge-pendiente' };
+    return map[status] ?? '';
+  }
+
+  getVaccineBadge(status: string): string {
+    const map: Record<string, string> = { 'Al Día': 'badge-al-dia', 'Próxima': 'badge-proxima', 'Vencida': 'badge-vencida' };
+    return map[status] ?? '';
+  }
+
+  getHospBadge(status: string): string {
+    const map: Record<string, string> = { 'Crítico': 'badge-critico', 'Estable': 'badge-estable', 'Recuperación': 'badge-recuperacion' };
+    return map[status] ?? '';
+  }
+
+  // ── Navigation ────────────────────────────────────────────────
+  verFicha(patientId: string) {
+    this.store.selectPatient(patientId);
+    this.activeTab = 3;
+  }
+
+  // ── Dialogs ───────────────────────────────────────────────────
+  openNuevaConsulta(patientId?: string) {
+    this.dialog.open(NuevaConsultaDialog, { width: '640px', data: { patientId } })
+      .afterClosed().subscribe(ok => { if (ok) this.store.reload(); });
+  }
+
+  openRegistrarPaciente(patient?: Patient) {
+    this.dialog.open(RegistrarPacienteDialog, { width: '580px', data: { patient } })
+      .afterClosed().subscribe(ok => { if (ok) this.store.reload(); });
+  }
+
+  openNuevaCita(patientId?: string) {
+    this.dialog.open(NuevaCitaDialog, { width: '520px', data: { patientId } })
+      .afterClosed().subscribe(ok => { if (ok) this.store.reload(); });
+  }
+
+  openRegistrarVacuna(patientId?: string) {
+    this.dialog.open(RegistrarVacunaDialog, { width: '560px', data: { patientId } })
+      .afterClosed().subscribe(ok => { if (ok) this.store.reload(); });
+  }
+
+  openRegistrarIngreso(patientId?: string) {
+    this.dialog.open(RegistrarIngresoDialog, { width: '560px', data: { patientId } })
+      .afterClosed().subscribe(ok => { if (ok) this.store.reload(); });
+  }
+
+  openRegistrarCliente() {
+    this.dialog.open(RegistrarClienteDialog, { width: '500px' })
+      .afterClosed().subscribe(ok => { if (ok) this.store.reload(); });
+  }
+
+  deletePatient(patient: Patient) {
+    if (!confirm(`¿Eliminar a ${patient.name}? Esta acción no se puede deshacer.`)) return;
+    this.svc.deleteMascota(patient.id).subscribe({
+      next: () => { this.snack.open('Paciente eliminado', 'OK', { duration: 3000 }); this.store.reload(); },
+      error: () => this.snack.open('Error al eliminar', '', { duration: 3000 }),
+    });
+  }
+}

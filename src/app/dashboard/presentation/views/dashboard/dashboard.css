@@ -1,0 +1,245 @@
+.dashboard {
+  min-height: 100%;
+}
+
+.page-header {
+  padding: 24px 28px 20px;
+  background: #fff;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.page-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: #1E293B;
+}
+
+.page-header p {
+  font-size: 13px;
+  color: #94A3B8;
+  margin: 0;
+}
+
+.dashboard-body {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: #06B6D4 !important;
+  color: #fff !important;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 8px !important;
+}
+
+.btn-outline {
+  border-color: #E2E8F0 !important;
+  color: #475569 !important;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 8px !important;
+  background: #fff !important;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+.stat-delta {
+  font-size: 12px;
+  font-weight: 600;
+}
+.stat-delta.positive { color: #16A34A; }
+.stat-delta.negative { color: #DC2626; }
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1E293B;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #64748B;
+}
+
+.lower-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1E293B;
+  margin: 0 0 16px;
+}
+
+.card-header h2 { margin: 0; }
+
+.link-ver-todas {
+  font-size: 13px;
+  color: #06B6D4;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.appointment-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #F8FAFC;
+}
+
+.appointment-row:last-child { border-bottom: none; }
+
+.apt-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.apt-avatar mat-icon {
+  color: #fff;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.apt-info { flex: 1; }
+
+.apt-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1E293B;
+}
+
+.apt-owner {
+  font-size: 12px;
+  color: #94A3B8;
+  margin-top: 2px;
+}
+
+.apt-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.apt-time {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1E293B;
+}
+
+.activity-row {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #F8FAFC;
+}
+
+.activity-row:last-child { border-bottom: none; }
+
+.act-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.act-icon mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.act-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1E293B;
+}
+
+.act-subtitle {
+  font-size: 12px;
+  color: #64748B;
+  margin-top: 1px;
+}
+
+.act-time {
+  font-size: 11px;
+  color: #94A3B8;
+  margin-top: 2px;
+}
+
+/* Badge overrides in dashboard */
+.badge-confirmada { background: #DCFCE7; color: #16A34A; }
+.badge-pendiente { background: #FEF3C7; color: #D97706; }

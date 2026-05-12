@@ -1,0 +1,37 @@
+<h2 mat-dialog-title class="dlg-title">Registrar Cliente</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dlg-form">
+    <div class="dlg-row">
+      <div class="dlg-field dlg-field-full">
+        <label>Nombre completo *</label>
+        <input type="text" formControlName="nombre" placeholder="Nombre del propietario" />
+      </div>
+    </div>
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>Teléfono *</label>
+        <input type="tel" formControlName="telefono" placeholder="+51 999 000 000" />
+      </div>
+      <div class="dlg-field">
+        <label>DNI</label>
+        <input type="text" formControlName="dni" placeholder="12345678" />
+      </div>
+    </div>
+    <div class="dlg-field">
+      <label>Correo electrónico</label>
+      <input type="email" formControlName="correo" placeholder="correo@ejemplo.com" />
+    </div>
+    <div class="dlg-field">
+      <label>Dirección</label>
+      <input type="text" formControlName="direccion" placeholder="Av. Principal 123..." />
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancelar</button>
+  <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting">
+    <mat-icon>person_add</mat-icon> Registrar Cliente
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,38 @@
+<h2 mat-dialog-title class="dlg-title">Nueva Cita</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dlg-form">
+    <div class="dlg-row">
+      <div class="dlg-field dlg-field-full">
+        <label>Paciente *</label>
+        <select formControlName="mascotaId">
+          <option value="">Seleccionar paciente...</option>
+          @for (p of store.patients(); track p.id) {
+            <option [value]="p.id">{{ p.name }} — {{ p.species }} ({{ p.owner }})</option>
+          }
+        </select>
+      </div>
+    </div>
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>Fecha *</label>
+        <input type="date" formControlName="fecha" />
+      </div>
+      <div class="dlg-field">
+        <label>Hora *</label>
+        <input type="time" formControlName="hora" />
+      </div>
+    </div>
+    <div class="dlg-field">
+      <label>Motivo / Tipo de consulta *</label>
+      <input type="text" formControlName="motivo" placeholder="Ej: Vacunación anual, Revisión general..." />
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancelar</button>
+  <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting">
+    <mat-icon>event_available</mat-icon> Guardar Cita
+  </button>
+</mat-dialog-actions>

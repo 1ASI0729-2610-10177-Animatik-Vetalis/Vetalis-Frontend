@@ -1,0 +1,52 @@
+<h2 mat-dialog-title class="dlg-title">Nueva Consulta Médica</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dlg-form">
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>Paciente *</label>
+        <select formControlName="mascotaId">
+          <option value="">Seleccionar paciente...</option>
+          @for (p of store.patients(); track p.id) {
+            <option [value]="p.id">{{ p.name }} ({{ p.owner }})</option>
+          }
+        </select>
+      </div>
+      <div class="dlg-field">
+        <label>Tipo *</label>
+        <select formControlName="tipo">
+          @for (t of tipos; track t) { <option [value]="t">{{ t }}</option> }
+        </select>
+      </div>
+    </div>
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>Hora</label>
+        <input type="time" formControlName="hora" />
+      </div>
+    </div>
+    <div class="dlg-field">
+      <label>Subjetivo (motivo de consulta)</label>
+      <textarea formControlName="subjetivo" placeholder="Lo que reporta el propietario..."></textarea>
+    </div>
+    <div class="dlg-field">
+      <label>Objetivo (hallazgos clínicos)</label>
+      <textarea formControlName="objetivo" placeholder="Signos vitales, examen físico..."></textarea>
+    </div>
+    <div class="dlg-field">
+      <label>Evaluación / Diagnóstico *</label>
+      <textarea formControlName="evaluacion" placeholder="Diagnóstico presuntivo..."></textarea>
+    </div>
+    <div class="dlg-field">
+      <label>Plan de tratamiento</label>
+      <textarea formControlName="plan" placeholder="Medicamentos, indicaciones, seguimiento..."></textarea>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancelar</button>
+  <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting">
+    <mat-icon>medical_services</mat-icon> Registrar Consulta
+  </button>
+</mat-dialog-actions>
