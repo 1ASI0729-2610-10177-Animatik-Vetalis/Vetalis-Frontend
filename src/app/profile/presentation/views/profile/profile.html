@@ -1,0 +1,160 @@
+<div class="profile">
+  <div class="page-header">
+    <div>
+      <h1>Mi Perfil</h1>
+      <p>Gestiona tu información personal y preferencias</p>
+    </div>
+  </div>
+
+  <div class="profile-body">
+    <!-- Left column -->
+    <div class="left-col">
+
+      <!-- User hero card -->
+      <div class="card user-hero">
+        <div class="hero-avatar">
+          <mat-icon>person</mat-icon>
+        </div>
+        <div class="hero-info">
+          <div class="hero-name">Dr. Carlos Méndez Rodríguez</div>
+          <div class="hero-role">Médico Veterinario</div>
+          <div class="hero-email">carlos.mendez&#64;vetalis.com</div>
+        </div>
+        <button mat-stroked-button class="btn-change-photo"><mat-icon>photo_camera</mat-icon> Cambiar Foto</button>
+      </div>
+
+      <!-- Datos personales -->
+      <div class="card form-card">
+        <div class="card-title">Datos Personales</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Nombre</label>
+            <input [(ngModel)]="form.nombre" placeholder="Nombre" />
+          </div>
+          <div class="form-field">
+            <label>Apellidos</label>
+            <input [(ngModel)]="form.apellidos" placeholder="Apellidos" />
+          </div>
+          <div class="form-field">
+            <label>Correo Electrónico</label>
+            <input [(ngModel)]="form.correo" type="email" placeholder="correo@ejemplo.com" />
+          </div>
+          <div class="form-field">
+            <label>Teléfono</label>
+            <input [(ngModel)]="form.telefono" placeholder="+51 000 000 000" />
+          </div>
+          <div class="form-field form-field--full">
+            <label>Especialidad</label>
+            <input [(ngModel)]="form.especialidad" placeholder="Especialidad" />
+          </div>
+          <div class="form-field">
+            <label>DNI / Documento</label>
+            <input [(ngModel)]="form.dni" placeholder="00000000" />
+          </div>
+        </div>
+        <div class="card-footer">
+          <button mat-raised-button class="btn-primary" (click)="saveProfile()"><mat-icon>save</mat-icon> Guardar Cambios</button>
+        </div>
+      </div>
+
+      <!-- Seguridad -->
+      <div class="card form-card">
+        <div class="card-title">Seguridad</div>
+        <div class="form-grid form-grid--single">
+          <div class="form-field">
+            <label>Contraseña Actual</label>
+            <input [(ngModel)]="passwords.current" type="password" placeholder="••••••••" />
+          </div>
+          <div class="form-field">
+            <label>Nueva Contraseña</label>
+            <input [(ngModel)]="passwords.nuevo" type="password" placeholder="••••••••" />
+          </div>
+          <div class="form-field">
+            <label>Confirmar Nueva Contraseña</label>
+            <input [(ngModel)]="passwords.confirmar" type="password" placeholder="••••••••" />
+          </div>
+        </div>
+        <div class="card-footer">
+          <button mat-raised-button class="btn-primary" (click)="savePassword()"><mat-icon>lock</mat-icon> Actualizar Contraseña</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right column -->
+    <div class="right-col">
+
+      <!-- Preferences -->
+      <div class="card pref-card">
+        <div class="card-title">Preferencias</div>
+        <div class="pref-list">
+          <div class="pref-item">
+            <div class="pref-label">
+              <div class="pref-name">Notificaciones por Email</div>
+              <div class="pref-desc">Recibe alertas y recordatorios por correo</div>
+            </div>
+            <mat-slide-toggle [(ngModel)]="preferences.emailNotifications" color="primary"></mat-slide-toggle>
+          </div>
+          <div class="pref-item">
+            <div class="pref-label">
+              <div class="pref-name">Notificaciones SMS</div>
+              <div class="pref-desc">Alertas por mensaje de texto</div>
+            </div>
+            <mat-slide-toggle [(ngModel)]="preferences.smsNotifications" color="primary"></mat-slide-toggle>
+          </div>
+          <div class="pref-item">
+            <div class="pref-label">
+              <div class="pref-name">Recordatorios de Citas</div>
+              <div class="pref-desc">Avisos antes de cada consulta programada</div>
+            </div>
+            <mat-slide-toggle [(ngModel)]="preferences.appointmentReminders" color="primary"></mat-slide-toggle>
+          </div>
+          <div class="pref-item">
+            <div class="pref-label">
+              <div class="pref-name">Alertas del Sistema</div>
+              <div class="pref-desc">Notificaciones críticas del sistema</div>
+            </div>
+            <mat-slide-toggle [(ngModel)]="preferences.systemAlerts" color="primary"></mat-slide-toggle>
+          </div>
+          <div class="pref-item">
+            <div class="pref-label">
+              <div class="pref-name">Reporte Semanal</div>
+              <div class="pref-desc">Resumen de actividad semanal</div>
+            </div>
+            <mat-slide-toggle [(ngModel)]="preferences.weeklyReport" color="primary"></mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity stats -->
+      <div class="card stats-card">
+        <div class="card-title">Tu Actividad</div>
+        <div class="stats-grid">
+          @for (s of activityStats; track s.label) {
+            <div class="stat-item">
+              <div class="stat-val">{{ s.value }}</div>
+              <div class="stat-lbl">{{ s.label }}</div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="card quick-card">
+        <div class="card-title">Acciones Rápidas</div>
+        <div class="quick-list">
+          @for (a of quickActions; track a.label) {
+            <button class="quick-item" mat-button>
+              <div class="quick-icon" [style.background]="a.bg">
+                <mat-icon [style.color]="a.color">{{ a.icon }}</mat-icon>
+              </div>
+              <span class="quick-label">{{ a.label }}</span>
+              <mat-icon class="quick-arrow">chevron_right</mat-icon>
+            </button>
+          }
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
