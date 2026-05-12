@@ -1,0 +1,88 @@
+<div class="dashboard">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>Dashboard</h1>
+    <p>Bienvenido al panel de control de Vetalis Pro</p>
+  </div>
+
+  <div class="dashboard-body">
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <button mat-raised-button class="btn-primary" (click)="openNuevaConsulta()">
+        <mat-icon>add</mat-icon>
+        Nueva Consulta
+      </button>
+      <button mat-stroked-button class="btn-outline" (click)="openNuevaCita()">
+        <mat-icon>event</mat-icon>
+        Nueva Cita
+      </button>
+      <button mat-stroked-button class="btn-outline" (click)="openRegistrarPaciente()">
+        <mat-icon>person_add</mat-icon>
+        Registrar Paciente
+      </button>
+    </div>
+
+    <!-- Stats cards -->
+    <div class="stats-grid">
+      @for (stat of stats; track stat.label) {
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon" [style.background]="stat.bg">
+              <mat-icon [style.color]="stat.color">{{ stat.icon }}</mat-icon>
+            </div>
+            <span class="stat-delta" [class.positive]="stat.positive" [class.negative]="!stat.positive">
+              {{ stat.delta }}
+            </span>
+          </div>
+          <div class="stat-value">{{ stat.value }}</div>
+          <div class="stat-label">{{ stat.label }}</div>
+        </div>
+      }
+    </div>
+
+    <!-- Lower section -->
+    <div class="lower-grid">
+      <!-- Próximas citas -->
+      <div class="card appointments-card">
+        <div class="card-header">
+          <h2>Próximas Citas</h2>
+          <a class="link-ver-todas">Ver todas</a>
+        </div>
+        @for (apt of store.todayAppointments(); track apt.id) {
+          <div class="appointment-row">
+            <div class="apt-avatar" [style.background]="apt.avatarColor">
+              <mat-icon>pets</mat-icon>
+            </div>
+            <div class="apt-info">
+              <div class="apt-title">{{ apt.patientName }} - {{ apt.type }}</div>
+              <div class="apt-owner">Propietario: {{ apt.ownerName }}</div>
+            </div>
+            <div class="apt-right">
+              <div class="apt-time">{{ apt.time }}</div>
+              <span class="badge" [ngClass]="'badge-' + apt.status.toLowerCase()">
+                {{ apt.status }}
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Actividad reciente -->
+      <div class="card activity-card">
+        <h2>Actividad Reciente</h2>
+        @for (act of activities; track act.title) {
+          <div class="activity-row">
+            <div class="act-icon" [style.background]="act.bg">
+              <mat-icon [style.color]="act.color">{{ act.icon }}</mat-icon>
+            </div>
+            <div class="act-info">
+              <div class="act-title">{{ act.title }}</div>
+              <div class="act-subtitle">{{ act.subtitle }}</div>
+              <div class="act-time">{{ act.time }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
