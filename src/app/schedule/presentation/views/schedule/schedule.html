@@ -1,10 +1,12 @@
 <div class="schedule">
   <div class="page-header">
     <div>
-      <h1>Agenda de Citas</h1>
-      <p>Gestiona y organiza tus consultas veterinarias</p>
+      <h1>{{ 'schedule.title' | translate }}</h1>
+      <p>{{ 'schedule.subtitle' | translate }}</p>
     </div>
-    <button mat-raised-button class="btn-primary" (click)="openNuevaCita()"><mat-icon>add</mat-icon> Nueva Cita</button>
+    <button mat-raised-button class="btn-primary" (click)="openNuevaCita()">
+      <mat-icon>add</mat-icon> {{ 'schedule.newAppointment' | translate }}
+    </button>
   </div>
 
   <div class="schedule-body">
@@ -15,8 +17,10 @@
         <h2>{{ store.monthLabel() }}</h2>
         <button mat-icon-button (click)="store.nextMonth()"><mat-icon>chevron_right</mat-icon></button>
         <div class="view-toggle">
-          @for (v of ['Día','Semana','Mes']; track v) {
-            <button class="vt-btn" [class.vt-active]="viewMode === v" (click)="viewMode = $any(v)">{{ v }}</button>
+          @for (v of viewModes; track v.value) {
+            <button class="vt-btn" [class.vt-active]="viewMode === v.value" (click)="viewMode = v.value">
+              {{ v.labelKey | translate }}
+            </button>
           }
           <button mat-icon-button class="vt-icon"><mat-icon>calendar_view_month</mat-icon></button>
         </div>
@@ -25,7 +29,7 @@
       <table class="cal-table">
         <thead>
         <tr>
-          @for (d of dayNames; track d) { <th>{{ d }}</th> }
+          @for (d of dayNameKeys; track d) { <th>{{ d | translate }}</th> }
         </tr>
         </thead>
         <tbody>
@@ -51,11 +55,11 @@
     <div class="card today-card">
       <div class="today-header">
         <h2>{{ store.todayLabel() }}</h2>
-        <span class="today-count">{{ store.todayCitas().length }} citas</span>
+        <span class="today-count">{{ store.todayCitas().length }} {{ 'schedule.appointments' | translate }}</span>
       </div>
 
       @if (store.loading()) {
-        <div class="loading-state">Cargando citas...</div>
+        <div class="loading-state">{{ 'schedule.loading' | translate }}</div>
       } @else {
         @for (cita of store.todayCitas(); track cita.id) {
           <div class="cita-card">
@@ -68,7 +72,7 @@
                 <span class="badge" [ngClass]="cita.badgeClass">{{ cita.status }}</span>
                 <button mat-icon-button class="cita-menu"><mat-icon>more_vert</mat-icon></button>
               </div>
-              <div class="cita-owner">Dueño: {{ cita.owner }}</div>
+              <div class="cita-owner">{{ 'schedule.owner' | translate }} {{ cita.owner }}</div>
               <div class="cita-details">
                 <mat-icon>schedule</mat-icon> {{ cita.time }}
                 <mat-icon>calendar_today</mat-icon> {{ cita.type }}
@@ -76,7 +80,7 @@
             </div>
           </div>
         } @empty {
-          <div class="empty-state">No hay citas programadas para hoy.</div>
+          <div class="empty-state">{{ 'schedule.empty' | translate }}</div>
         }
       }
     </div>

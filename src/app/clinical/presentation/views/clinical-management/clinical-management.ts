@@ -7,6 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ClinicalStore } from '../../../application/clinical.store';
 import { ClinicalService } from '../../../infrastructure/services/clinical.service';
 import { Patient } from '../../../domain/model/patient.model';
@@ -21,7 +22,7 @@ const PAGE_SIZE = 5;
 
 @Component({
   selector: 'app-clinical-management',
-  imports: [NgClass, MatIconModule, MatButtonModule, MatTabsModule, MatSelectModule, FormsModule, MatDialogModule],
+  imports: [NgClass, MatIconModule, MatButtonModule, MatTabsModule, MatSelectModule, FormsModule, MatDialogModule, TranslatePipe],
   templateUrl: './clinical-management.html',
   styleUrl: './clinical-management.css'
 })
@@ -30,6 +31,7 @@ export class ClinicalManagement {
   private svc    = inject(ClinicalService);
   private dialog = inject(MatDialog);
   private snack  = inject(MatSnackBar);
+  private translate = inject(TranslateService);
 
   activeTab = 0;
 
@@ -39,6 +41,19 @@ export class ClinicalManagement {
   vaccineFilter         = 'Todas';
   hospitalizationFilter = 'Todos';
   consultDateFilter: 'all' | 'today' | 'week' = 'all';
+
+  vaccineFilters = [
+    { value: 'Todas',    labelKey: 'clinical.vaccines.filterAll'      },
+    { value: 'Próximas', labelKey: 'clinical.vaccines.filterUpcoming'  },
+    { value: 'Vencidas', labelKey: 'clinical.vaccines.filterExpired'   },
+  ];
+
+  hospFilters = [
+    { value: 'Todos',        labelKey: 'clinical.hospitalization.filterAll'      },
+    { value: 'Crítico',      labelKey: 'clinical.hospitalization.filterCritical' },
+    { value: 'Estable',      labelKey: 'clinical.hospitalization.filterStable'   },
+    { value: 'Recuperación', labelKey: 'clinical.hospitalization.filterRecovery' },
+  ];
 
   // ── Pagination ────────────────────────────────────────────────
   consultPage = 1;
@@ -84,9 +99,9 @@ export class ClinicalManagement {
   get vaccineSummary() {
     const vs = this.store.vaccines();
     return [
-      { label: 'Vacunas Vencidas',  sublabel: 'Requieren atención inmediata', value: vs.filter(v => v.status === 'Vencida').length,  color: '#EF4444', bg: '#FEF2F2', icon: 'error' },
-      { label: 'Próximas 7 días',   sublabel: 'Programar citas pronto',        value: vs.filter(v => v.status === 'Próxima').length,  color: '#F59E0B', bg: '#FFFBEB', icon: 'schedule' },
-      { label: 'Al Día',            sublabel: 'Vacunación completa',            value: vs.filter(v => v.status === 'Al Día').length,   color: '#22C55E', bg: '#F0FDF4', icon: 'check_circle' },
+      { labelKey: 'clinical.vaccines.summaryExpired',  sublabelKey: 'clinical.vaccines.summaryExpiredSub',  value: vs.filter(v => v.status === 'Vencida').length,  color: '#EF4444', bg: '#FEF2F2', icon: 'error'        },
+      { labelKey: 'clinical.vaccines.summaryUpcoming', sublabelKey: 'clinical.vaccines.summaryUpcomingSub', value: vs.filter(v => v.status === 'Próxima').length,  color: '#F59E0B', bg: '#FFFBEB', icon: 'schedule'     },
+      { labelKey: 'clinical.vaccines.summaryUpToDate', sublabelKey: 'clinical.vaccines.summaryUpToDateSub', value: vs.filter(v => v.status === 'Al Día').length,   color: '#22C55E', bg: '#F0FDF4', icon: 'check_circle' },
     ];
   }
 
@@ -104,9 +119,9 @@ export class ClinicalManagement {
   get hospitalStats() {
     const hs = this.store.hospitalizations();
     return [
-      { label: 'Total Hospitalizados', sublabel: 'Pacientes activos',             value: hs.length,                                      icon: 'local_hospital', color: '#3B82F6', bg: '#EFF6FF' },
-      { label: 'Estado Crítico',        sublabel: 'Requieren atención inmediata', value: hs.filter(h => h.status === 'Crítico').length,   icon: 'favorite',       color: '#EF4444', bg: '#FEF2F2' },
-      { label: 'En Recuperación',       sublabel: 'Progreso favorable',           value: hs.filter(h => h.status === 'Recuperación').length, icon: 'person',      color: '#F59E0B', bg: '#FFFBEB' },
+      { labelKey: 'clinical.hospitalization.statTotal',    sublabelKey: 'clinical.hospitalization.statTotalSub',    value: hs.length,                                         icon: 'local_hospital', color: '#3B82F6', bg: '#EFF6FF' },
+      { labelKey: 'clinical.hospitalization.statCritical', sublabelKey: 'clinical.hospitalization.statCriticalSub', value: hs.filter(h => h.status === 'Crítico').length,     icon: 'favorite',       color: '#EF4444', bg: '#FEF2F2' },
+      { labelKey: 'clinical.hospitalization.statRecovery', sublabelKey: 'clinical.hospitalization.statRecoverySub', value: hs.filter(h => h.status === 'Recuperación').length, icon: 'person',         color: '#F59E0B', bg: '#FFFBEB' },
     ];
   }
 
@@ -124,10 +139,10 @@ export class ClinicalManagement {
     return {
       name: p.name, breed: p.breed, age: p.age, owner: p.owner, avatarColor: p.avatarColor,
       stats: [
-        { label: 'Total Consultas',    value: String(sc.length) },
-        { label: 'Vacunas Aplicadas',  value: String(this.store.vaccines().filter(v => v.mascotaId === p.id).length) },
-        { label: 'Hospitalizaciones',  value: String(this.store.hospitalizations().filter(h => h.mascotaId === p.id).length) },
-        { label: 'Última Visita',      value: sc.length > 0 ? sc[0].date : '—' },
+        { labelKey: 'clinical.history.statTotalConsults',    value: String(sc.length) },
+        { labelKey: 'clinical.history.statVaccinesApplied',  value: String(this.store.vaccines().filter(v => v.mascotaId === p.id).length) },
+        { labelKey: 'clinical.history.statHospitalizations', value: String(this.store.hospitalizations().filter(h => h.mascotaId === p.id).length) },
+        { labelKey: 'clinical.history.statLastVisit',        value: sc.length > 0 ? sc[0].date : '—' },
       ]
     };
   }
@@ -199,10 +214,14 @@ export class ClinicalManagement {
   }
 
   deletePatient(patient: Patient) {
-    if (!confirm(`¿Eliminar a ${patient.name}? Esta acción no se puede deshacer.`)) return;
+    const msg = this.translate.instant('clinical.messages.confirmDelete', { name: patient.name });
+    if (!confirm(msg)) return;
     this.svc.deleteMascota(patient.id).subscribe({
-      next: () => { this.snack.open('Paciente eliminado', 'OK', { duration: 3000 }); this.store.reload(); },
-      error: () => this.snack.open('Error al eliminar', '', { duration: 3000 }),
+      next: () => {
+        this.snack.open(this.translate.instant('clinical.messages.patientDeleted'), 'OK', { duration: 3000 });
+        this.store.reload();
+      },
+      error: () => this.snack.open(this.translate.instant('clinical.messages.deleteError'), '', { duration: 3000 }),
     });
   }
 }

@@ -2,12 +2,12 @@
   <!-- Header -->
   <div class="page-header">
     <div>
-      <h1>Gestión Clínica</h1>
-      <p>Administra pacientes, consultas e historial médico</p>
+      <h1>{{ 'clinical.title' | translate }}</h1>
+      <p>{{ 'clinical.subtitle' | translate }}</p>
     </div>
     <div class="header-search">
       <mat-icon class="search-icon">search</mat-icon>
-      <input placeholder="Buscar paciente o cliente..." class="header-search-input" />
+      <input [placeholder]="'clinical.search.placeholder' | translate" class="header-search-input" />
       <mat-icon class="notif-icon">notifications</mat-icon>
     </div>
   </div>
@@ -16,30 +16,33 @@
 
     <!-- ===== PACIENTES ===== -->
     <mat-tab>
-      <ng-template mat-tab-label><mat-icon class="tab-icon">pets</mat-icon> Pacientes</ng-template>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">pets</mat-icon> {{ 'clinical.tabs.patients' | translate }}</ng-template>
       <div class="tab-content">
         <div class="section-header">
-          <div><h2>Pacientes Registrados</h2><p>Gestiona la información de las mascotas</p></div>
+          <div>
+            <h2>{{ 'clinical.patients.title' | translate }}</h2>
+            <p>{{ 'clinical.patients.subtitle' | translate }}</p>
+          </div>
           <button mat-raised-button class="btn-primary" (click)="openRegistrarPaciente()">
-            <mat-icon>add</mat-icon> Registrar Paciente
+            <mat-icon>add</mat-icon> {{ 'clinical.patients.register' | translate }}
           </button>
         </div>
         <div class="filters-row">
           <div class="search-wrap">
             <mat-icon>search</mat-icon>
-            <input [(ngModel)]="patientSearch" placeholder="Buscar por nombre, ID o propietario..." class="filter-input" />
+            <input [(ngModel)]="patientSearch" [placeholder]="'clinical.patients.search' | translate" class="filter-input" />
           </div>
           <div class="species-wrap">
             <mat-select [(value)]="speciesFilter" class="species-select">
-              <mat-option value="Todas">Todas las especies</mat-option>
-              <mat-option value="Perro">Perro</mat-option>
-              <mat-option value="Gato">Gato</mat-option>
-              <mat-option value="Ave">Ave</mat-option>
+              <mat-option value="Todas">{{ 'clinical.patients.filterAll' | translate }}</mat-option>
+              <mat-option value="Perro">{{ 'clinical.patients.filterDog' | translate }}</mat-option>
+              <mat-option value="Gato">{{ 'clinical.patients.filterCat' | translate }}</mat-option>
+              <mat-option value="Ave">{{ 'clinical.patients.filterBird' | translate }}</mat-option>
             </mat-select>
           </div>
         </div>
         @if (store.loading()) {
-          <div class="loading-msg">Cargando pacientes...</div>
+          <div class="loading-msg">{{ 'clinical.patients.loading' | translate }}</div>
         } @else {
           <div class="patients-grid">
             @for (p of filteredPatients; track p.id) {
@@ -53,14 +56,14 @@
                   <span class="badge badge-activo">{{ p.status }}</span>
                 </div>
                 <div class="pc-details">
-                  <div class="pc-row"><mat-icon>pets</mat-icon><span>Especie:</span> {{ p.species }} - {{ p.breed }}</div>
-                  <div class="pc-row"><mat-icon>cake</mat-icon><span>Edad:</span> {{ p.age }}</div>
-                  <div class="pc-row"><mat-icon>monitor_weight</mat-icon><span>Peso:</span> {{ p.weight }}</div>
-                  <div class="pc-row"><mat-icon>person</mat-icon><span>Propietario:</span> {{ p.owner }}</div>
+                  <div class="pc-row"><mat-icon>pets</mat-icon><span>{{ 'clinical.patients.species' | translate }}</span> {{ p.species }} - {{ p.breed }}</div>
+                  <div class="pc-row"><mat-icon>cake</mat-icon><span>{{ 'clinical.patients.age' | translate }}</span> {{ p.age }}</div>
+                  <div class="pc-row"><mat-icon>monitor_weight</mat-icon><span>{{ 'clinical.patients.weight' | translate }}</span> {{ p.weight }}</div>
+                  <div class="pc-row"><mat-icon>person</mat-icon><span>{{ 'clinical.patients.owner' | translate }}</span> {{ p.owner }}</div>
                 </div>
                 <div class="pc-actions">
                   <button mat-button class="btn-ver-ficha" (click)="verFicha(p.id)">
-                    <mat-icon>visibility</mat-icon> Ver Ficha
+                    <mat-icon>visibility</mat-icon> {{ 'clinical.patients.viewFile' | translate }}
                   </button>
                   <button mat-icon-button (click)="openRegistrarPaciente(p)" title="Editar">
                     <mat-icon>edit</mat-icon>
@@ -71,7 +74,7 @@
                 </div>
               </div>
             } @empty {
-              <p class="empty-msg">No se encontraron pacientes.</p>
+              <p class="empty-msg">{{ 'clinical.patients.empty' | translate }}</p>
             }
           </div>
         }
@@ -80,39 +83,48 @@
 
     <!-- ===== CLIENTES ===== -->
     <mat-tab>
-      <ng-template mat-tab-label><mat-icon class="tab-icon">people</mat-icon> Clientes</ng-template>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">people</mat-icon> {{ 'clinical.tabs.clients' | translate }}</ng-template>
       <div class="tab-content empty-tab">
         <mat-icon>people_outline</mat-icon>
-        <h3>Módulo de Clientes</h3>
-        <p>Gestiona la información de los propietarios</p>
+        <h3>{{ 'clinical.clients.title' | translate }}</h3>
+        <p>{{ 'clinical.clients.subtitle' | translate }}</p>
         <button mat-raised-button class="btn-primary" (click)="openRegistrarCliente()">
-          <mat-icon>add</mat-icon> Registrar Cliente
+          <mat-icon>add</mat-icon> {{ 'clinical.clients.register' | translate }}
         </button>
       </div>
     </mat-tab>
 
     <!-- ===== CONSULTAS ===== -->
     <mat-tab>
-      <ng-template mat-tab-label><mat-icon class="tab-icon">medical_services</mat-icon> Consultas</ng-template>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">medical_services</mat-icon> {{ 'clinical.tabs.consultations' | translate }}</ng-template>
       <div class="tab-content">
         <div class="section-header">
-          <div><h2>Consultas Médicas</h2><p>Registra y gestiona consultas veterinarias</p></div>
+          <div>
+            <h2>{{ 'clinical.consultations.title' | translate }}</h2>
+            <p>{{ 'clinical.consultations.subtitle' | translate }}</p>
+          </div>
           <button mat-raised-button class="btn-primary" (click)="openNuevaConsulta()">
-            <mat-icon>add</mat-icon> Nueva Consulta
+            <mat-icon>add</mat-icon> {{ 'clinical.consultations.newConsult' | translate }}
           </button>
         </div>
         <div class="card table-card">
           <div class="table-top">
-            <h3>Consultas Recientes</h3>
+            <h3>{{ 'clinical.consultations.recent' | translate }}</h3>
             <div class="table-actions">
-              <button mat-stroked-button class="btn-sm" [class.btn-sm-active]="consultDateFilter === 'all'"   (click)="setConsultFilter('all')">Todas</button>
-              <button mat-stroked-button class="btn-sm" [class.btn-sm-active]="consultDateFilter === 'today'" (click)="setConsultFilter('today')">Hoy</button>
-              <button mat-stroked-button class="btn-sm" [class.btn-sm-active]="consultDateFilter === 'week'"  (click)="setConsultFilter('week')">Esta semana</button>
+              <button mat-stroked-button class="btn-sm" [class.btn-sm-active]="consultDateFilter === 'all'"   (click)="setConsultFilter('all')">{{ 'clinical.consultations.filterAll' | translate }}</button>
+              <button mat-stroked-button class="btn-sm" [class.btn-sm-active]="consultDateFilter === 'today'" (click)="setConsultFilter('today')">{{ 'clinical.consultations.filterToday' | translate }}</button>
+              <button mat-stroked-button class="btn-sm" [class.btn-sm-active]="consultDateFilter === 'week'"  (click)="setConsultFilter('week')">{{ 'clinical.consultations.filterWeek' | translate }}</button>
             </div>
           </div>
           <table class="data-table">
             <thead><tr>
-              <th>ID</th><th>Paciente</th><th>Cliente</th><th>Tipo</th><th>Diagnóstico</th><th>Fecha</th><th>Estado</th>
+              <th>{{ 'clinical.consultations.colId' | translate }}</th>
+              <th>{{ 'clinical.consultations.colPatient' | translate }}</th>
+              <th>{{ 'clinical.consultations.colClient' | translate }}</th>
+              <th>{{ 'clinical.consultations.colType' | translate }}</th>
+              <th>{{ 'clinical.consultations.colDiagnosis' | translate }}</th>
+              <th>{{ 'clinical.consultations.colDate' | translate }}</th>
+              <th>{{ 'clinical.consultations.colStatus' | translate }}</th>
             </tr></thead>
             <tbody>
               @for (c of pagedConsultations; track c.id) {
@@ -129,12 +141,12 @@
                   <td><span class="badge" [ngClass]="getConsultBadge(c.status)">{{ c.status }}</span></td>
                 </tr>
               } @empty {
-                <tr><td colspan="7" class="empty-msg">No hay consultas.</td></tr>
+                <tr><td colspan="7" class="empty-msg">{{ 'clinical.consultations.empty' | translate }}</td></tr>
               }
             </tbody>
           </table>
           <div class="table-footer">
-            <span>Mostrando {{ pagedConsultations.length }} de {{ filteredConsultations.length }} consultas</span>
+            <span>{{ 'clinical.consultations.showing' | translate: { current: pagedConsultations.length, total: filteredConsultations.length } }}</span>
             <div class="pagination">
               <button mat-icon-button [disabled]="consultPage <= 1" (click)="consultPage = consultPage - 1">
                 <mat-icon>chevron_left</mat-icon>
@@ -153,37 +165,37 @@
 
     <!-- ===== HISTORIAL CLÍNICO ===== -->
     <mat-tab>
-      <ng-template mat-tab-label><mat-icon class="tab-icon">assignment</mat-icon> Historial Clínico</ng-template>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">assignment</mat-icon> {{ 'clinical.tabs.history' | translate }}</ng-template>
       <div class="tab-content">
         @if (!historyPatient) {
           <div class="empty-tab">
             <mat-icon>assignment_ind</mat-icon>
-            <h3>Selecciona un paciente</h3>
-            <p>Haz clic en "Ver Ficha" desde la pestaña de Pacientes</p>
-            <button mat-stroked-button (click)="activeTab = 0">Ir a Pacientes</button>
+            <h3>{{ 'clinical.history.selectPatient' | translate }}</h3>
+            <p>{{ 'clinical.history.selectPatientHint' | translate }}</p>
+            <button mat-stroked-button (click)="activeTab = 0">{{ 'clinical.history.goToPatients' | translate }}</button>
           </div>
         } @else {
           <div class="history-header">
             <div class="hist-avatar" [style.background]="historyPatient.avatarColor"><mat-icon>pets</mat-icon></div>
             <div class="hist-info">
               <h2>{{ historyPatient.name }}</h2>
-              <p>{{ historyPatient.breed }} · {{ historyPatient.age }} · Propietario: {{ historyPatient.owner }}</p>
+              <p>{{ historyPatient.breed }} · {{ historyPatient.age }} · {{ 'clinical.history.owner' | translate }} {{ historyPatient.owner }}</p>
             </div>
             <div class="hist-actions">
               <button mat-raised-button class="btn-primary" (click)="openNuevaConsulta(store.selectedPatientId()!)">
-                <mat-icon>add</mat-icon> Nueva Consulta
+                <mat-icon>add</mat-icon> {{ 'clinical.history.newConsult' | translate }}
               </button>
               <button mat-icon-button><mat-icon>bookmark_border</mat-icon></button>
             </div>
           </div>
           <div class="hist-stats">
-            @for (s of historyPatient.stats; track s.label) {
-              <div class="hist-stat"><div class="hs-val">{{ s.value }}</div><div class="hs-lbl">{{ s.label }}</div></div>
+            @for (s of historyPatient.stats; track s.labelKey) {
+              <div class="hist-stat"><div class="hs-val">{{ s.value }}</div><div class="hs-lbl">{{ s.labelKey | translate }}</div></div>
             }
           </div>
-          <div class="hist-section-title">Historial Médico Completo</div>
+          <div class="hist-section-title">{{ 'clinical.history.fullHistory' | translate }}</div>
           @if (historyRecords.length === 0) {
-            <p class="empty-msg">No hay consultas registradas para este paciente.</p>
+            <p class="empty-msg">{{ 'clinical.history.empty' | translate }}</p>
           } @else {
             <div class="timeline">
               @for (r of historyRecords; track r.date) {
@@ -212,32 +224,39 @@
 
     <!-- ===== VACUNAS ===== -->
     <mat-tab>
-      <ng-template mat-tab-label><mat-icon class="tab-icon">vaccines</mat-icon> Vacunas</ng-template>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">vaccines</mat-icon> {{ 'clinical.tabs.vaccines' | translate }}</ng-template>
       <div class="tab-content">
         <div class="section-header">
           <div class="chips-row">
-            @for (f of ['Todas','Próximas','Vencidas']; track f) {
-              <button class="chip" [class.chip-active]="vaccineFilter === f" (click)="vaccineFilter = f">{{ f }}</button>
+            @for (f of vaccineFilters; track f.value) {
+              <button class="chip" [class.chip-active]="vaccineFilter === f.value" (click)="vaccineFilter = f.value">
+                {{ f.labelKey | translate }}
+              </button>
             }
           </div>
           <button mat-raised-button class="btn-primary" (click)="openRegistrarVacuna()">
-            <mat-icon>add</mat-icon> Registrar Vacuna
+            <mat-icon>add</mat-icon> {{ 'clinical.vaccines.register' | translate }}
           </button>
         </div>
         <div class="vsummary-grid">
-          @for (s of vaccineSummary; track s.label) {
+          @for (s of vaccineSummary; track s.labelKey) {
             <div class="vsummary" [style.background]="s.bg">
               <mat-icon [style.color]="s.color" class="vs-icon">{{ s.icon }}</mat-icon>
               <div class="vs-val" [style.color]="s.color">{{ s.value }}</div>
-              <div class="vs-label" [style.color]="s.color">{{ s.label }}</div>
-              <div class="vs-sub">{{ s.sublabel }}</div>
+              <div class="vs-label" [style.color]="s.color">{{ s.labelKey | translate }}</div>
+              <div class="vs-sub">{{ s.sublabelKey | translate }}</div>
             </div>
           }
         </div>
         <div class="card table-card">
           <table class="data-table">
             <thead><tr>
-              <th>Paciente</th><th>Vacuna</th><th>Última Aplicación</th><th>Próxima Dosis</th><th>Estado</th><th>Acciones</th>
+              <th>{{ 'clinical.vaccines.colPatient' | translate }}</th>
+              <th>{{ 'clinical.vaccines.colVaccine' | translate }}</th>
+              <th>{{ 'clinical.vaccines.colLastApplied' | translate }}</th>
+              <th>{{ 'clinical.vaccines.colNextDose' | translate }}</th>
+              <th>{{ 'clinical.vaccines.colStatus' | translate }}</th>
+              <th>{{ 'clinical.vaccines.colActions' | translate }}</th>
             </tr></thead>
             <tbody>
               @for (v of filteredVaccines; track v.id) {
@@ -252,14 +271,14 @@
                   <td><span class="badge" [ngClass]="getVaccineBadge(v.status)">{{ v.status }}</span></td>
                   <td>
                     <button mat-button class="action-link" (click)="openRegistrarVacuna(v.mascotaId)">
-                      @if (v.status === 'Al Día') { Ver Detalles }
-                      @else if (v.status === 'Próxima') { Programar }
-                      @else { Aplicar Ya }
+                      @if (v.status === 'Al Día') { {{ 'clinical.vaccines.actionViewDetails' | translate }} }
+                      @else if (v.status === 'Próxima') { {{ 'clinical.vaccines.actionSchedule' | translate }} }
+                      @else { {{ 'clinical.vaccines.actionApplyNow' | translate }} }
                     </button>
                   </td>
                 </tr>
               } @empty {
-                <tr><td colspan="6" class="empty-msg">No hay vacunas.</td></tr>
+                <tr><td colspan="6" class="empty-msg">{{ 'clinical.vaccines.empty' | translate }}</td></tr>
               }
             </tbody>
           </table>
@@ -269,34 +288,47 @@
 
     <!-- ===== HOSPITALIZACIÓN ===== -->
     <mat-tab>
-      <ng-template mat-tab-label><mat-icon class="tab-icon">local_hospital</mat-icon> Hospitalización</ng-template>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">local_hospital</mat-icon> {{ 'clinical.tabs.hospitalization' | translate }}</ng-template>
       <div class="tab-content">
         <div class="section-header">
-          <div><h2>Pacientes Hospitalizados</h2><p>Gestión y seguimiento de pacientes en hospitalización</p></div>
+          <div>
+            <h2>{{ 'clinical.hospitalization.title' | translate }}</h2>
+            <p>{{ 'clinical.hospitalization.subtitle' | translate }}</p>
+          </div>
           <button mat-raised-button class="btn-primary" (click)="openRegistrarIngreso()">
-            <mat-icon>add</mat-icon> Registrar Ingreso
+            <mat-icon>add</mat-icon> {{ 'clinical.hospitalization.register' | translate }}
           </button>
         </div>
         <div class="hosp-stats-row">
-          @for (s of hospitalStats; track s.label) {
+          @for (s of hospitalStats; track s.labelKey) {
             <div class="hosp-stat-card">
-              <div><div class="hosp-stat-label">{{ s.label }}</div><div class="hosp-stat-val" [style.color]="s.color">{{ s.value }}</div><div class="hosp-stat-sub">{{ s.sublabel }}</div></div>
+              <div>
+                <div class="hosp-stat-label">{{ s.labelKey | translate }}</div>
+                <div class="hosp-stat-val" [style.color]="s.color">{{ s.value }}</div>
+                <div class="hosp-stat-sub">{{ s.sublabelKey | translate }}</div>
+              </div>
               <div class="hosp-stat-icon" [style.background]="s.bg"><mat-icon [style.color]="s.color">{{ s.icon }}</mat-icon></div>
             </div>
           }
         </div>
         <div class="chips-row">
-          @for (f of ['Todos','Crítico','Estable','Recuperación']; track f) {
-            <button class="chip" [class.chip-active]="hospitalizationFilter === f" (click)="hospitalizationFilter = f">
-              {{ f }} ({{ getHospCount(f) }})
+          @for (f of hospFilters; track f.value) {
+            <button class="chip" [class.chip-active]="hospitalizationFilter === f.value" (click)="hospitalizationFilter = f.value">
+              {{ f.labelKey | translate }} ({{ getHospCount(f.value) }})
             </button>
           }
         </div>
         <div class="card table-card">
-          <h3 class="table-title">Lista de Pacientes</h3>
+          <h3 class="table-title">{{ 'clinical.hospitalization.list' | translate }}</h3>
           <table class="data-table">
             <thead><tr>
-              <th>Paciente</th><th>Propietario</th><th>Estado</th><th>Fecha Ingreso</th><th>Diagnóstico</th><th>Tratamiento</th><th>Acciones</th>
+              <th>{{ 'clinical.hospitalization.colPatient' | translate }}</th>
+              <th>{{ 'clinical.hospitalization.colOwner' | translate }}</th>
+              <th>{{ 'clinical.hospitalization.colStatus' | translate }}</th>
+              <th>{{ 'clinical.hospitalization.colAdmissionDate' | translate }}</th>
+              <th>{{ 'clinical.hospitalization.colDiagnosis' | translate }}</th>
+              <th>{{ 'clinical.hospitalization.colTreatment' | translate }}</th>
+              <th>{{ 'clinical.hospitalization.colActions' | translate }}</th>
             </tr></thead>
             <tbody>
               @for (h of filteredHospitalizations; track h.id) {
@@ -320,7 +352,7 @@
                   </div></td>
                 </tr>
               } @empty {
-                <tr><td colspan="7" class="empty-msg">No hay pacientes hospitalizados.</td></tr>
+                <tr><td colspan="7" class="empty-msg">{{ 'clinical.hospitalization.empty' | translate }}</td></tr>
               }
             </tbody>
           </table>

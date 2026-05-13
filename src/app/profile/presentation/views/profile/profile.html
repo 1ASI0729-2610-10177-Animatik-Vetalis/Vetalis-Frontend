@@ -1,8 +1,8 @@
 <div class="profile">
   <div class="page-header">
     <div>
-      <h1>Mi Perfil</h1>
-      <p>Gestiona tu información personal y preferencias</p>
+      <h1>{{ 'profile.title' | translate }}</h1>
+      <p>{{ 'profile.subtitle' | translate }}</p>
     </div>
   </div>
 
@@ -17,65 +17,71 @@
         </div>
         <div class="hero-info">
           <div class="hero-name">Dr. Carlos Méndez Rodríguez</div>
-          <div class="hero-role">Médico Veterinario</div>
+          <div class="hero-role">{{ 'profile.role' | translate }}</div>
           <div class="hero-email">carlos.mendez&#64;vetalis.com</div>
         </div>
-        <button mat-stroked-button class="btn-change-photo"><mat-icon>photo_camera</mat-icon> Cambiar Foto</button>
+        <button mat-stroked-button class="btn-change-photo">
+          <mat-icon>photo_camera</mat-icon> {{ 'profile.changePhoto' | translate }}
+        </button>
       </div>
 
-      <!-- Datos personales -->
+      <!-- Personal data -->
       <div class="card form-card">
-        <div class="card-title">Datos Personales</div>
+        <div class="card-title">{{ 'profile.personalData.title' | translate }}</div>
         <div class="form-grid">
           <div class="form-field">
-            <label>Nombre</label>
-            <input [(ngModel)]="form.nombre" placeholder="Nombre" />
+            <label>{{ 'profile.personalData.name' | translate }}</label>
+            <input [(ngModel)]="form.nombre" [placeholder]="'profile.personalData.namePlaceholder' | translate" />
           </div>
           <div class="form-field">
-            <label>Apellidos</label>
-            <input [(ngModel)]="form.apellidos" placeholder="Apellidos" />
+            <label>{{ 'profile.personalData.lastName' | translate }}</label>
+            <input [(ngModel)]="form.apellidos" [placeholder]="'profile.personalData.lastNamePlaceholder' | translate" />
           </div>
           <div class="form-field">
-            <label>Correo Electrónico</label>
-            <input [(ngModel)]="form.correo" type="email" placeholder="correo@ejemplo.com" />
+            <label>{{ 'profile.personalData.email' | translate }}</label>
+            <input [(ngModel)]="form.correo" type="email" [placeholder]="'profile.personalData.emailPlaceholder' | translate" />
           </div>
           <div class="form-field">
-            <label>Teléfono</label>
-            <input [(ngModel)]="form.telefono" placeholder="+51 000 000 000" />
+            <label>{{ 'profile.personalData.phone' | translate }}</label>
+            <input [(ngModel)]="form.telefono" [placeholder]="'profile.personalData.phonePlaceholder' | translate" />
           </div>
           <div class="form-field form-field--full">
-            <label>Especialidad</label>
-            <input [(ngModel)]="form.especialidad" placeholder="Especialidad" />
+            <label>{{ 'profile.personalData.specialty' | translate }}</label>
+            <input [(ngModel)]="form.especialidad" [placeholder]="'profile.personalData.specialtyPlaceholder' | translate" />
           </div>
           <div class="form-field">
-            <label>DNI / Documento</label>
-            <input [(ngModel)]="form.dni" placeholder="00000000" />
+            <label>{{ 'profile.personalData.document' | translate }}</label>
+            <input [(ngModel)]="form.dni" [placeholder]="'profile.personalData.documentPlaceholder' | translate" />
           </div>
         </div>
         <div class="card-footer">
-          <button mat-raised-button class="btn-primary" (click)="saveProfile()"><mat-icon>save</mat-icon> Guardar Cambios</button>
+          <button mat-raised-button class="btn-primary" (click)="saveProfile()">
+            <mat-icon>save</mat-icon> {{ 'profile.personalData.save' | translate }}
+          </button>
         </div>
       </div>
 
-      <!-- Seguridad -->
+      <!-- Security -->
       <div class="card form-card">
-        <div class="card-title">Seguridad</div>
+        <div class="card-title">{{ 'profile.security.title' | translate }}</div>
         <div class="form-grid form-grid--single">
           <div class="form-field">
-            <label>Contraseña Actual</label>
+            <label>{{ 'profile.security.currentPassword' | translate }}</label>
             <input [(ngModel)]="passwords.current" type="password" placeholder="••••••••" />
           </div>
           <div class="form-field">
-            <label>Nueva Contraseña</label>
+            <label>{{ 'profile.security.newPassword' | translate }}</label>
             <input [(ngModel)]="passwords.nuevo" type="password" placeholder="••••••••" />
           </div>
           <div class="form-field">
-            <label>Confirmar Nueva Contraseña</label>
+            <label>{{ 'profile.security.confirmPassword' | translate }}</label>
             <input [(ngModel)]="passwords.confirmar" type="password" placeholder="••••••••" />
           </div>
         </div>
         <div class="card-footer">
-          <button mat-raised-button class="btn-primary" (click)="savePassword()"><mat-icon>lock</mat-icon> Actualizar Contraseña</button>
+          <button mat-raised-button class="btn-primary" (click)="savePassword()">
+            <mat-icon>lock</mat-icon> {{ 'profile.security.update' | translate }}
+          </button>
         </div>
       </div>
 
@@ -86,40 +92,40 @@
 
       <!-- Preferences -->
       <div class="card pref-card">
-        <div class="card-title">Preferencias</div>
+        <div class="card-title">{{ 'profile.preferences.title' | translate }}</div>
         <div class="pref-list">
           <div class="pref-item">
             <div class="pref-label">
-              <div class="pref-name">Notificaciones por Email</div>
-              <div class="pref-desc">Recibe alertas y recordatorios por correo</div>
+              <div class="pref-name">{{ 'profile.preferences.emailNotifications' | translate }}</div>
+              <div class="pref-desc">{{ 'profile.preferences.emailNotificationsDesc' | translate }}</div>
             </div>
             <mat-slide-toggle [(ngModel)]="preferences.emailNotifications" color="primary"></mat-slide-toggle>
           </div>
           <div class="pref-item">
             <div class="pref-label">
-              <div class="pref-name">Notificaciones SMS</div>
-              <div class="pref-desc">Alertas por mensaje de texto</div>
+              <div class="pref-name">{{ 'profile.preferences.smsNotifications' | translate }}</div>
+              <div class="pref-desc">{{ 'profile.preferences.smsNotificationsDesc' | translate }}</div>
             </div>
             <mat-slide-toggle [(ngModel)]="preferences.smsNotifications" color="primary"></mat-slide-toggle>
           </div>
           <div class="pref-item">
             <div class="pref-label">
-              <div class="pref-name">Recordatorios de Citas</div>
-              <div class="pref-desc">Avisos antes de cada consulta programada</div>
+              <div class="pref-name">{{ 'profile.preferences.appointmentReminders' | translate }}</div>
+              <div class="pref-desc">{{ 'profile.preferences.appointmentRemindersDesc' | translate }}</div>
             </div>
             <mat-slide-toggle [(ngModel)]="preferences.appointmentReminders" color="primary"></mat-slide-toggle>
           </div>
           <div class="pref-item">
             <div class="pref-label">
-              <div class="pref-name">Alertas del Sistema</div>
-              <div class="pref-desc">Notificaciones críticas del sistema</div>
+              <div class="pref-name">{{ 'profile.preferences.systemAlerts' | translate }}</div>
+              <div class="pref-desc">{{ 'profile.preferences.systemAlertsDesc' | translate }}</div>
             </div>
             <mat-slide-toggle [(ngModel)]="preferences.systemAlerts" color="primary"></mat-slide-toggle>
           </div>
           <div class="pref-item">
             <div class="pref-label">
-              <div class="pref-name">Reporte Semanal</div>
-              <div class="pref-desc">Resumen de actividad semanal</div>
+              <div class="pref-name">{{ 'profile.preferences.weeklyReport' | translate }}</div>
+              <div class="pref-desc">{{ 'profile.preferences.weeklyReportDesc' | translate }}</div>
             </div>
             <mat-slide-toggle [(ngModel)]="preferences.weeklyReport" color="primary"></mat-slide-toggle>
           </div>
@@ -128,12 +134,12 @@
 
       <!-- Activity stats -->
       <div class="card stats-card">
-        <div class="card-title">Tu Actividad</div>
+        <div class="card-title">{{ 'profile.activity.title' | translate }}</div>
         <div class="stats-grid">
-          @for (s of activityStats; track s.label) {
+          @for (s of activityStats; track s.labelKey) {
             <div class="stat-item">
               <div class="stat-val">{{ s.value }}</div>
-              <div class="stat-lbl">{{ s.label }}</div>
+              <div class="stat-lbl">{{ s.labelKey | translate }}</div>
             </div>
           }
         </div>
@@ -141,14 +147,14 @@
 
       <!-- Quick actions -->
       <div class="card quick-card">
-        <div class="card-title">Acciones Rápidas</div>
+        <div class="card-title">{{ 'profile.quickActions.title' | translate }}</div>
         <div class="quick-list">
-          @for (a of quickActions; track a.label) {
-            <button class="quick-item" mat-button>
+          @for (a of quickActions; track a.labelKey) {
+            <button class="quick-item" type="button">
               <div class="quick-icon" [style.background]="a.bg">
                 <mat-icon [style.color]="a.color">{{ a.icon }}</mat-icon>
               </div>
-              <span class="quick-label">{{ a.label }}</span>
+              <span class="quick-label">{{ a.labelKey | translate }}</span>
               <mat-icon class="quick-arrow">chevron_right</mat-icon>
             </button>
           }

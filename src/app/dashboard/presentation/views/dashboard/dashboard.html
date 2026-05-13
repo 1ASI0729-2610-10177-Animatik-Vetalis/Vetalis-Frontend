@@ -1,8 +1,8 @@
 <div class="dashboard">
   <!-- Header -->
   <div class="page-header">
-    <h1>Dashboard</h1>
-    <p>Bienvenido al panel de control de Vetalis Pro</p>
+    <h1>{{ 'dashboard.title' | translate }}</h1>
+    <p>{{ 'dashboard.subtitle' | translate }}</p>
   </div>
 
   <div class="dashboard-body">
@@ -10,21 +10,21 @@
     <div class="quick-actions">
       <button mat-raised-button class="btn-primary" (click)="openNuevaConsulta()">
         <mat-icon>add</mat-icon>
-        Nueva Consulta
+        {{ 'dashboard.actions.newConsult' | translate }}
       </button>
       <button mat-stroked-button class="btn-outline" (click)="openNuevaCita()">
         <mat-icon>event</mat-icon>
-        Nueva Cita
+        {{ 'dashboard.actions.newAppointment' | translate }}
       </button>
       <button mat-stroked-button class="btn-outline" (click)="openRegistrarPaciente()">
         <mat-icon>person_add</mat-icon>
-        Registrar Paciente
+        {{ 'dashboard.actions.registerPatient' | translate }}
       </button>
     </div>
 
     <!-- Stats cards -->
     <div class="stats-grid">
-      @for (stat of stats; track stat.label) {
+      @for (stat of stats; track stat.labelKey) {
         <div class="stat-card">
           <div class="stat-header">
             <div class="stat-icon" [style.background]="stat.bg">
@@ -35,7 +35,7 @@
             </span>
           </div>
           <div class="stat-value">{{ stat.value }}</div>
-          <div class="stat-label">{{ stat.label }}</div>
+          <div class="stat-label">{{ stat.labelKey | translate }}</div>
         </div>
       }
     </div>
@@ -45,8 +45,8 @@
       <!-- Próximas citas -->
       <div class="card appointments-card">
         <div class="card-header">
-          <h2>Próximas Citas</h2>
-          <a class="link-ver-todas">Ver todas</a>
+          <h2>{{ 'dashboard.appointments.title' | translate }}</h2>
+          <a class="link-ver-todas">{{ 'dashboard.appointments.viewAll' | translate }}</a>
         </div>
         @for (apt of store.todayAppointments(); track apt.id) {
           <div class="appointment-row">
@@ -55,7 +55,7 @@
             </div>
             <div class="apt-info">
               <div class="apt-title">{{ apt.patientName }} - {{ apt.type }}</div>
-              <div class="apt-owner">Propietario: {{ apt.ownerName }}</div>
+              <div class="apt-owner">{{ 'dashboard.appointments.owner' | translate }} {{ apt.ownerName }}</div>
             </div>
             <div class="apt-right">
               <div class="apt-time">{{ apt.time }}</div>
@@ -69,14 +69,14 @@
 
       <!-- Actividad reciente -->
       <div class="card activity-card">
-        <h2>Actividad Reciente</h2>
-        @for (act of activities; track act.title) {
+        <h2>{{ 'dashboard.activity.title' | translate }}</h2>
+        @for (act of activities; track act.titleKey) {
           <div class="activity-row">
             <div class="act-icon" [style.background]="act.bg">
               <mat-icon [style.color]="act.color">{{ act.icon }}</mat-icon>
             </div>
             <div class="act-info">
-              <div class="act-title">{{ act.title }}</div>
+              <div class="act-title">{{ act.titleKey | translate }}</div>
               <div class="act-subtitle">{{ act.subtitle }}</div>
               <div class="act-time">{{ act.time }}</div>
             </div>

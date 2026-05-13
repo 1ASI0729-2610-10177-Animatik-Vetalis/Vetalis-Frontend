@@ -1,9 +1,9 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { startWith, map } from 'rxjs';
 import { CitaDisplay, CalCell, CalChip } from '../domain/model/cita.model';
 import { ScheduleService } from '../infrastructure/services/schedule.service';
-
-const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-                'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+import { TranslateService } from '@ngx-translate/core';
 
 const CHIP: Record<string, { bg: string; text: string }> = {
   PENDIENTE:  { bg: '#FEF9C3', text: '#92400E' },
@@ -14,20 +14,33 @@ const CHIP: Record<string, { bg: string; text: string }> = {
 
 @Injectable({ providedIn: 'root' })
 export class ScheduleStore {
-  private svc = inject(ScheduleService);
+  private svc       = inject(ScheduleService);
+  private translate = inject(TranslateService);
 
   readonly appointments = signal<CitaDisplay[]>([]);
   readonly currentDate  = signal(new Date());
   readonly loading      = signal(true);
 
+  private readonly lang = toSignal(
+    this.translate.onLangChange.pipe(
+      startWith(null),
+      map(() => this.translate.currentLang ?? 'es')
+    ),
+    { initialValue: this.translate.currentLang ?? 'es' }
+  );
+
   readonly monthLabel = computed(() => {
+    this.lang();
     const d = this.currentDate();
-    return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+    const month = this.translate.instant(`schedule.months.${d.getMonth()}`);
+    return this.translate.instant('schedule.monthLabel', { month, year: d.getFullYear() });
   });
 
   readonly todayLabel = computed(() => {
+    this.lang();
     const t = new Date();
-    return `Citas de Hoy — ${t.getDate()} de ${MONTHS[t.getMonth()]}`;
+    const month = this.translate.instant(`schedule.months.${t.getMonth()}`);
+    return this.translate.instant('schedule.todayLabel', { day: t.getDate(), month });
   });
 
   readonly todayCitas = computed(() => {
@@ -68,7 +81,6 @@ export class ScheduleStore {
     // Monday-first offset: Sun(0)→6, Mon(1)→0, ... Sat(6)→5
     const offset = (first.getDay() + 6) % 7;
 
-    // Group appointments by date key within this month
     const byDay = new Map<string, CitaDisplay[]>();
     for (const a of appointments) {
       const [ay, am] = a.date.split('-').map(Number);
@@ -81,12 +93,10 @@ export class ScheduleStore {
 
     const cells: CalCell[] = [];
 
-    // Fill prev-month days
     const prevLast = new Date(year, month, 0).getDate();
     for (let i = offset - 1; i >= 0; i--)
       cells.push({ day: prevLast - i, prev: true, apts: [] });
 
-    // Current month days
     for (let d = 1; d <= last.getDate(); d++) {
       const key  = `${year}-${String(month + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const apts = byDay.get(key) ?? [];
@@ -97,11 +107,9 @@ export class ScheduleStore {
       cells.push({ day: d, current: key === today, apts: chips });
     }
 
-    // Fill next-month days to complete last row
     let nd = 1;
     while (cells.length % 7 !== 0) cells.push({ day: nd++, apts: [] });
 
-    // Split into weeks
     const weeks: CalCell[][] = [];
     for (let i = 0; i < cells.length; i += 7)
       weeks.push(cells.slice(i, i + 7));

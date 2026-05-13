@@ -4,17 +4,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ClinicalService } from '../../../../clinical/infrastructure/services/clinical.service';
 
 @Component({
   selector: 'app-profile',
-  imports: [FormsModule, MatIconModule, MatButtonModule, MatSlideToggleModule],
+  imports: [FormsModule, MatIconModule, MatButtonModule, MatSlideToggleModule, TranslatePipe],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
 export class Profile {
-  private svc   = inject(ClinicalService);
-  private snack = inject(MatSnackBar);
+  private svc       = inject(ClinicalService);
+  private snack     = inject(MatSnackBar);
+  private translate = inject(TranslateService);
 
   form = {
     nombre:       'Carlos',
@@ -36,17 +38,17 @@ export class Profile {
   };
 
   activityStats = [
-    { value: '247', label: 'Consultas realizadas' },
-    { value: '89',  label: 'Pacientes atendidos' },
-    { value: '4.9', label: 'Calificación promedio' },
-    { value: '3 años', label: 'Tiempo en el sistema' }
+    { value: '247',   labelKey: 'profile.activity.consultations' },
+    { value: '89',    labelKey: 'profile.activity.patients'      },
+    { value: '4.9',   labelKey: 'profile.activity.rating'        },
+    { value: '3 años', labelKey: 'profile.activity.time'         }
   ];
 
   quickActions = [
-    { icon: 'download',     label: 'Exportar Datos',   color: '#06B6D4', bg: '#E0F2FE' },
-    { icon: 'history',      label: 'Ver Actividad',    color: '#8B5CF6', bg: '#EDE9FE' },
-    { icon: 'help_outline', label: 'Centro de Ayuda',  color: '#F59E0B', bg: '#FEF9C3' },
-    { icon: 'logout',       label: 'Cerrar Sesión',    color: '#EF4444', bg: '#FEE2E2' },
+    { icon: 'download',     labelKey: 'profile.quickActions.exportData',   color: '#06B6D4', bg: '#E0F2FE' },
+    { icon: 'history',      labelKey: 'profile.quickActions.viewActivity', color: '#8B5CF6', bg: '#EDE9FE' },
+    { icon: 'help_outline', labelKey: 'profile.quickActions.helpCenter',   color: '#F59E0B', bg: '#FEF9C3' },
+    { icon: 'logout',       labelKey: 'profile.quickActions.logout',       color: '#EF4444', bg: '#FEE2E2' },
   ];
 
   saveProfile() {
@@ -59,17 +61,17 @@ export class Profile {
       dni:          this.form.dni,
     };
     this.svc.updateVeterinario(1, body).subscribe({
-      next: () => this.snack.open('Perfil actualizado correctamente', 'OK', { duration: 3000 }),
-      error: () => this.snack.open('Error al guardar el perfil', '', { duration: 3000 }),
+      next: () => this.snack.open(this.translate.instant('profile.messages.profileSaved'), 'OK', { duration: 3000 }),
+      error: () => this.snack.open(this.translate.instant('profile.messages.profileError'), '', { duration: 3000 }),
     });
   }
 
   savePassword() {
     if (!this.passwords.nuevo || this.passwords.nuevo !== this.passwords.confirmar) {
-      this.snack.open('Las contraseñas no coinciden', '', { duration: 3000 });
+      this.snack.open(this.translate.instant('profile.messages.passwordMismatch'), '', { duration: 3000 });
       return;
     }
-    this.snack.open('Contraseña actualizada', 'OK', { duration: 3000 });
+    this.snack.open(this.translate.instant('profile.messages.passwordUpdated'), 'OK', { duration: 3000 });
     this.passwords = { current: '', nuevo: '', confirmar: '' };
   }
 }

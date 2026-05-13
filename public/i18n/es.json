@@ -1,0 +1,286 @@
+{
+  "sidebar": {
+    "systemName": "Sistema Veterinario",
+    "nav": {
+      "dashboard": "Dashboard",
+      "clinical": "Gestión Clínica",
+      "schedule": "Agenda",
+      "communication": "Comunicación",
+      "profile": "Perfil"
+    },
+    "user": {
+      "role": "Veterinario"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Bienvenido al panel de control de Vetalis Pro",
+    "actions": {
+      "newConsult": "Nueva Consulta",
+      "newAppointment": "Nueva Cita",
+      "registerPatient": "Registrar Paciente"
+    },
+    "stats": {
+      "todayAppointments": "Citas Hoy",
+      "activePatients": "Pacientes Activos",
+      "hospitalized": "Hospitalizados",
+      "vaccinesApplied": "Vacunas Aplicadas"
+    },
+    "appointments": {
+      "title": "Próximas Citas",
+      "viewAll": "Ver todas",
+      "owner": "Propietario:"
+    },
+    "activity": {
+      "title": "Actividad Reciente",
+      "items": {
+        "newConsult": "Nueva consulta registrada",
+        "vaccineApplied": "Vacuna aplicada",
+        "newClient": "Nuevo cliente registrado",
+        "historyUpdated": "Historial actualizado",
+        "pendingReminder": "Recordatorio pendiente"
+      }
+    }
+  },
+  "clinical": {
+    "title": "Gestión Clínica",
+    "subtitle": "Administra pacientes, consultas e historial médico",
+    "search": {
+      "placeholder": "Buscar paciente o cliente..."
+    },
+    "tabs": {
+      "patients": "Pacientes",
+      "clients": "Clientes",
+      "consultations": "Consultas",
+      "history": "Historial Clínico",
+      "vaccines": "Vacunas",
+      "hospitalization": "Hospitalización"
+    },
+    "patients": {
+      "title": "Pacientes Registrados",
+      "subtitle": "Gestiona la información de las mascotas",
+      "register": "Registrar Paciente",
+      "search": "Buscar por nombre, ID o propietario...",
+      "filterAll": "Todas las especies",
+      "filterDog": "Perro",
+      "filterCat": "Gato",
+      "filterBird": "Ave",
+      "loading": "Cargando pacientes...",
+      "species": "Especie:",
+      "age": "Edad:",
+      "weight": "Peso:",
+      "owner": "Propietario:",
+      "viewFile": "Ver Ficha",
+      "empty": "No se encontraron pacientes."
+    },
+    "clients": {
+      "title": "Módulo de Clientes",
+      "subtitle": "Gestiona la información de los propietarios",
+      "register": "Registrar Cliente"
+    },
+    "consultations": {
+      "title": "Consultas Médicas",
+      "subtitle": "Registra y gestiona consultas veterinarias",
+      "newConsult": "Nueva Consulta",
+      "recent": "Consultas Recientes",
+      "filterAll": "Todas",
+      "filterToday": "Hoy",
+      "filterWeek": "Esta semana",
+      "colId": "ID",
+      "colPatient": "Paciente",
+      "colClient": "Cliente",
+      "colType": "Tipo",
+      "colDiagnosis": "Diagnóstico",
+      "colDate": "Fecha",
+      "colStatus": "Estado",
+      "showing": "Mostrando {{current}} de {{total}} consultas",
+      "empty": "No hay consultas."
+    },
+    "history": {
+      "selectPatient": "Selecciona un paciente",
+      "selectPatientHint": "Haz clic en \"Ver Ficha\" desde la pestaña de Pacientes",
+      "goToPatients": "Ir a Pacientes",
+      "owner": "Propietario:",
+      "fullHistory": "Historial Médico Completo",
+      "empty": "No hay consultas registradas para este paciente.",
+      "newConsult": "Nueva Consulta",
+      "statTotalConsults": "Total Consultas",
+      "statVaccinesApplied": "Vacunas Aplicadas",
+      "statHospitalizations": "Hospitalizaciones",
+      "statLastVisit": "Última Visita"
+    },
+    "vaccines": {
+      "register": "Registrar Vacuna",
+      "filterAll": "Todas",
+      "filterUpcoming": "Próximas",
+      "filterExpired": "Vencidas",
+      "summaryExpired": "Vacunas Vencidas",
+      "summaryExpiredSub": "Requieren atención inmediata",
+      "summaryUpcoming": "Próximas 7 días",
+      "summaryUpcomingSub": "Programar citas pronto",
+      "summaryUpToDate": "Al Día",
+      "summaryUpToDateSub": "Vacunación completa",
+      "colPatient": "Paciente",
+      "colVaccine": "Vacuna",
+      "colLastApplied": "Última Aplicación",
+      "colNextDose": "Próxima Dosis",
+      "colStatus": "Estado",
+      "colActions": "Acciones",
+      "actionViewDetails": "Ver Detalles",
+      "actionSchedule": "Programar",
+      "actionApplyNow": "Aplicar Ya",
+      "empty": "No hay vacunas."
+    },
+    "hospitalization": {
+      "title": "Pacientes Hospitalizados",
+      "subtitle": "Gestión y seguimiento de pacientes en hospitalización",
+      "register": "Registrar Ingreso",
+      "filterAll": "Todos",
+      "filterCritical": "Crítico",
+      "filterStable": "Estable",
+      "filterRecovery": "Recuperación",
+      "statTotal": "Total Hospitalizados",
+      "statTotalSub": "Pacientes activos",
+      "statCritical": "Estado Crítico",
+      "statCriticalSub": "Requieren atención inmediata",
+      "statRecovery": "En Recuperación",
+      "statRecoverySub": "Progreso favorable",
+      "list": "Lista de Pacientes",
+      "colPatient": "Paciente",
+      "colOwner": "Propietario",
+      "colStatus": "Estado",
+      "colAdmissionDate": "Fecha Ingreso",
+      "colDiagnosis": "Diagnóstico",
+      "colTreatment": "Tratamiento",
+      "colActions": "Acciones",
+      "empty": "No hay pacientes hospitalizados."
+    },
+    "messages": {
+      "patientDeleted": "Paciente eliminado",
+      "deleteError": "Error al eliminar",
+      "confirmDelete": "¿Eliminar a {{name}}? Esta acción no se puede deshacer."
+    }
+  },
+  "schedule": {
+    "title": "Agenda de Citas",
+    "subtitle": "Gestiona y organiza tus consultas veterinarias",
+    "newAppointment": "Nueva Cita",
+    "viewDay": "Día",
+    "viewWeek": "Semana",
+    "viewMonth": "Mes",
+    "dayMon": "Lun",
+    "dayTue": "Mar",
+    "dayWed": "Mié",
+    "dayThu": "Jue",
+    "dayFri": "Vie",
+    "daySat": "Sáb",
+    "daySun": "Dom",
+    "appointments": "citas",
+    "owner": "Dueño:",
+    "loading": "Cargando citas...",
+    "empty": "No hay citas programadas para hoy.",
+    "todayLabel": "Citas de Hoy — {{day}} de {{month}}",
+    "monthLabel": "{{month}} {{year}}",
+    "months": {
+      "0": "Enero",
+      "1": "Febrero",
+      "2": "Marzo",
+      "3": "Abril",
+      "4": "Mayo",
+      "5": "Junio",
+      "6": "Julio",
+      "7": "Agosto",
+      "8": "Septiembre",
+      "9": "Octubre",
+      "10": "Noviembre",
+      "11": "Diciembre"
+    }
+  },
+  "communication": {
+    "title": "Comunicación",
+    "subtitle": "Notificaciones y recordatorios del sistema",
+    "newNotification": "Nueva Notificación",
+    "notifications": {
+      "title": "Notificaciones",
+      "new": "nuevas",
+      "markAllRead": "Marcar todas como leídas",
+      "newAppointment": "Nueva cita programada",
+      "pendingVaccine": "Vacuna pendiente",
+      "systemAlert": "Alerta del sistema",
+      "treatmentComplete": "Tratamiento completado",
+      "newClientMessage": "Nuevo mensaje de cliente",
+      "cancelledAppointment": "Cita cancelada"
+    },
+    "reminders": {
+      "title": "Recordatorios",
+      "add": "Agregar",
+      "upcomingConsult": "Próxima consulta",
+      "ongoingMedication": "Medicación en curso",
+      "upcomingVaccine": "Vacunación próxima",
+      "treatmentControl": "Control de tratamiento",
+      "labResults": "Resultados de laboratorio"
+    }
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "subtitle": "Gestiona tu información personal y preferencias",
+    "changePhoto": "Cambiar Foto",
+    "role": "Médico Veterinario",
+    "personalData": {
+      "title": "Datos Personales",
+      "name": "Nombre",
+      "namePlaceholder": "Nombre",
+      "lastName": "Apellidos",
+      "lastNamePlaceholder": "Apellidos",
+      "email": "Correo Electrónico",
+      "emailPlaceholder": "correo@ejemplo.com",
+      "phone": "Teléfono",
+      "phonePlaceholder": "+51 000 000 000",
+      "specialty": "Especialidad",
+      "specialtyPlaceholder": "Especialidad",
+      "document": "DNI / Documento",
+      "documentPlaceholder": "00000000",
+      "save": "Guardar Cambios"
+    },
+    "security": {
+      "title": "Seguridad",
+      "currentPassword": "Contraseña Actual",
+      "newPassword": "Nueva Contraseña",
+      "confirmPassword": "Confirmar Nueva Contraseña",
+      "update": "Actualizar Contraseña"
+    },
+    "preferences": {
+      "title": "Preferencias",
+      "emailNotifications": "Notificaciones por Email",
+      "emailNotificationsDesc": "Recibe alertas y recordatorios por correo",
+      "smsNotifications": "Notificaciones SMS",
+      "smsNotificationsDesc": "Alertas por mensaje de texto",
+      "appointmentReminders": "Recordatorios de Citas",
+      "appointmentRemindersDesc": "Avisos antes de cada consulta programada",
+      "systemAlerts": "Alertas del Sistema",
+      "systemAlertsDesc": "Notificaciones críticas del sistema",
+      "weeklyReport": "Reporte Semanal",
+      "weeklyReportDesc": "Resumen de actividad semanal"
+    },
+    "activity": {
+      "title": "Tu Actividad",
+      "consultations": "Consultas realizadas",
+      "patients": "Pacientes atendidos",
+      "rating": "Calificación promedio",
+      "time": "Tiempo en el sistema"
+    },
+    "quickActions": {
+      "title": "Acciones Rápidas",
+      "exportData": "Exportar Datos",
+      "viewActivity": "Ver Actividad",
+      "helpCenter": "Centro de Ayuda",
+      "logout": "Cerrar Sesión"
+    },
+    "messages": {
+      "profileSaved": "Perfil actualizado correctamente",
+      "profileError": "Error al guardar el perfil",
+      "passwordUpdated": "Contraseña actualizada",
+      "passwordMismatch": "Las contraseñas no coinciden"
+    }
+  }
+}

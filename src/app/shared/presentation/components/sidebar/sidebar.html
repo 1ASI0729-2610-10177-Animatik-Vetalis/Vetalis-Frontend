@@ -6,7 +6,7 @@
     </div>
     <div class="logo-text">
       <span class="logo-title">Vetalis Pro</span>
-      <span class="logo-subtitle">Sistema Veterinario</span>
+      <span class="logo-subtitle">{{ 'sidebar.systemName' | translate }}</span>
     </div>
   </div>
 
@@ -19,10 +19,26 @@
         class="nav-item"
         matRipple>
         <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
-        <span class="nav-label">{{ item.label }}</span>
+        <span class="nav-label">{{ item.labelKey | translate }}</span>
       </a>
     }
   </nav>
+
+  <!-- Language switcher -->
+  <div class="lang-switcher">
+    <button
+      class="lang-btn"
+      [class.lang-active]="currentLang() === 'es'"
+      (click)="switchLang('es')">
+      ES
+    </button>
+    <button
+      class="lang-btn"
+      [class.lang-active]="currentLang() === 'en'"
+      (click)="switchLang('en')">
+      EN
+    </button>
+  </div>
 
   <!-- User profile -->
   <div class="sidebar-user">
@@ -31,7 +47,7 @@
     </div>
     <div class="user-info">
       <span class="user-name">Dr. Carlos Méndez</span>
-      <span class="user-role">Veterinario</span>
+      <span class="user-role">{{ 'sidebar.user.role' | translate }}</span>
     </div>
     <mat-icon class="user-menu">more_vert</mat-icon>
   </div>
