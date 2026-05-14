@@ -74,9 +74,16 @@
       "empty": "No patients found."
     },
     "clients": {
-      "title": "Clients Module",
+      "title": "Registered Clients",
       "subtitle": "Manage owner information",
-      "register": "Register Client"
+      "register": "Register Client",
+      "search": "Search by name, DNI or email...",
+      "colName": "Name",
+      "colDni": "DNI",
+      "colPhone": "Phone",
+      "colEmail": "Email",
+      "colAddress": "Address",
+      "empty": "No clients found."
     },
     "consultations": {
       "title": "Medical Consultations",

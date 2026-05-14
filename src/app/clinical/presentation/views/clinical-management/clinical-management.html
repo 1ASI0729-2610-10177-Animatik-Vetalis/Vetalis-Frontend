@@ -84,13 +84,55 @@
     <!-- ===== CLIENTES ===== -->
     <mat-tab>
       <ng-template mat-tab-label><mat-icon class="tab-icon">people</mat-icon> {{ 'clinical.tabs.clients' | translate }}</ng-template>
-      <div class="tab-content empty-tab">
-        <mat-icon>people_outline</mat-icon>
-        <h3>{{ 'clinical.clients.title' | translate }}</h3>
-        <p>{{ 'clinical.clients.subtitle' | translate }}</p>
-        <button mat-raised-button class="btn-primary" (click)="openRegistrarCliente()">
-          <mat-icon>add</mat-icon> {{ 'clinical.clients.register' | translate }}
-        </button>
+      <div class="tab-content">
+        <div class="section-header">
+          <div>
+            <h2>{{ 'clinical.clients.title' | translate }}</h2>
+            <p>{{ 'clinical.clients.subtitle' | translate }}</p>
+          </div>
+          <button mat-raised-button class="btn-primary" (click)="openRegistrarCliente()">
+            <mat-icon>add</mat-icon> {{ 'clinical.clients.register' | translate }}
+          </button>
+        </div>
+        <div class="filters-row">
+          <div class="search-wrap">
+            <mat-icon>search</mat-icon>
+            <input [(ngModel)]="clientSearch" [placeholder]="'clinical.clients.search' | translate" class="filter-input" />
+          </div>
+        </div>
+        @if (store.loading()) {
+          <div class="loading-msg">{{ 'clinical.patients.loading' | translate }}</div>
+        } @else {
+          <div class="card table-card">
+            <table class="data-table">
+              <thead><tr>
+                <th>{{ 'clinical.clients.colName' | translate }}</th>
+                <th>{{ 'clinical.clients.colDni' | translate }}</th>
+                <th>{{ 'clinical.clients.colPhone' | translate }}</th>
+                <th>{{ 'clinical.clients.colEmail' | translate }}</th>
+                <th>{{ 'clinical.clients.colAddress' | translate }}</th>
+              </tr></thead>
+              <tbody>
+                @for (c of filteredClients; track c.id) {
+                  <tr>
+                    <td>
+                      <div class="td-patient">
+                        <div class="td-avatar" style="background:#6366F1"><mat-icon>person</mat-icon></div>
+                        <div class="td-name">{{ c.nombre }}</div>
+                      </div>
+                    </td>
+                    <td>{{ c.dni }}</td>
+                    <td>{{ c.telefono }}</td>
+                    <td>{{ c.email }}</td>
+                    <td>{{ c.direccion }}</td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="5" class="empty-msg">{{ 'clinical.clients.empty' | translate }}</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
     </mat-tab>
 

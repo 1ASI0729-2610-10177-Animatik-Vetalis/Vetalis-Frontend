@@ -74,9 +74,16 @@
       "empty": "No se encontraron pacientes."
     },
     "clients": {
-      "title": "Módulo de Clientes",
+      "title": "Clientes Registrados",
       "subtitle": "Gestiona la información de los propietarios",
-      "register": "Registrar Cliente"
+      "register": "Registrar Cliente",
+      "search": "Buscar por nombre, DNI o email...",
+      "colName": "Nombre",
+      "colDni": "DNI",
+      "colPhone": "Teléfono",
+      "colEmail": "Email",
+      "colAddress": "Dirección",
+      "empty": "No se encontraron clientes."
     },
     "consultations": {
       "title": "Consultas Médicas",

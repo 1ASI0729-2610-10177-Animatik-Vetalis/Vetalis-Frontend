@@ -37,6 +37,7 @@ export class ClinicalManagement {
 
   // ── Filters ───────────────────────────────────────────────────
   patientSearch         = '';
+  clientSearch          = '';
   speciesFilter         = 'Todas';
   vaccineFilter         = 'Todas';
   hospitalizationFilter = 'Todos';
@@ -64,6 +65,14 @@ export class ClinicalManagement {
     return this.store.patients().filter(p =>
       (s === '' || p.name.toLowerCase().includes(s) || p.owner.toLowerCase().includes(s) || p.id.includes(s)) &&
       (this.speciesFilter === 'Todas' || p.species === this.speciesFilter)
+    );
+  }
+
+  // ── Clients ───────────────────────────────────────────────────
+  get filteredClients() {
+    const s = this.clientSearch.toLowerCase();
+    return this.store.rawClientes().filter(c =>
+      s === '' || c.nombre?.toLowerCase().includes(s) || c.dni?.includes(s) || c.email?.toLowerCase().includes(s)
     );
   }
 
