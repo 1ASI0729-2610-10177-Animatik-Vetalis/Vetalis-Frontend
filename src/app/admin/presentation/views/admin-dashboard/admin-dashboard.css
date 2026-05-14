@@ -81,6 +81,20 @@
 .result-warn .result-status { color: #C2410C; }
 .cierre-actions { display: flex; gap: 10px; }
 
+/* ── Search bar ────────────────────────────────────────────── */
+.filters-row { display: flex; gap: 12px; margin-bottom: 20px; }
+.search-wrap {
+  flex: 1; display: flex; align-items: center; gap: 8px;
+  background: #fff; border: 1px solid #E2E8F0; border-radius: 8px; padding: 0 12px;
+  max-width: 340px;
+}
+.search-wrap mat-icon { color: #94A3B8; font-size: 18px; width: 18px; height: 18px; }
+.filter-input {
+  border: none; outline: none; font-size: 13px; flex: 1;
+  padding: 10px 0; background: transparent; color: #1E293B;
+}
+.filter-input::placeholder { color: #94A3B8; }
+
 /* ── US026: Inventory ──────────────────────────────────────── */
 .inv-summary-row {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;
