@@ -39,8 +39,11 @@ export class RegistrarIngresoDialog {
     if (this.form.invalid) return;
     this.submitting = true;
     const v = this.form.value;
+    const existingIds = this.store.hospitalizations().map(h => parseInt(h.id?.replace('H-', '') ?? '0', 10)).filter(n => !isNaN(n));
+    const nextNum = (existingIds.length ? Math.max(...existingIds) : 0) + 1;
+    const id = `H-${String(nextNum).padStart(3, '0')}`;
     const body = {
-      mascotaId: v.mascotaId, veterinarioId: 1,
+      id, mascotaId: v.mascotaId, veterinarioId: 1,
       fechaIngreso: v.fechaIngreso, diagnostico: v.diagnostico,
       tratamientos: [v.tratamiento], estado: v.estado,
       observaciones: v.observaciones,

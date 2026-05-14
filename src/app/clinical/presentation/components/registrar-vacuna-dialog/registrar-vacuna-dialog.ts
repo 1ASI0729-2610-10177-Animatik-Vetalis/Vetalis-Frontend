@@ -38,8 +38,11 @@ export class RegistrarVacunaDialog {
     if (this.form.invalid) return;
     this.submitting = true;
     const v = this.form.value;
+    const existingIds = this.store.vaccines().map(v => parseInt(v.id?.replace('V-', '') ?? '0', 10)).filter(n => !isNaN(n));
+    const nextNum = (existingIds.length ? Math.max(...existingIds) : 0) + 1;
+    const id = `V-${String(nextNum).padStart(3, '0')}`;
     const body = {
-      mascotaId: v.mascotaId, tipoVacunaId: v.tipoVacunaId,
+      id, mascotaId: v.mascotaId, tipoVacunaId: v.tipoVacunaId,
       fechaAplicacion: v.fechaAplicacion, proximaDosis: v.proximaDosis,
       lote: v.lote, observaciones: v.observaciones, veterinarioId: 1,
     };

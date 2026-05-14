@@ -25,6 +25,7 @@ export class ClinicalStore {
   rawTiposVacuna  = signal<any[]>([]);
   rawMascotas     = signal<any[]>([]);
   rawVeterinarios = signal<any[]>([]);
+  rawCitas        = signal<any[]>([]);
 
   // History / patient selection
   selectedPatientId = signal<string | null>(null);
@@ -53,6 +54,7 @@ export class ClinicalStore {
         this.rawTiposVacuna.set(d.rawTiposVacuna);
         this.rawMascotas.set(d.rawMascotas);
         this.rawVeterinarios.set(d.rawVeterinarios);
+        this.rawCitas.set(d.rawCitas);
         this.loading.set(false);
       },
       error: () => this.loading.set(false),

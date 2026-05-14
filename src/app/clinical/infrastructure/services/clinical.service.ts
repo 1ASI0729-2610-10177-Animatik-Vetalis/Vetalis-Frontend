@@ -42,6 +42,7 @@ export class ClinicalService {
           rawTiposVacuna: d.tiposVacuna,
           rawMascotas:    d.mascotas,
           rawVeterinarios: d.veterinarios,
+          rawCitas:       d.citas,
         };
       })
     );

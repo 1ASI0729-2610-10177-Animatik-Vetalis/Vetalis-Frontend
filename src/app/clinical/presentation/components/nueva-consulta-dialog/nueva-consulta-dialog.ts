@@ -40,7 +40,10 @@ export class NuevaConsultaDialog {
     this.submitting = true;
     const v = this.form.value;
     const today = new Date().toISOString().split('T')[0];
-    const body = { mascotaId: v.mascotaId, veterinarioId: 1, fecha: today, hora: v.hora, tipo: v.tipo, subjetivo: v.subjetivo, objetivo: v.objetivo, evaluacion: v.evaluacion, plan: v.plan, estado: 'Completada' };
+    const existingIds = this.store.consultations().map(c => parseInt(c.id?.replace('C-', '') ?? '0', 10)).filter(n => !isNaN(n));
+    const nextNum = (existingIds.length ? Math.max(...existingIds) : 1240) + 1;
+    const id = `C-${nextNum}`;
+    const body = { id, mascotaId: v.mascotaId, veterinarioId: 1, fecha: today, hora: v.hora, tipo: v.tipo, subjetivo: v.subjetivo, objetivo: v.objetivo, evaluacion: v.evaluacion, plan: v.plan, estado: 'Completada' };
     this.svc.createConsulta(body).subscribe({
       next: () => { this.snack.open('Consulta registrada', 'OK', { duration: 3000 }); this.ref.close(true); },
       error: () => { this.snack.open('Error al guardar', '', { duration: 3000 }); this.submitting = false; },
