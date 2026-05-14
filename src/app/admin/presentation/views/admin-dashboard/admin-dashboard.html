@@ -1,0 +1,349 @@
+<div class="admin">
+
+  <!-- ── Header ─────────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1>Administración</h1>
+      <p>Gestión financiera e inventario de la clínica</p>
+    </div>
+    <button mat-stroked-button (click)="reload()">
+      <mat-icon>refresh</mat-icon> Actualizar
+    </button>
+  </div>
+
+  <mat-tab-group class="admin-tabs" animationDuration="0ms" [(selectedIndex)]="activeTab">
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 1: CIERRE DE CAJA (US021)                          -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">point_of_sale</mat-icon> Cierre de Caja
+      </ng-template>
+      <div class="tab-content">
+        <div class="section-header">
+          <div>
+            <h2>Cierre de Caja Diario</h2>
+            <p>Reconcilia los ingresos del sistema con el efectivo físico</p>
+          </div>
+        </div>
+
+        <!-- Date selector -->
+        <div class="cierre-date-row">
+          <label class="date-label">Fecha de cierre:</label>
+          <input type="date" class="date-input" [(ngModel)]="fechaCierre" (change)="resetCierre()" />
+        </div>
+
+        @if (loading()) {
+          <div class="loading-msg">Cargando datos...</div>
+        } @else {
+
+          <!-- Summary cards -->
+          <div class="cierre-cards">
+            <div class="cierre-card">
+              <mat-icon style="color:#06B6D4">receipt_long</mat-icon>
+              <div class="cc-val">{{ pagosFecha.length }}</div>
+              <div class="cc-lbl">Transacciones</div>
+            </div>
+            <div class="cierre-card">
+              <mat-icon style="color:#22C55E">payments</mat-icon>
+              <div class="cc-val cc-money">S/ {{ totalSistema | number:'1.2-2' }}</div>
+              <div class="cc-lbl">Total Sistema</div>
+            </div>
+            <div class="cierre-card" [ngClass]="{'cc-warn': discrepancia !== null && discrepancia !== 0, 'cc-ok': discrepancia === 0}">
+              <mat-icon>{{ discrepancia === null ? 'help_outline' : (discrepancia === 0 ? 'check_circle' : 'warning') }}</mat-icon>
+              <div class="cc-val cc-money">
+                @if (discrepancia === null) { — }
+                @else { S/ {{ discrepancia | number:'1.2-2' }} }
+              </div>
+              <div class="cc-lbl">Discrepancia</div>
+            </div>
+          </div>
+
+          <!-- Payments by method table -->
+          @if (pagosFecha.length === 0) {
+            <div class="empty-state-inline">
+              <mat-icon>receipt_long</mat-icon>
+              <p>No hay pagos registrados para el <strong>{{ fechaCierre }}</strong></p>
+            </div>
+          } @else {
+            <div class="card table-card" style="margin-bottom:20px">
+              <h3 class="table-title">Ingresos por Método de Pago</h3>
+              <table class="data-table">
+                <thead><tr>
+                  <th>Método de Pago</th>
+                  <th>N° Transacciones</th>
+                  <th>Total</th>
+                </tr></thead>
+                <tbody>
+                  @for (t of totalesPorMetodo; track t.metodo) {
+                    <tr>
+                      <td>
+                        <div class="td-method">
+                          <mat-icon class="method-icon">{{ t.metodo === 'Efectivo' ? 'payments' : t.metodo === 'Transferencia' ? 'account_balance' : 'credit_card' }}</mat-icon>
+                          {{ t.metodo }}
+                        </div>
+                      </td>
+                      <td>{{ t.count }}</td>
+                      <td class="td-money">S/ {{ t.total | number:'1.2-2' }}</td>
+                    </tr>
+                  }
+                  <tr class="total-row">
+                    <td><strong>TOTAL SISTEMA</strong></td>
+                    <td><strong>{{ pagosFecha.length }}</strong></td>
+                    <td class="td-money"><strong>S/ {{ totalSistema | number:'1.2-2' }}</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          }
+
+          <!-- Physical cash input -->
+          <div class="card cierre-form-card">
+            <h3>Arqueo de Efectivo</h3>
+            <div class="efectivo-row">
+              <label>Efectivo físico contado (S/)</label>
+              <input type="number" class="efectivo-input" [(ngModel)]="efectivoFisico" min="0" step="0.01" [disabled]="cierreProcesado" />
+            </div>
+
+            @if (estadoCierre) {
+              <div class="cierre-result" [ngClass]="estadoCierre === 'Cerrado' ? 'result-ok' : 'result-warn'">
+                <mat-icon>{{ estadoCierre === 'Cerrado' ? 'check_circle' : 'warning' }}</mat-icon>
+                <div>
+                  <div class="result-status">{{ estadoCierre }}</div>
+                  @if (discrepancia !== 0) {
+                    <div class="result-detail">
+                      Diferencia de <strong>S/ {{ discrepancia! | number:'1.2-2' }}</strong>
+                      ({{ discrepancia! > 0 ? 'sobrante' : 'faltante' }})
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <div class="cierre-actions">
+              @if (!cierreProcesado) {
+                <button mat-raised-button class="btn-primary" (click)="procesarCierre()" [disabled]="pagosFecha.length === 0">
+                  <mat-icon>lock</mat-icon> Procesar Cierre
+                </button>
+              } @else {
+                <button mat-stroked-button (click)="resetCierre()">
+                  <mat-icon>refresh</mat-icon> Nuevo Cierre
+                </button>
+              }
+            </div>
+          </div>
+
+        }
+      </div>
+    </mat-tab>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 2: INVENTARIO (US026)                              -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">inventory_2</mat-icon> Inventario
+      </ng-template>
+      <div class="tab-content">
+        <div class="section-header">
+          <div>
+            <h2>Inventario de Medicamentos</h2>
+            <p>Gestiona el stock y agrega nuevos productos</p>
+          </div>
+          <button mat-raised-button class="btn-primary" (click)="abrirAgregarProducto()">
+            <mat-icon>add</mat-icon> Agregar Producto
+          </button>
+        </div>
+
+        <div class="filters-row">
+          <div class="search-wrap">
+            <mat-icon>search</mat-icon>
+            <input [(ngModel)]="invSearch" placeholder="Buscar producto..." class="filter-input" />
+          </div>
+        </div>
+
+        @if (loading()) {
+          <div class="loading-msg">Cargando inventario...</div>
+        } @else {
+          <div class="inv-summary-row">
+            <div class="inv-stat" style="--c:#22C55E;--bg:#F0FDF4">
+              <mat-icon>inventory</mat-icon>
+              <div>
+                <div class="is-val">{{ inventarioConNombre.length }}</div>
+                <div class="is-lbl">Total Productos</div>
+              </div>
+            </div>
+            <div class="inv-stat" style="--c:#EF4444;--bg:#FEF2F2">
+              <mat-icon>remove_shopping_cart</mat-icon>
+              <div>
+                <div class="is-val">{{ inventarioConNombre.length - alertasStock.length }}</div>
+                <div class="is-lbl">En Nivel Normal</div>
+              </div>
+            </div>
+            <div class="inv-stat" style="--c:#F59E0B;--bg:#FFFBEB">
+              <mat-icon>warning</mat-icon>
+              <div>
+                <div class="is-val">{{ alertasStock.length }}</div>
+                <div class="is-lbl">Bajo Stock</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card table-card">
+            <table class="data-table">
+              <thead><tr>
+                <th>#</th>
+                <th>Producto</th>
+                <th>Descripción</th>
+                <th>Unidad</th>
+                <th>Stock Actual</th>
+                <th>Punto Reorden</th>
+                <th>Estado</th>
+              </tr></thead>
+              <tbody>
+                @for (item of inventarioFiltrado; track item.id; let i = $index) {
+                  <tr>
+                    <td class="td-id">{{ item.medicamentoId }}</td>
+                    <td><div class="td-name">{{ item.nombre }}</div></td>
+                    <td><div class="td-sub">{{ item.descripcion }}</div></td>
+                    <td>{{ item.unidad }}</td>
+                    <td>
+                      <div class="stock-val" [ngClass]="{'stock-low': item.stockActual <= item.puntoReorden, 'stock-zero': item.stockActual === 0}">
+                        {{ item.stockActual }}
+                      </div>
+                    </td>
+                    <td>{{ item.puntoReorden }}</td>
+                    <td>
+                      <span class="badge" [ngClass]="{
+                        'badge-completada': stockStatus(item) === 'Normal',
+                        'badge-pendiente':  stockStatus(item) === 'Stock Bajo',
+                        'badge-critico':    stockStatus(item) === 'Sin Stock'
+                      }">{{ stockStatus(item) }}</span>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="7" class="empty-msg">No se encontraron productos.</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 3: ALERTAS DE STOCK (US023)                        -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">notification_important</mat-icon>
+        Alertas de Stock
+        @if (alertasVisibles.length > 0) {
+          <span class="tab-alert-badge">{{ alertasVisibles.length }}</span>
+        }
+      </ng-template>
+      <div class="tab-content">
+        <div class="section-header">
+          <div>
+            <h2>Alertas de Stock Bajo</h2>
+            <p>Productos que han alcanzado o superado su punto de reorden</p>
+          </div>
+          @if (alertasVisibles.length > 0) {
+            <button mat-stroked-button (click)="acknowledgeAll()">
+              <mat-icon>done_all</mat-icon> Reconocer Todas
+            </button>
+          }
+        </div>
+
+        @if (loading()) {
+          <div class="loading-msg">Cargando alertas...</div>
+        } @else {
+
+          <!-- Alert summary -->
+          <div class="alert-summary-row">
+            <div class="alert-stat alert-stat-red">
+              <mat-icon>error</mat-icon>
+              <div>
+                <div class="as-val">{{ inventarioConNombre.filter(i => i.stockActual === 0).length }}</div>
+                <div class="as-lbl">Sin Stock</div>
+              </div>
+            </div>
+            <div class="alert-stat alert-stat-amber">
+              <mat-icon>warning</mat-icon>
+              <div>
+                <div class="as-val">{{ alertasStock.length }}</div>
+                <div class="as-lbl">Total Alertas</div>
+              </div>
+            </div>
+            <div class="alert-stat alert-stat-blue">
+              <mat-icon>notifications_off</mat-icon>
+              <div>
+                <div class="as-val">{{ acknowledgedIds().length }}</div>
+                <div class="as-lbl">Reconocidas</div>
+              </div>
+            </div>
+          </div>
+
+          @if (alertasVisibles.length === 0) {
+            <div class="empty-state-inline">
+              <mat-icon style="color:#22C55E">check_circle</mat-icon>
+              <p>No hay alertas de stock pendientes.</p>
+            </div>
+          } @else {
+            <div class="card table-card">
+              <table class="data-table">
+                <thead><tr>
+                  <th>Producto</th>
+                  <th>Unidad</th>
+                  <th>Stock Actual</th>
+                  <th>Punto Reorden</th>
+                  <th>Nivel de Urgencia</th>
+                  <th>Acción</th>
+                </tr></thead>
+                <tbody>
+                  @for (item of alertasVisibles; track item.id) {
+                    <tr [ngClass]="{'row-critical': item.stockActual === 0}">
+                      <td>
+                        <div class="td-patient">
+                          <div class="alert-icon-wrap" [ngClass]="item.stockActual === 0 ? 'alert-red' : 'alert-amber'">
+                            <mat-icon>{{ item.stockActual === 0 ? 'remove_shopping_cart' : 'warning' }}</mat-icon>
+                          </div>
+                          <div class="td-name">{{ item.nombre }}</div>
+                        </div>
+                      </td>
+                      <td>{{ item.unidad }}</td>
+                      <td>
+                        <span class="stock-badge" [ngClass]="item.stockActual === 0 ? 'stock-badge-zero' : 'stock-badge-low'">
+                          {{ item.stockActual }}
+                        </span>
+                      </td>
+                      <td>{{ item.puntoReorden }}</td>
+                      <td>
+                        <span class="badge" [ngClass]="item.stockActual === 0 ? 'badge-critico' : 'badge-pendiente'">
+                          {{ item.stockActual === 0 ? 'Crítico — Sin Stock' : 'Stock Bajo' }}
+                        </span>
+                      </td>
+                      <td>
+                        <button mat-stroked-button class="btn-acknowledge" (click)="acknowledge(item.id)">
+                          <mat-icon>check</mat-icon> Reconocer
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+
+          @if (acknowledgedIds().length > 0) {
+            <div class="acked-section">
+              <p class="acked-label">{{ acknowledgedIds().length }} alerta(s) reconocida(s) en esta sesión</p>
+            </div>
+          }
+        }
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>

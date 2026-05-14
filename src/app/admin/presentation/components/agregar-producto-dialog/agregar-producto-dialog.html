@@ -1,0 +1,39 @@
+<h2 mat-dialog-title class="dlg-title">Agregar Producto al Inventario</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dlg-form">
+    <div class="dlg-field dlg-field-full">
+      <label>Nombre del Producto *</label>
+      <input type="text" formControlName="nombre" placeholder="Ej: Amoxicilina 500mg" />
+    </div>
+    <div class="dlg-field dlg-field-full">
+      <label>Descripción</label>
+      <textarea formControlName="descripcion" placeholder="Descripción breve del producto"></textarea>
+    </div>
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>Unidad de Medida *</label>
+        <select formControlName="unidad">
+          @for (u of unidades; track u) {
+            <option [value]="u">{{ u }}</option>
+          }
+        </select>
+      </div>
+      <div class="dlg-field">
+        <label>Stock Inicial *</label>
+        <input type="number" formControlName="stockInicial" min="0" placeholder="0" />
+      </div>
+    </div>
+    <div class="dlg-field">
+      <label>Punto de Reorden (alerta cuando stock ≤)</label>
+      <input type="number" formControlName="puntoReorden" min="1" placeholder="10" />
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancelar</button>
+  <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting">
+    <mat-icon>add</mat-icon> Agregar Producto
+  </button>
+</mat-dialog-actions>

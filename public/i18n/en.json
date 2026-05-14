@@ -6,7 +6,8 @@
       "clinical": "Clinical Management",
       "schedule": "Schedule",
       "communication": "Communication",
-      "profile": "Profile"
+      "profile": "Profile",
+      "admin": "Administration"
     },
     "user": {
       "role": "Veterinarian"

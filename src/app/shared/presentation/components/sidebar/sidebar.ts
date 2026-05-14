@@ -21,6 +21,7 @@ export class Sidebar {
     { path: '/schedule',      icon: 'calendar_month',  labelKey: 'sidebar.nav.schedule'       },
     { path: '/communication', icon: 'forum',            labelKey: 'sidebar.nav.communication'  },
     { path: '/profile',       icon: 'account_circle',  labelKey: 'sidebar.nav.profile'        },
+    { path: '/admin',         icon: 'admin_panel_settings', labelKey: 'sidebar.nav.admin'     },
   ];
 
   switchLang(lang: string): void {
