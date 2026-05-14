@@ -6,7 +6,8 @@
       "clinical": "Clinical Management",
       "schedule": "Schedule",
       "communication": "Communication",
-      "profile": "Profile"
+      "profile": "Profile",
+      "admin": "Administration"
     },
     "user": {
       "role": "Veterinarian"
@@ -288,6 +289,96 @@
       "profileError": "Error saving profile",
       "passwordUpdated": "Password updated",
       "passwordMismatch": "Passwords do not match"
+    }
+  },
+  "admin": {
+    "title": "Administration",
+    "subtitle": "Financial management and clinic inventory",
+    "refresh": "Refresh",
+    "tabs": {
+      "cashClosing": "Cash Closing",
+      "inventory": "Inventory",
+      "stockAlerts": "Stock Alerts"
+    },
+    "cashClosing": {
+      "title": "Daily Cash Closing",
+      "subtitle": "Reconcile system income with physical cash",
+      "dateLabel": "Closing date:",
+      "loading": "Loading data...",
+      "transactions": "Transactions",
+      "totalSystem": "System Total",
+      "discrepancy": "Discrepancy",
+      "noPayments": "No payments registered for {{date}}",
+      "byMethod": "Income by Payment Method",
+      "colMethod": "Payment Method",
+      "colTransactions": "No. Transactions",
+      "colTotal": "Total",
+      "totalRow": "SYSTEM TOTAL",
+      "cashCount": "Cash Count",
+      "cashLabel": "Physical cash counted (S/)",
+      "closed": "Closed",
+      "closedWithDiscrepancy": "Closed with Discrepancy",
+      "difference": "Difference of",
+      "surplus": "surplus",
+      "shortage": "shortage",
+      "process": "Process Closing",
+      "newClosing": "New Closing"
+    },
+    "inventory": {
+      "title": "Medication Inventory",
+      "subtitle": "Manage stock and add new products",
+      "addProduct": "Add Product",
+      "searchPlaceholder": "Search product...",
+      "loading": "Loading inventory...",
+      "statTotal": "Total Products",
+      "statNormal": "Normal Level",
+      "statLow": "Low Stock",
+      "colProduct": "Product",
+      "colDescription": "Description",
+      "colUnit": "Unit",
+      "colStock": "Current Stock",
+      "colReorder": "Reorder Point",
+      "colStatus": "Status",
+      "empty": "No products found.",
+      "statusNormal": "Normal",
+      "statusLow": "Low Stock",
+      "statusZero": "No Stock"
+    },
+    "alerts": {
+      "title": "Low Stock Alerts",
+      "subtitle": "Products that have reached or exceeded their reorder point",
+      "acknowledgeAll": "Acknowledge All",
+      "loading": "Loading alerts...",
+      "statZero": "No Stock",
+      "statTotal": "Total Alerts",
+      "statAcknowledged": "Acknowledged",
+      "empty": "No pending stock alerts.",
+      "colProduct": "Product",
+      "colUnit": "Unit",
+      "colStock": "Current Stock",
+      "colReorder": "Reorder Point",
+      "colUrgency": "Urgency Level",
+      "colAction": "Action",
+      "critical": "Critical — No Stock",
+      "low": "Low Stock",
+      "acknowledge": "Acknowledge",
+      "ackedMessage": "{{count}} alert(s) acknowledged in this session"
+    },
+    "dialog": {
+      "title": "Add Product to Inventory",
+      "nameLabel": "Product Name *",
+      "namePlaceholder": "e.g. Amoxicillin 500mg",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Brief product description",
+      "unitLabel": "Unit of Measure *",
+      "stockLabel": "Initial Stock *",
+      "reorderLabel": "Reorder Point (alert when stock ≤)",
+      "cancel": "Cancel",
+      "submit": "Add Product",
+      "duplicate": "Product already exists in the system",
+      "successMsg": "Product added successfully",
+      "errorInventory": "Error saving inventory",
+      "errorProduct": "Error saving product"
     }
   }
 }

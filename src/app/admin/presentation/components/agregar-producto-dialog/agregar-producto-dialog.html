@@ -1,0 +1,39 @@
+<h2 mat-dialog-title class="dlg-title">{{ 'admin.dialog.title' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dlg-form">
+    <div class="dlg-field dlg-field-full">
+      <label>{{ 'admin.dialog.nameLabel' | translate }}</label>
+      <input type="text" formControlName="nombre" [placeholder]="'admin.dialog.namePlaceholder' | translate" />
+    </div>
+    <div class="dlg-field dlg-field-full">
+      <label>{{ 'admin.dialog.descriptionLabel' | translate }}</label>
+      <textarea formControlName="descripcion" [placeholder]="'admin.dialog.descriptionPlaceholder' | translate"></textarea>
+    </div>
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>{{ 'admin.dialog.unitLabel' | translate }}</label>
+        <select formControlName="unidad">
+          @for (u of unidades; track u) {
+            <option [value]="u">{{ u }}</option>
+          }
+        </select>
+      </div>
+      <div class="dlg-field">
+        <label>{{ 'admin.dialog.stockLabel' | translate }}</label>
+        <input type="number" formControlName="stockInicial" min="0" placeholder="0" />
+      </div>
+    </div>
+    <div class="dlg-field">
+      <label>{{ 'admin.dialog.reorderLabel' | translate }}</label>
+      <input type="number" formControlName="puntoReorden" min="1" placeholder="10" />
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'admin.dialog.cancel' | translate }}</button>
+  <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting">
+    <mat-icon>add</mat-icon> {{ 'admin.dialog.submit' | translate }}
+  </button>
+</mat-dialog-actions>
