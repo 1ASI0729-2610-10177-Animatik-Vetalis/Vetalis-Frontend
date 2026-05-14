@@ -5,12 +5,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AdminService } from '../../../infrastructure/services/admin.service';
 import { AgregarProductoDialog } from '../../components/agregar-producto-dialog/agregar-producto-dialog';
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [NgClass, DecimalPipe, FormsModule, MatIconModule, MatButtonModule, MatTabsModule, MatDialogModule],
+  imports: [NgClass, DecimalPipe, FormsModule, MatIconModule, MatButtonModule, MatTabsModule, MatDialogModule, TranslatePipe],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
 })
@@ -72,6 +73,12 @@ export class AdminDashboard {
     if (item.stockActual === 0)               return 'Sin Stock';
     if (item.stockActual <= item.puntoReorden) return 'Stock Bajo';
     return 'Normal';
+  }
+
+  stockStatusKey(item: any): string {
+    if (item.stockActual === 0)               return 'admin.inventory.statusZero';
+    if (item.stockActual <= item.puntoReorden) return 'admin.inventory.statusLow';
+    return 'admin.inventory.statusNormal';
   }
 
   // ── US023: Low stock alerts ───────────────────────────────────
