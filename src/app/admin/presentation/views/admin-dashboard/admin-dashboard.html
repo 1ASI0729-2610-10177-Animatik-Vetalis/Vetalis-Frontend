@@ -1,0 +1,351 @@
+<div class="admin">
+
+  <!-- ── Header ─────────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1>{{ 'admin.title' | translate }}</h1>
+      <p>{{ 'admin.subtitle' | translate }}</p>
+    </div>
+    <button mat-stroked-button (click)="reload()">
+      <mat-icon>refresh</mat-icon> {{ 'admin.refresh' | translate }}
+    </button>
+  </div>
+
+  <mat-tab-group class="admin-tabs" animationDuration="0ms" [(selectedIndex)]="activeTab">
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 1: CIERRE DE CAJA (US021)                          -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">point_of_sale</mat-icon> {{ 'admin.tabs.cashClosing' | translate }}
+      </ng-template>
+      <div class="tab-content">
+        <div class="section-header">
+          <div>
+            <h2>{{ 'admin.cashClosing.title' | translate }}</h2>
+            <p>{{ 'admin.cashClosing.subtitle' | translate }}</p>
+          </div>
+        </div>
+
+        <!-- Date selector -->
+        <div class="cierre-date-row">
+          <label class="date-label">{{ 'admin.cashClosing.dateLabel' | translate }}</label>
+          <input type="date" class="date-input" [(ngModel)]="fechaCierre" (change)="resetCierre()" />
+        </div>
+
+        @if (loading()) {
+          <div class="loading-msg">{{ 'admin.cashClosing.loading' | translate }}</div>
+        } @else {
+
+          <!-- Summary cards -->
+          <div class="cierre-cards">
+            <div class="cierre-card">
+              <mat-icon style="color:#06B6D4">receipt_long</mat-icon>
+              <div class="cc-val">{{ pagosFecha.length }}</div>
+              <div class="cc-lbl">{{ 'admin.cashClosing.transactions' | translate }}</div>
+            </div>
+            <div class="cierre-card">
+              <mat-icon style="color:#22C55E">payments</mat-icon>
+              <div class="cc-val cc-money">S/ {{ totalSistema | number:'1.2-2' }}</div>
+              <div class="cc-lbl">{{ 'admin.cashClosing.totalSystem' | translate }}</div>
+            </div>
+            <div class="cierre-card" [ngClass]="{'cc-warn': discrepancia !== null && discrepancia !== 0, 'cc-ok': discrepancia === 0}">
+              <mat-icon>{{ discrepancia === null ? 'help_outline' : (discrepancia === 0 ? 'check_circle' : 'warning') }}</mat-icon>
+              <div class="cc-val cc-money">
+                @if (discrepancia === null) { — }
+                @else { S/ {{ discrepancia | number:'1.2-2' }} }
+              </div>
+              <div class="cc-lbl">{{ 'admin.cashClosing.discrepancy' | translate }}</div>
+            </div>
+          </div>
+
+          <!-- Payments by method table -->
+          @if (pagosFecha.length === 0) {
+            <div class="empty-state-inline">
+              <mat-icon>receipt_long</mat-icon>
+              <p>{{ 'admin.cashClosing.noPayments' | translate: {date: fechaCierre} }}</p>
+            </div>
+          } @else {
+            <div class="card table-card" style="margin-bottom:20px">
+              <h3 class="table-title">{{ 'admin.cashClosing.byMethod' | translate }}</h3>
+              <table class="data-table">
+                <thead><tr>
+                  <th>{{ 'admin.cashClosing.colMethod' | translate }}</th>
+                  <th>{{ 'admin.cashClosing.colTransactions' | translate }}</th>
+                  <th>{{ 'admin.cashClosing.colTotal' | translate }}</th>
+                </tr></thead>
+                <tbody>
+                  @for (t of totalesPorMetodo; track t.metodo) {
+                    <tr>
+                      <td>
+                        <div class="td-method">
+                          <mat-icon class="method-icon">{{ t.metodo === 'Efectivo' ? 'payments' : t.metodo === 'Transferencia' ? 'account_balance' : 'credit_card' }}</mat-icon>
+                          {{ t.metodo }}
+                        </div>
+                      </td>
+                      <td>{{ t.count }}</td>
+                      <td class="td-money">S/ {{ t.total | number:'1.2-2' }}</td>
+                    </tr>
+                  }
+                  <tr class="total-row">
+                    <td><strong>{{ 'admin.cashClosing.totalRow' | translate }}</strong></td>
+                    <td><strong>{{ pagosFecha.length }}</strong></td>
+                    <td class="td-money"><strong>S/ {{ totalSistema | number:'1.2-2' }}</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          }
+
+          <!-- Physical cash input -->
+          <div class="card cierre-form-card">
+            <h3>{{ 'admin.cashClosing.cashCount' | translate }}</h3>
+            <div class="efectivo-row">
+              <label>{{ 'admin.cashClosing.cashLabel' | translate }}</label>
+              <input type="number" class="efectivo-input" [(ngModel)]="efectivoFisico" min="0" step="0.01" [disabled]="cierreProcesado" />
+            </div>
+
+            @if (estadoCierre) {
+              <div class="cierre-result" [ngClass]="estadoCierre === 'Cerrado' ? 'result-ok' : 'result-warn'">
+                <mat-icon>{{ estadoCierre === 'Cerrado' ? 'check_circle' : 'warning' }}</mat-icon>
+                <div>
+                  <div class="result-status">
+                    {{ (discrepancia === 0 ? 'admin.cashClosing.closed' : 'admin.cashClosing.closedWithDiscrepancy') | translate }}
+                  </div>
+                  @if (discrepancia !== 0) {
+                    <div class="result-detail">
+                      {{ 'admin.cashClosing.difference' | translate }} <strong>S/ {{ discrepancia! | number:'1.2-2' }}</strong>
+                      ({{ (discrepancia! > 0 ? 'admin.cashClosing.surplus' : 'admin.cashClosing.shortage') | translate }})
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <div class="cierre-actions">
+              @if (!cierreProcesado) {
+                <button mat-raised-button class="btn-primary" (click)="procesarCierre()" [disabled]="pagosFecha.length === 0">
+                  <mat-icon>lock</mat-icon> {{ 'admin.cashClosing.process' | translate }}
+                </button>
+              } @else {
+                <button mat-stroked-button (click)="resetCierre()">
+                  <mat-icon>refresh</mat-icon> {{ 'admin.cashClosing.newClosing' | translate }}
+                </button>
+              }
+            </div>
+          </div>
+
+        }
+      </div>
+    </mat-tab>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 2: INVENTARIO (US026)                              -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">inventory_2</mat-icon> {{ 'admin.tabs.inventory' | translate }}
+      </ng-template>
+      <div class="tab-content">
+        <div class="section-header">
+          <div>
+            <h2>{{ 'admin.inventory.title' | translate }}</h2>
+            <p>{{ 'admin.inventory.subtitle' | translate }}</p>
+          </div>
+          <button mat-raised-button class="btn-primary" (click)="abrirAgregarProducto()">
+            <mat-icon>add</mat-icon> {{ 'admin.inventory.addProduct' | translate }}
+          </button>
+        </div>
+
+        <div class="filters-row">
+          <div class="search-wrap">
+            <mat-icon>search</mat-icon>
+            <input [(ngModel)]="invSearch" [placeholder]="'admin.inventory.searchPlaceholder' | translate" class="filter-input" />
+          </div>
+        </div>
+
+        @if (loading()) {
+          <div class="loading-msg">{{ 'admin.inventory.loading' | translate }}</div>
+        } @else {
+          <div class="inv-summary-row">
+            <div class="inv-stat" style="--c:#22C55E;--bg:#F0FDF4">
+              <mat-icon>inventory</mat-icon>
+              <div>
+                <div class="is-val">{{ inventarioConNombre.length }}</div>
+                <div class="is-lbl">{{ 'admin.inventory.statTotal' | translate }}</div>
+              </div>
+            </div>
+            <div class="inv-stat" style="--c:#EF4444;--bg:#FEF2F2">
+              <mat-icon>remove_shopping_cart</mat-icon>
+              <div>
+                <div class="is-val">{{ inventarioConNombre.length - alertasStock.length }}</div>
+                <div class="is-lbl">{{ 'admin.inventory.statNormal' | translate }}</div>
+              </div>
+            </div>
+            <div class="inv-stat" style="--c:#F59E0B;--bg:#FFFBEB">
+              <mat-icon>warning</mat-icon>
+              <div>
+                <div class="is-val">{{ alertasStock.length }}</div>
+                <div class="is-lbl">{{ 'admin.inventory.statLow' | translate }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card table-card">
+            <table class="data-table">
+              <thead><tr>
+                <th>#</th>
+                <th>{{ 'admin.inventory.colProduct' | translate }}</th>
+                <th>{{ 'admin.inventory.colDescription' | translate }}</th>
+                <th>{{ 'admin.inventory.colUnit' | translate }}</th>
+                <th>{{ 'admin.inventory.colStock' | translate }}</th>
+                <th>{{ 'admin.inventory.colReorder' | translate }}</th>
+                <th>{{ 'admin.inventory.colStatus' | translate }}</th>
+              </tr></thead>
+              <tbody>
+                @for (item of inventarioFiltrado; track item.id; let i = $index) {
+                  <tr>
+                    <td class="td-id">{{ i + 1 }}</td>
+                    <td><div class="td-name">{{ item.nombre }}</div></td>
+                    <td><div class="td-sub">{{ item.descripcion }}</div></td>
+                    <td>{{ item.unidad }}</td>
+                    <td>
+                      <div class="stock-val" [ngClass]="{'stock-low': item.stockActual <= item.puntoReorden, 'stock-zero': item.stockActual === 0}">
+                        {{ item.stockActual }}
+                      </div>
+                    </td>
+                    <td>{{ item.puntoReorden }}</td>
+                    <td>
+                      <span class="badge" [ngClass]="{
+                        'badge-completada': stockStatus(item) === 'Normal',
+                        'badge-pendiente':  stockStatus(item) === 'Stock Bajo',
+                        'badge-critico':    stockStatus(item) === 'Sin Stock'
+                      }">{{ stockStatusKey(item) | translate }}</span>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="7" class="empty-msg">{{ 'admin.inventory.empty' | translate }}</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 3: ALERTAS DE STOCK (US023)                        -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">notification_important</mat-icon>
+        {{ 'admin.tabs.stockAlerts' | translate }}
+        @if (alertasVisibles.length > 0) {
+          <span class="tab-alert-badge">{{ alertasVisibles.length }}</span>
+        }
+      </ng-template>
+      <div class="tab-content">
+        <div class="section-header">
+          <div>
+            <h2>{{ 'admin.alerts.title' | translate }}</h2>
+            <p>{{ 'admin.alerts.subtitle' | translate }}</p>
+          </div>
+          @if (alertasVisibles.length > 0) {
+            <button mat-stroked-button (click)="acknowledgeAll()">
+              <mat-icon>done_all</mat-icon> {{ 'admin.alerts.acknowledgeAll' | translate }}
+            </button>
+          }
+        </div>
+
+        @if (loading()) {
+          <div class="loading-msg">{{ 'admin.alerts.loading' | translate }}</div>
+        } @else {
+
+          <!-- Alert summary -->
+          <div class="alert-summary-row">
+            <div class="alert-stat alert-stat-red">
+              <mat-icon>error</mat-icon>
+              <div>
+                <div class="as-val">{{ inventarioConNombre.filter(i => i.stockActual === 0).length }}</div>
+                <div class="as-lbl">{{ 'admin.alerts.statZero' | translate }}</div>
+              </div>
+            </div>
+            <div class="alert-stat alert-stat-amber">
+              <mat-icon>warning</mat-icon>
+              <div>
+                <div class="as-val">{{ alertasStock.length }}</div>
+                <div class="as-lbl">{{ 'admin.alerts.statTotal' | translate }}</div>
+              </div>
+            </div>
+            <div class="alert-stat alert-stat-blue">
+              <mat-icon>notifications_off</mat-icon>
+              <div>
+                <div class="as-val">{{ acknowledgedIds().length }}</div>
+                <div class="as-lbl">{{ 'admin.alerts.statAcknowledged' | translate }}</div>
+              </div>
+            </div>
+          </div>
+
+          @if (alertasVisibles.length === 0) {
+            <div class="empty-state-inline">
+              <mat-icon style="color:#22C55E">check_circle</mat-icon>
+              <p>{{ 'admin.alerts.empty' | translate }}</p>
+            </div>
+          } @else {
+            <div class="card table-card">
+              <table class="data-table">
+                <thead><tr>
+                  <th>{{ 'admin.alerts.colProduct' | translate }}</th>
+                  <th>{{ 'admin.alerts.colUnit' | translate }}</th>
+                  <th>{{ 'admin.alerts.colStock' | translate }}</th>
+                  <th>{{ 'admin.alerts.colReorder' | translate }}</th>
+                  <th>{{ 'admin.alerts.colUrgency' | translate }}</th>
+                  <th>{{ 'admin.alerts.colAction' | translate }}</th>
+                </tr></thead>
+                <tbody>
+                  @for (item of alertasVisibles; track item.id) {
+                    <tr [ngClass]="{'row-critical': item.stockActual === 0}">
+                      <td>
+                        <div class="td-patient">
+                          <div class="alert-icon-wrap" [ngClass]="item.stockActual === 0 ? 'alert-red' : 'alert-amber'">
+                            <mat-icon>{{ item.stockActual === 0 ? 'remove_shopping_cart' : 'warning' }}</mat-icon>
+                          </div>
+                          <div class="td-name">{{ item.nombre }}</div>
+                        </div>
+                      </td>
+                      <td>{{ item.unidad }}</td>
+                      <td>
+                        <span class="stock-badge" [ngClass]="item.stockActual === 0 ? 'stock-badge-zero' : 'stock-badge-low'">
+                          {{ item.stockActual }}
+                        </span>
+                      </td>
+                      <td>{{ item.puntoReorden }}</td>
+                      <td>
+                        <span class="badge" [ngClass]="item.stockActual === 0 ? 'badge-critico' : 'badge-pendiente'">
+                          {{ (item.stockActual === 0 ? 'admin.alerts.critical' : 'admin.alerts.low') | translate }}
+                        </span>
+                      </td>
+                      <td>
+                        <button mat-stroked-button class="btn-acknowledge" (click)="acknowledge(item.id)">
+                          <mat-icon>check</mat-icon> {{ 'admin.alerts.acknowledge' | translate }}
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+
+          @if (acknowledgedIds().length > 0) {
+            <div class="acked-section">
+              <p class="acked-label">{{ 'admin.alerts.ackedMessage' | translate: {count: acknowledgedIds().length} }}</p>
+            </div>
+          }
+        }
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>
