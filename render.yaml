@@ -1,9 +1,7 @@
 services:
   - type: web
     name: vetalis-api
-    env: node
-    buildCommand: npm install -g json-server
-    startCommand: json-server db.json --port $PORT --host 0.0.0.0
-    envVars:
-      - key: PORT
-        value: 10000
+    runtime: node
+    plan: free
+    buildCommand: npm install json-server
+    startCommand: npx json-server db.json --port $PORT --host 0.0.0.0
