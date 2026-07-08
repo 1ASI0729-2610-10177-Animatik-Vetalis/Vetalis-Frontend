@@ -67,34 +67,43 @@
               <p>{{ 'admin.cashClosing.noPayments' | translate: {date: fechaCierre} }}</p>
             </div>
           } @else {
-            <div class="card table-card" style="margin-bottom:20px">
-              <h3 class="table-title">{{ 'admin.cashClosing.byMethod' | translate }}</h3>
-              <table class="data-table">
-                <thead><tr>
-                  <th>{{ 'admin.cashClosing.colMethod' | translate }}</th>
-                  <th>{{ 'admin.cashClosing.colTransactions' | translate }}</th>
-                  <th>{{ 'admin.cashClosing.colTotal' | translate }}</th>
-                </tr></thead>
-                <tbody>
-                  @for (t of totalesPorMetodo; track t.metodo) {
-                    <tr>
-                      <td>
-                        <div class="td-method">
-                          <mat-icon class="method-icon">{{ t.metodo === 'Efectivo' ? 'payments' : t.metodo === 'Transferencia' ? 'account_balance' : 'credit_card' }}</mat-icon>
-                          {{ t.metodo }}
-                        </div>
-                      </td>
-                      <td>{{ t.count }}</td>
-                      <td class="td-money">S/ {{ t.total | number:'1.2-2' }}</td>
+            <div class="cierre-analytics">
+              <div class="card table-card">
+                <h3 class="table-title">{{ 'admin.cashClosing.byMethod' | translate }}</h3>
+                <table class="data-table">
+                  <thead><tr>
+                    <th>{{ 'admin.cashClosing.colMethod' | translate }}</th>
+                    <th>{{ 'admin.cashClosing.colTransactions' | translate }}</th>
+                    <th>{{ 'admin.cashClosing.colTotal' | translate }}</th>
+                  </tr></thead>
+                  <tbody>
+                    @for (t of totalesPorMetodo; track t.metodo) {
+                      <tr>
+                        <td>
+                          <div class="td-method">
+                            <mat-icon class="method-icon">{{ t.metodo === 'Efectivo' ? 'payments' : t.metodo === 'Transferencia' ? 'account_balance' : 'credit_card' }}</mat-icon>
+                            {{ t.metodo }}
+                          </div>
+                        </td>
+                        <td>{{ t.count }}</td>
+                        <td class="td-money">S/ {{ t.total | number:'1.2-2' }}</td>
+                      </tr>
+                    }
+                    <tr class="total-row">
+                      <td><strong>{{ 'admin.cashClosing.totalRow' | translate }}</strong></td>
+                      <td><strong>{{ pagosFecha.length }}</strong></td>
+                      <td class="td-money"><strong>S/ {{ totalSistema | number:'1.2-2' }}</strong></td>
                     </tr>
-                  }
-                  <tr class="total-row">
-                    <td><strong>{{ 'admin.cashClosing.totalRow' | translate }}</strong></td>
-                    <td><strong>{{ pagosFecha.length }}</strong></td>
-                    <td class="td-money"><strong>S/ {{ totalSistema | number:'1.2-2' }}</strong></td>
-                  </tr>
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="card chart-card">
+                <h3 class="table-title">{{ 'admin.cashClosing.chartTitle' | translate }}</h3>
+                <div class="admin-chart-box">
+                  <app-chart type="doughnut" [data]="pagosChartData" [options]="pagosChartOptions"></app-chart>
+                </div>
+              </div>
             </div>
           }
 

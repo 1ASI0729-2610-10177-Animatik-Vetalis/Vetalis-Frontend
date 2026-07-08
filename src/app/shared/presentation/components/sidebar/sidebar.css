@@ -133,6 +133,13 @@
   height: 22px;
 }
 
+.user-initials {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
 .user-info {
   flex: 1;
   display: flex;
@@ -154,12 +161,26 @@
   color: #94A3B8;
 }
 
-.user-menu {
+.user-menu-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 6px;
+  color: #94A3B8;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.user-menu-btn:hover { background: #FEE2E2; color: #EF4444; }
+
+.user-menu-btn mat-icon {
   font-size: 18px;
   width: 18px;
   height: 18px;
-  color: #94A3B8;
-  flex-shrink: 0;
 }
 
 .lang-switcher {

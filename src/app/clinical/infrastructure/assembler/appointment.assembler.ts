@@ -4,7 +4,7 @@ const COLORS = ['#F97316','#7C3AED','#06B6D4','#16A34A','#EF4444','#8B5CF6','#F5
 
 function hash(id: string): number {
   let h = 0;
-  for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return h;
 }
 
@@ -23,8 +23,8 @@ const STATUS_MAP: Record<string, string> = {
 
 export class AppointmentAssembler {
   static toDomain(raw: any, mascotas: any[], clientes: any[]): Appointment {
-    const m = mascotas.find(x => x.id === raw.mascotaId);
-    const c = clientes.find(x => x.id === m?.clienteId);
+    const m = mascotas.find(x => String(x.id) === String(raw.mascotaId));
+    const c = clientes.find(x => String(x.id) === String(m?.clienteId));
     return {
       id:          raw.id,
       date:        raw.fecha.split('T')[0],
@@ -33,7 +33,7 @@ export class AppointmentAssembler {
       ownerName:   c?.nombre ?? '—',
       time:        toTime(raw.fecha),
       status:      STATUS_MAP[raw.estado] ?? raw.estado,
-      avatarColor: COLORS[hash(raw.mascotaId) % COLORS.length],
+      avatarColor: COLORS[hash(String(raw.mascotaId)) % COLORS.length],
     };
   }
 

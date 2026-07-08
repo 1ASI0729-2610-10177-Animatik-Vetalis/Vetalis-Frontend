@@ -4,7 +4,7 @@ const COLORS = ['#F97316','#7C3AED','#06B6D4','#16A34A','#EF4444','#8B5CF6','#F5
 
 function hash(id: string): number {
   let h = 0;
-  for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return h;
 }
 
@@ -17,9 +17,10 @@ function calcAge(dob: string): string {
 
 export class PatientAssembler {
   static toDomain(raw: any, clientes: any[], especies: any[], razas: any[]): Patient {
-    const cliente = clientes.find(c => c.id === raw.clienteId);
-    const especie = especies.find(e => e.id === raw.especieId);
-    const raza    = razas.find(r => r.id === raw.razaId);
+    const cliente = clientes.find(c => String(c.id) === String(raw.clienteId));
+    const raza    = razas.find(r => String(r.id) === String(raw.razaId));
+    // El backend no expone especieId en mascota: la especie sale vía raza.especieId.
+    const especie = especies.find(e => String(e.id) === String(raza?.especieId ?? raw.especieId));
     return {
       id:          raw.id,
       name:        raw.nombre,

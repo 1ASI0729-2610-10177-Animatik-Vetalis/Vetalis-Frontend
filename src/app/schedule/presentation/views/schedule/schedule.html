@@ -13,42 +13,84 @@
     <!-- Calendar card -->
     <div class="card cal-card">
       <div class="cal-nav">
-        <button mat-icon-button (click)="store.prevMonth()"><mat-icon>chevron_left</mat-icon></button>
-        <h2>{{ store.monthLabel() }}</h2>
-        <button mat-icon-button (click)="store.nextMonth()"><mat-icon>chevron_right</mat-icon></button>
+        <button mat-icon-button (click)="store.prev()"><mat-icon>chevron_left</mat-icon></button>
+        <h2>{{ store.headerLabel() }}</h2>
+        <button mat-icon-button (click)="store.next()"><mat-icon>chevron_right</mat-icon></button>
+        <button class="today-btn" (click)="store.goToday()">{{ 'schedule.today' | translate }}</button>
         <div class="view-toggle">
           @for (v of viewModes; track v.value) {
-            <button class="vt-btn" [class.vt-active]="viewMode === v.value" (click)="viewMode = v.value">
+            <button class="vt-btn" [class.vt-active]="store.viewMode() === v.value" (click)="store.setView(v.value)">
               {{ v.labelKey | translate }}
             </button>
           }
-          <button mat-icon-button class="vt-icon"><mat-icon>calendar_view_month</mat-icon></button>
         </div>
       </div>
 
-      <table class="cal-table">
-        <thead>
-        <tr>
-          @for (d of dayNameKeys; track d) { <th>{{ d | translate }}</th> }
-        </tr>
-        </thead>
-        <tbody>
-          @for (week of store.weeks(); track $index) {
-            <tr>
-              @for (cell of week; track $index) {
-                <td [class.today]="cell.current" [class.prev-month]="cell.prev">
-                  <div class="cal-day">{{ cell.day }}</div>
-                  @for (apt of cell.apts; track apt.label) {
-                    <div class="cal-apt" [style.background]="apt.color" [style.color]="apt.text">
-                      {{ apt.label }}
-                    </div>
-                  }
-                </td>
+      <!-- MONTH view -->
+      @if (store.viewMode() === 'month') {
+        <table class="cal-table">
+          <thead>
+          <tr>
+            @for (d of dayNameKeys; track d) { <th>{{ d | translate }}</th> }
+          </tr>
+          </thead>
+          <tbody>
+            @for (week of store.weeks(); track $index) {
+              <tr>
+                @for (cell of week; track $index) {
+                  <td [class.today]="cell.current" [class.prev-month]="cell.prev">
+                    <div class="cal-day">{{ cell.day }}</div>
+                    @for (apt of cell.apts; track apt.label) {
+                      <div class="cal-apt" [style.background]="apt.color" [style.color]="apt.text">
+                        {{ apt.label }}
+                      </div>
+                    }
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <!-- WEEK / DAY time-grid -->
+        <div class="week-cal">
+          <div class="wg-head" [style.gridTemplateColumns]="gridTemplate">
+            <div class="wg-corner"></div>
+            @for (col of gridColumns; track col.day.iso) {
+              <div class="wg-day-head" [class.wg-today]="col.day.isToday">
+                <span class="wg-dow">{{ col.day.dayKey | translate }}</span>
+                <span class="wg-dnum">{{ col.day.dayNum }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="wg-body" [style.gridTemplateColumns]="gridTemplate">
+            <!-- hour rail -->
+            <div class="wg-rail">
+              @for (h of store.hours; track h.hour) {
+                <div class="wg-hour"><span>{{ h.label }}</span></div>
               }
-            </tr>
-          }
-        </tbody>
-      </table>
+            </div>
+
+            <!-- day columns -->
+            @for (col of gridColumns; track col.day.iso) {
+              <div class="wg-col" [class.wg-col-today]="col.day.isToday">
+                @for (h of store.hours; track h.hour) { <div class="wg-line"></div> }
+                @for (b of col.blocks; track b.cita.id) {
+                  <div class="wg-apt" [ngClass]="b.cita.badgeClass"
+                       [style.top.px]="b.top" [style.height.px]="b.height">
+                    <div class="wg-apt-time">{{ b.cita.time }}</div>
+                    <div class="wg-apt-name">{{ b.cita.name }}</div>
+                    <div class="wg-apt-type">{{ b.cita.type }}</div>
+                  </div>
+                } @empty {
+                  <!-- sin citas este día -->
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
     </div>
 
     <!-- Today appointments -->

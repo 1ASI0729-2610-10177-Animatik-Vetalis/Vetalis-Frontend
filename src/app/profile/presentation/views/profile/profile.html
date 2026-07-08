@@ -150,7 +150,7 @@
         <div class="card-title">{{ 'profile.quickActions.title' | translate }}</div>
         <div class="quick-list">
           @for (a of quickActions; track a.labelKey) {
-            <button class="quick-item" type="button">
+            <button class="quick-item" type="button" (click)="a.action && a.action()">
               <div class="quick-icon" [style.background]="a.bg">
                 <mat-icon [style.color]="a.color">{{ a.icon }}</mat-icon>
               </div>

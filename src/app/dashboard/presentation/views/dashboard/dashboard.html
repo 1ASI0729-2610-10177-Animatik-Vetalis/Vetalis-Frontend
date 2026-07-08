@@ -24,7 +24,7 @@
 
     <!-- Stats cards -->
     <div class="stats-grid">
-      @for (stat of stats; track stat.labelKey) {
+      @for (stat of stats(); track stat.labelKey) {
         <div class="stat-card">
           <div class="stat-header">
             <div class="stat-icon" [style.background]="stat.bg">
@@ -38,6 +38,28 @@
           <div class="stat-label">{{ stat.labelKey | translate }}</div>
         </div>
       }
+    </div>
+
+    <!-- Charts row -->
+    <div class="charts-grid">
+      <div class="card chart-card">
+        <div class="card-header">
+          <h2>{{ 'dashboard.charts.consultsByMonth' | translate }}</h2>
+          <span class="chart-hint">{{ 'dashboard.charts.last6Months' | translate }}</span>
+        </div>
+        <div class="chart-box">
+          <app-chart type="bar" [data]="consultasChartData()" [options]="barOptions"></app-chart>
+        </div>
+      </div>
+
+      <div class="card chart-card">
+        <div class="card-header">
+          <h2>{{ 'dashboard.charts.patientsBySpecies' | translate }}</h2>
+        </div>
+        <div class="chart-box">
+          <app-chart type="doughnut" [data]="especiesChartData()" [options]="doughnutOptions"></app-chart>
+        </div>
+      </div>
     </div>
 
     <!-- Lower section -->

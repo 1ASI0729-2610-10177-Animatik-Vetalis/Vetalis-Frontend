@@ -5,7 +5,7 @@ const MN = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','D
 
 function hash(id: string): number {
   let h = 0;
-  for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return h;
 }
 
@@ -15,18 +15,18 @@ function fmt(fecha: string): string {
 }
 
 export class VaccineAssembler {
-  static toDomain(raw: any, mascotas: any[], razas: any[], tipos: any[]): Vaccine {
-    const m = mascotas.find(x => x.id === raw.mascotaId);
-    const r = razas.find(x => x.id === m?.razaId);
-    const t = tipos.find(x => x.id === raw.tipoVacunaId);
+  static toDomain(raw: any, mascotas: any[], razas: any[]): Vaccine {
+    const m = mascotas.find(x => String(x.id) === String(raw.mascotaId));
+    const r = razas.find(x => String(x.id) === String(m?.razaId));
     return {
       id:                 raw.id,
       mascotaId:          raw.mascotaId,
       patientName:        m?.nombre ?? '—',
       patientBreed:       r?.nombre ?? '—',
-      patientAvatarColor: COLORS[hash(raw.mascotaId) % COLORS.length],
-      vaccineName:        t?.nombre ?? '—',
-      vaccineDesc:        t?.descripcion ?? '—',
+      patientAvatarColor: COLORS[hash(String(raw.mascotaId)) % COLORS.length],
+      // El backend trae el nombre de la vacuna directamente (no hay colección tiposVacuna).
+      vaccineName:        raw.nombreVacuna ?? '—',
+      vaccineDesc:        raw.lote ? `Lote ${raw.lote}` : '',
       lastApplied:        fmt(raw.fechaAplicacion),
       nextDose:           fmt(raw.proximaDosis),
       nextDoseHighlight:  raw.estado === 'Vencida',
@@ -34,7 +34,7 @@ export class VaccineAssembler {
     };
   }
 
-  static toDomainList(vacunas: any[], mascotas: any[], razas: any[], tipos: any[]): Vaccine[] {
-    return vacunas.map(v => this.toDomain(v, mascotas, razas, tipos));
+  static toDomainList(vacunas: any[], mascotas: any[], razas: any[]): Vaccine[] {
+    return vacunas.map(v => this.toDomain(v, mascotas, razas));
   }
 }

@@ -1,0 +1,91 @@
+<div class="login-page">
+  <!-- Language switcher -->
+  <div class="login-lang">
+    <button class="lang-btn" [class.lang-active]="currentLang() === 'es'" (click)="switchLang('es')">ES</button>
+    <button class="lang-btn" [class.lang-active]="currentLang() === 'en'" (click)="switchLang('en')">EN</button>
+  </div>
+
+  <div class="login-card">
+    <!-- Brand -->
+    <div class="login-brand">
+      <div class="brand-icon">
+        <mat-icon>pets</mat-icon>
+      </div>
+      <h1 class="brand-title">Vetalis Pro</h1>
+      <p class="brand-subtitle">{{ 'auth.login.subtitle' | translate }}</p>
+    </div>
+
+    <!-- Error banner -->
+    @if (error()) {
+      <div class="login-error">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ 'auth.login.invalidCredentials' | translate }}</span>
+      </div>
+    }
+
+    <!-- Form -->
+    <form class="login-form" (ngSubmit)="handleLogin()">
+      <div class="field">
+        <label>{{ 'auth.login.email' | translate }}</label>
+        <div class="input-wrap" [class.input-error]="emailInvalid">
+          <mat-icon>mail_outline</mat-icon>
+          <input
+            type="email"
+            autocomplete="username"
+            [placeholder]="'auth.login.emailPlaceholder' | translate"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+            name="email">
+        </div>
+        @if (emailInvalid) {
+          <span class="field-error">{{ 'auth.login.emailError' | translate }}</span>
+        }
+      </div>
+
+      <div class="field">
+        <label>{{ 'auth.login.password' | translate }}</label>
+        <div class="input-wrap" [class.input-error]="passwordInvalid">
+          <mat-icon>lock_outline</mat-icon>
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            autocomplete="current-password"
+            [placeholder]="'auth.login.passwordPlaceholder' | translate"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+            name="password">
+          <button type="button" class="toggle-pass" (click)="showPassword.set(!showPassword())">
+            <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
+        @if (passwordInvalid) {
+          <span class="field-error">{{ 'auth.login.passwordError' | translate }}</span>
+        }
+      </div>
+
+      <button type="submit" class="login-btn" [disabled]="loading()">
+        @if (loading()) {
+          <span class="spinner"></span>
+        } @else {
+          <mat-icon>login</mat-icon>
+        }
+        <span>{{ 'auth.login.submit' | translate }}</span>
+      </button>
+    </form>
+
+    <!-- Demo accounts -->
+    <div class="demo-box">
+      <span class="demo-title">{{ 'auth.login.demoTitle' | translate }}</span>
+      <div class="demo-list">
+        @for (acc of demoAccounts; track acc.email) {
+          <button type="button" class="demo-chip" (click)="useDemo(acc)">
+            <mat-icon>{{ acc.label === 'Admin' ? 'admin_panel_settings' : 'medical_services' }}</mat-icon>
+            <span class="demo-role">{{ acc.label }}</span>
+            <span class="demo-email">{{ acc.email }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <p class="login-footer">© 2026 Vetalis Pro · {{ 'sidebar.systemName' | translate }}</p>
+</div>
