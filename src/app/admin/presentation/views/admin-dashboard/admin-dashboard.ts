@@ -33,13 +33,14 @@ export class AdminDashboard {
   Math = Math;
   activeTab = 0;
 
-  loading      = signal(true);
-  medicamentos = signal<any[]>([]);
-  inventario   = signal<any[]>([]);
-  pagos        = signal<any[]>([]);
-  mascotas     = signal<any[]>([]);
-  clientes     = signal<any[]>([]);
-  consultas    = signal<any[]>([]);
+  loading       = signal(true);
+  medicamentos  = signal<any[]>([]);
+  inventario    = signal<any[]>([]);
+  pagos         = signal<any[]>([]);
+  mascotas      = signal<any[]>([]);
+  clientes      = signal<any[]>([]);
+  consultas     = signal<any[]>([]);
+  veterinarios  = signal<any[]>([]);
 
   acknowledgedIds = signal<string[]>([]);
 
@@ -79,6 +80,7 @@ export class AdminDashboard {
         this.mascotas.set(d.mascotas ?? []);
         this.clientes.set(d.clientes ?? []);
         this.consultas.set(d.consultas ?? []);
+        this.veterinarios.set(d.veterinarios ?? []);
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
@@ -356,7 +358,9 @@ export class AdminDashboard {
       );
       const total    = pagosVet.reduce((s, p) => s + (p.monto ?? 0), 0);
       const comision = total * (this.commissionRate / 100);
-      return { id: vid, nombre: `Veterinario #${vid}`, consultas: consultasVet.length, total, comision };
+      const vet = this.veterinarios().find(v => String(v.id) === String(vid));
+      const nombre = vet?.nombre ?? vet?.displayName ?? `Veterinario #${vid}`;
+      return { id: vid, nombre, consultas: consultasVet.length, total, comision };
     });
   }
 }

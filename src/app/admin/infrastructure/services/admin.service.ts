@@ -11,11 +11,12 @@ export class AdminService {
 
   loadAll() {
     return forkJoin({
-      medicamentos:  this.http.get<any[]>(`${this.base}/medicamentos`),
-      pagos:         this.http.get<any[]>(`${this.base}/pagos`),
-      mascotas:      this.http.get<any[]>(`${this.base}/mascotas`),
-      clientes:      this.http.get<any[]>(`${this.base}/clientes`),
-      consultas:     this.http.get<any[]>(`${this.base}/consultas`),
+      medicamentos:   this.http.get<any[]>(`${this.base}/medicamentos`).pipe(catchError(() => of([]))),
+      pagos:          this.http.get<any[]>(`${this.base}/pagos`).pipe(catchError(() => of([]))),
+      mascotas:       this.http.get<any[]>(`${this.base}/mascotas`).pipe(catchError(() => of([]))),
+      clientes:       this.http.get<any[]>(`${this.base}/clientes`).pipe(catchError(() => of([]))),
+      consultas:      this.http.get<any[]>(`${this.base}/consultas`).pipe(catchError(() => of([]))),
+      veterinarios:   this.http.get<any[]>(`${this.base}/veterinarios`).pipe(catchError(() => of([]))),
     });
   }
 

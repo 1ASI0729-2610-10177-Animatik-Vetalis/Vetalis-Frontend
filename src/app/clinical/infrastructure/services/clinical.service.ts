@@ -72,8 +72,12 @@ export class ClinicalService {
   updateCliente(id: number, body: any)  { return this.http.put(`${this.base}/clientes/${id}`, body); }
   deleteCliente(id: number)             { return this.http.delete(`${this.base}/clientes/${id}`); }
 
-  // ── Veterinarios (perfil) ─────────────────────────────────────
+  // ── Veterinarios ─────────────────────────────────────────────
+  getVeterinarios()                        { return this.http.get<any[]>(`${this.base}/veterinarios`); }
   updateVeterinario(id: number, body: any) { return this.http.put(`${this.base}/veterinarios/${id}`, body); }
+
+  // ── Medicamentos ──────────────────────────────────────────────
+  getMedicamentos() { return this.http.get<any[]>(`${this.base}/medicamentos`); }
 
   // ── Tratamientos ──────────────────────────────────────────────
   getTratamientos(consultaId: string)   { return this.http.get<any[]>(`${this.base}/tratamientos?consultaId=${consultaId}`); }

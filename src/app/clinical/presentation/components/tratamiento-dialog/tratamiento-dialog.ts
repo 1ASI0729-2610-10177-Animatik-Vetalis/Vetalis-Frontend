@@ -6,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClinicalService } from '../../../infrastructure/services/clinical.service';
-import { AdminService } from '../../../../admin/infrastructure/services/admin.service';
 
 @Component({
   selector: 'app-tratamiento-dialog',
@@ -15,20 +14,20 @@ import { AdminService } from '../../../../admin/infrastructure/services/admin.se
   templateUrl: './tratamiento-dialog.html',
 })
 export class TratamientoDialog {
-  private fb         = inject(FormBuilder);
-  private ref        = inject(MatDialogRef<TratamientoDialog>);
-  private svc        = inject(ClinicalService);
-  private adminSvc   = inject(AdminService);
-  private snack      = inject(MatSnackBar);
-  readonly data      = inject(MAT_DIALOG_DATA, { optional: true }) as { consultaId: string; tratamiento?: any } | null;
+  private fb    = inject(FormBuilder);
+  private ref   = inject(MatDialogRef<TratamientoDialog>);
+  private svc   = inject(ClinicalService);
+  private snack = inject(MatSnackBar);
+  readonly data = inject(MAT_DIALOG_DATA, { optional: true }) as { consultaId: string; tratamiento?: any } | null;
 
-  isEdit      = !!this.data?.tratamiento;
+  isEdit       = !!this.data?.tratamiento;
   medicamentos = signal<any[]>([]);
   loading      = signal(true);
 
   form = this.fb.group({
     consultaId:    [this.data?.consultaId ?? '', Validators.required],
     medicamentoId: [this.data?.tratamiento?.medicamentoId ?? null],
+    cantidad:      [this.data?.tratamiento?.cantidad ?? 1, [Validators.min(1)]],
     descripcion:   [this.data?.tratamiento?.descripcion ?? ''],
     dosis:         [this.data?.tratamiento?.dosis ?? ''],
     frecuencia:    [this.data?.tratamiento?.frecuencia ?? ''],
@@ -36,8 +35,8 @@ export class TratamientoDialog {
   });
 
   constructor() {
-    this.adminSvc.loadAll().pipe().subscribe({
-      next: (d: any) => { this.medicamentos.set(d.medicamentos ?? []); this.loading.set(false); },
+    this.svc.getMedicamentos().subscribe({
+      next: meds => { this.medicamentos.set(meds); this.loading.set(false); },
       error: () => this.loading.set(false),
     });
   }
@@ -48,7 +47,15 @@ export class TratamientoDialog {
     if (this.form.invalid) return;
     this.submitting = true;
     const v = this.form.value;
-    const body = { consultaId: v.consultaId, medicamentoId: v.medicamentoId || null, descripcion: v.descripcion, dosis: v.dosis, frecuencia: v.frecuencia, duracion: v.duracion };
+    const body = {
+      consultaId:    v.consultaId,
+      medicamentoId: v.medicamentoId || null,
+      cantidad:      v.medicamentoId ? (v.cantidad ?? 1) : null,
+      descripcion:   v.descripcion,
+      dosis:         v.dosis,
+      frecuencia:    v.frecuencia,
+      duracion:      v.duracion,
+    };
 
     const op = this.isEdit
       ? this.svc.updateTratamiento(this.data!.tratamiento.id, body)
