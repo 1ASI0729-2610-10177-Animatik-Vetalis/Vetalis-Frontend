@@ -410,7 +410,9 @@
       "empty": "No products found.",
       "statusNormal": "Normal",
       "statusLow": "Low Stock",
-      "statusZero": "No Stock"
+      "statusZero": "No Stock",
+      "colPrice": "Price",
+      "colActions": "Actions"
     },
     "alerts": {
       "title": "Low Stock Alerts",
