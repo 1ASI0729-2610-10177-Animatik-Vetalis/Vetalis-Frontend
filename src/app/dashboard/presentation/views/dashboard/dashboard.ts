@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,6 +6,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ChartConfiguration } from 'chart.js';
 import { ClinicalStore } from '../../../../clinical/application/clinical.store';
+import { DashboardService } from '../../../infrastructure/services/dashboard.service';
 import { ChartComponent } from '../../../../shared/presentation/components/chart/chart';
 import { NuevaConsultaDialog } from '../../../../clinical/presentation/components/nueva-consulta-dialog/nueva-consulta-dialog';
 import { NuevaCitaDialog } from '../../../../clinical/presentation/components/nueva-cita-dialog/nueva-cita-dialog';
@@ -21,17 +22,35 @@ const ESPECIE_COLORS = ['#06B6D4', '#8B5CF6', '#F97316', '#22C55E', '#EF4444', '
   styleUrl: './dashboard.css'
 })
 export class Dashboard {
-  store          = inject(ClinicalStore);
-  private dialog = inject(MatDialog);
-  private t      = inject(TranslateService);
+  store            = inject(ClinicalStore);
+  private dashSvc  = inject(DashboardService);
+  private dialog   = inject(MatDialog);
+  private t        = inject(TranslateService);
 
-  // ── Stats reales derivadas del store ──────────────────────────
-  stats = computed(() => [
-    { labelKey: 'dashboard.stats.todayAppointments', value: this.store.todayAppointments().length, delta: '+12%', positive: true,  icon: 'event_note',     color: '#3B82F6', bg: '#EFF6FF' },
-    { labelKey: 'dashboard.stats.activePatients',    value: this.store.patients().length,           delta: '+8%',  positive: true,  icon: 'pets',           color: '#8B5CF6', bg: '#F5F3FF' },
-    { labelKey: 'dashboard.stats.hospitalized',      value: this.store.hospitalizations().length,   delta: '-3%',  positive: false, icon: 'local_hospital', color: '#F97316', bg: '#FFF7ED' },
-    { labelKey: 'dashboard.stats.vaccinesApplied',   value: this.store.vaccines().length,           delta: '+15%', positive: true,  icon: 'vaccines',       color: '#22C55E', bg: '#F0FDF4' },
-  ]);
+  summary = signal<any>(null);
+  proximasCitas = signal<any[]>([]);
+  actividadReciente = signal<any[]>([]);
+
+  constructor() {
+    this.dashSvc.getSummary().subscribe(s => {
+      if (s) {
+        this.summary.set(s);
+        this.proximasCitas.set(s.proximasCitas ?? []);
+        this.actividadReciente.set(s.actividadReciente ?? []);
+      }
+    });
+  }
+
+  // ── Stats: usa backend si disponible, fallback al store ──────
+  stats = computed(() => {
+    const s = this.summary();
+    return [
+      { labelKey: 'dashboard.stats.todayAppointments', value: s ? s.citasHoy           : this.store.todayAppointments().length, delta: '+12%', positive: true,  icon: 'event_note',     color: '#3B82F6', bg: '#EFF6FF' },
+      { labelKey: 'dashboard.stats.activePatients',    value: s ? s.pacientesActivos    : this.store.patients().length,           delta: '+8%',  positive: true,  icon: 'pets',           color: '#8B5CF6', bg: '#F5F3FF' },
+      { labelKey: 'dashboard.stats.hospitalized',      value: s ? s.hospitalizados      : this.store.hospitalizations().length,   delta: '-3%',  positive: false, icon: 'local_hospital', color: '#F97316', bg: '#FFF7ED' },
+      { labelKey: 'dashboard.stats.vaccinesApplied',   value: s ? s.vacunasAplicadas    : this.store.vaccines().length,           delta: '+15%', positive: true,  icon: 'vaccines',       color: '#22C55E', bg: '#F0FDF4' },
+    ];
+  });
 
   // ── Gráfico: consultas de los últimos 6 meses ─────────────────
   consultasChartData = computed<ChartConfiguration<'bar'>['data']>(() => {
@@ -96,13 +115,26 @@ export class Dashboard {
     },
   };
 
-  activities = [
+  staticActivities = [
     { icon: 'add_circle',    color: '#06B6D4', bg: '#E0F2FE', titleKey: 'dashboard.activity.items.newConsult',      subtitle: 'Max - Control General',      time: 'Hace 15 minutos' },
     { icon: 'check_circle',  color: '#22C55E', bg: '#DCFCE7', titleKey: 'dashboard.activity.items.vaccineApplied',  subtitle: 'Luna - Antirrábica',         time: 'Hace 1 hora' },
     { icon: 'person_add',    color: '#8B5CF6', bg: '#F5F3FF', titleKey: 'dashboard.activity.items.newClient',       subtitle: 'Ana Martínez',               time: 'Hace 2 horas' },
     { icon: 'description',   color: '#F97316', bg: '#FFF7ED', titleKey: 'dashboard.activity.items.historyUpdated',  subtitle: 'Rocky - Cirugía programada', time: 'Hace 3 horas' },
     { icon: 'notifications', color: '#EF4444', bg: '#FEF2F2', titleKey: 'dashboard.activity.items.pendingReminder', subtitle: 'Vacuna próxima - Toby',      time: 'Hace 4 horas' },
   ];
+
+  get activities() {
+    const backend = this.actividadReciente();
+    if (backend.length > 0) {
+      return backend.map((a: any) => ({
+        icon: 'event_note', color: '#06B6D4', bg: '#E0F2FE',
+        titleKey: 'dashboard.activity.items.newConsult',
+        subtitle: a.descripcion ?? '',
+        time: a.fecha ? (a.fecha as string).slice(0, 10) : '',
+      }));
+    }
+    return this.staticActivities;
+  }
 
   openNuevaConsulta() {
     this.dialog.open(NuevaConsultaDialog, { width: '640px' })

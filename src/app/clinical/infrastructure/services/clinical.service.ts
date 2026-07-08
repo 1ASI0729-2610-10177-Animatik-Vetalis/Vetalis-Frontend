@@ -56,7 +56,15 @@ export class ClinicalService {
   closeConsulta(id: string)         { return this.http.put(`${this.base}/consultas/${id}/close`, {}); }
   createVacuna(body: any)           { return this.http.post(`${this.base}/vacunas`, body); }
   createHospitalizacion(body: any)  { return this.http.post(`${this.base}/hospitalizacion`, body); }
-  createCliente(body: any)          { return this.http.post(`${this.base}/clientes`, body); }
+  createCliente(body: any)              { return this.http.post(`${this.base}/clientes`, body); }
+  updateCliente(id: number, body: any)  { return this.http.put(`${this.base}/clientes/${id}`, body); }
+  deleteCliente(id: number)             { return this.http.delete(`${this.base}/clientes/${id}`); }
+
+  getTratamientos(consultaId: string)   { return this.http.get<any[]>(`${this.base}/tratamientos?consultaId=${consultaId}`); }
+  createTratamiento(body: any)          { return this.http.post<any>(`${this.base}/tratamientos`, body); }
+  updateTratamiento(id: number, b: any) { return this.http.put<any>(`${this.base}/tratamientos/${id}`, b); }
+  deleteTratamiento(id: number)         { return this.http.delete(`${this.base}/tratamientos/${id}`); }
+
   updateVeterinario(id: number, b: any) { return this.http.put(`${this.base}/veterinarios/${id}`, b); }
-  getVeterinarios()                 { return this.http.get<any[]>(`${this.base}/veterinarios`); }
+  getVeterinarios()                     { return this.http.get<any[]>(`${this.base}/veterinarios`); }
 }

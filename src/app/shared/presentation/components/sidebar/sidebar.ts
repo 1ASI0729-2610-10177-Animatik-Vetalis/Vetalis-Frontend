@@ -32,6 +32,7 @@ export class Sidebar {
     { path: '/dashboard',     icon: 'dashboard',            labelKey: 'sidebar.nav.dashboard'     },
     { path: '/clinical',      icon: 'medical_services',     labelKey: 'sidebar.nav.clinical'      },
     { path: '/schedule',      icon: 'calendar_month',       labelKey: 'sidebar.nav.schedule'      },
+    { path: '/iot',           icon: 'router',               labelKey: 'sidebar.nav.iot'           },
     { path: '/communication', icon: 'forum',                labelKey: 'sidebar.nav.communication' },
     { path: '/profile',       icon: 'account_circle',       labelKey: 'sidebar.nav.profile'       },
     { path: '/admin',         icon: 'admin_panel_settings', labelKey: 'sidebar.nav.admin', roles: ['admin'] },

@@ -18,4 +18,5 @@ export interface Consultation {
   objetivo?: string;
   plan?: string;
   veterinario?: string;
+  diagnosticText?: string;
 }

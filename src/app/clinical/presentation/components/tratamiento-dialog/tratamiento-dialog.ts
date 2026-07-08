@@ -1,0 +1,65 @@
+import { Component, inject, signal } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { NgFor } from '@angular/common';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ClinicalService } from '../../../infrastructure/services/clinical.service';
+import { AdminService } from '../../../../admin/infrastructure/services/admin.service';
+
+@Component({
+  selector: 'app-tratamiento-dialog',
+  standalone: true,
+  imports: [ReactiveFormsModule, NgFor, MatDialogModule, MatButtonModule, MatIconModule],
+  templateUrl: './tratamiento-dialog.html',
+})
+export class TratamientoDialog {
+  private fb         = inject(FormBuilder);
+  private ref        = inject(MatDialogRef<TratamientoDialog>);
+  private svc        = inject(ClinicalService);
+  private adminSvc   = inject(AdminService);
+  private snack      = inject(MatSnackBar);
+  readonly data      = inject(MAT_DIALOG_DATA, { optional: true }) as { consultaId: string; tratamiento?: any } | null;
+
+  isEdit      = !!this.data?.tratamiento;
+  medicamentos = signal<any[]>([]);
+  loading      = signal(true);
+
+  form = this.fb.group({
+    consultaId:    [this.data?.consultaId ?? '', Validators.required],
+    medicamentoId: [this.data?.tratamiento?.medicamentoId ?? null],
+    descripcion:   [this.data?.tratamiento?.descripcion ?? ''],
+    dosis:         [this.data?.tratamiento?.dosis ?? ''],
+    frecuencia:    [this.data?.tratamiento?.frecuencia ?? ''],
+    duracion:      [this.data?.tratamiento?.duracion ?? ''],
+  });
+
+  constructor() {
+    this.adminSvc.loadAll().pipe().subscribe({
+      next: (d: any) => { this.medicamentos.set(d.medicamentos ?? []); this.loading.set(false); },
+      error: () => this.loading.set(false),
+    });
+  }
+
+  submitting = false;
+
+  submit() {
+    if (this.form.invalid) return;
+    this.submitting = true;
+    const v = this.form.value;
+    const body = { consultaId: v.consultaId, medicamentoId: v.medicamentoId || null, descripcion: v.descripcion, dosis: v.dosis, frecuencia: v.frecuencia, duracion: v.duracion };
+
+    const op = this.isEdit
+      ? this.svc.updateTratamiento(this.data!.tratamiento.id, body)
+      : this.svc.createTratamiento(body);
+
+    op.subscribe({
+      next: () => {
+        this.snack.open(this.isEdit ? 'Tratamiento actualizado' : 'Tratamiento registrado', 'OK', { duration: 3000 });
+        this.ref.close(true);
+      },
+      error: () => { this.snack.open('Error al guardar', '', { duration: 3000 }); this.submitting = false; },
+    });
+  }
+}

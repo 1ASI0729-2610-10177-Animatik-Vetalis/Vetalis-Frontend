@@ -17,6 +17,7 @@ import { RegistrarPacienteDialog } from '../../components/registrar-paciente-dia
 import { RegistrarVacunaDialog } from '../../components/registrar-vacuna-dialog/registrar-vacuna-dialog';
 import { RegistrarIngresoDialog } from '../../components/registrar-ingreso-dialog/registrar-ingreso-dialog';
 import { RegistrarClienteDialog } from '../../components/registrar-cliente-dialog/registrar-cliente-dialog';
+import { TratamientoDialog } from '../../components/tratamiento-dialog/tratamiento-dialog';
 
 const PAGE_SIZE = 5;
 
@@ -158,6 +159,7 @@ export class ClinicalManagement {
 
   get historyRecords() {
     return this.selectedConsultations.map(c => ({
+      consultaId: c.id,
       type: c.type, date: c.date, doctor: c.veterinario ?? 'Veterinario',
       color: c.cerrada ? '#64748B' : '#22C55E',
       bg: c.cerrada ? '#F1F5F9' : '#F0FDF4',
@@ -224,6 +226,24 @@ export class ClinicalManagement {
 
   openRegistrarCliente() {
     this.dialog.open(RegistrarClienteDialog, { width: '500px' })
+      .afterClosed().subscribe(ok => { if (ok) this.store.reload(); });
+  }
+
+  openEditarCliente(cliente: any) {
+    this.dialog.open(RegistrarClienteDialog, { width: '500px', data: { cliente } })
+      .afterClosed().subscribe(ok => { if (ok) this.store.reload(); });
+  }
+
+  deleteCliente(cliente: any) {
+    if (!confirm(`¿Eliminar al cliente ${cliente.nombre}? Esta acción no se puede deshacer.`)) return;
+    this.svc.deleteCliente(cliente.id).subscribe({
+      next: () => { this.snack.open('Cliente eliminado', 'OK', { duration: 3000 }); this.store.reload(); },
+      error: () => this.snack.open('Error al eliminar', '', { duration: 3000 }),
+    });
+  }
+
+  openTratamiento(consultaId: string) {
+    this.dialog.open(TratamientoDialog, { width: '560px', data: { consultaId } })
       .afterClosed().subscribe(ok => { if (ok) this.store.reload(); });
   }
 

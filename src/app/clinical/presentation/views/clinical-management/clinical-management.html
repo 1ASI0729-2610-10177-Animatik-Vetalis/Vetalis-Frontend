@@ -117,6 +117,7 @@
                 <th>{{ 'clinical.clients.colPhone' | translate }}</th>
                 <th>{{ 'clinical.clients.colEmail' | translate }}</th>
                 <th>{{ 'clinical.clients.colAddress' | translate }}</th>
+                <th>Acciones</th>
               </tr></thead>
               <tbody>
                 @for (c of filteredClients; track c.id) {
@@ -131,9 +132,15 @@
                     <td>{{ c.telefono }}</td>
                     <td>{{ c.email }}</td>
                     <td>{{ c.direccion }}</td>
+                    <td>
+                      <div class="td-actions">
+                        <button mat-icon-button (click)="openEditarCliente(c)" title="Editar"><mat-icon>edit</mat-icon></button>
+                        <button mat-icon-button (click)="deleteCliente(c)" title="Eliminar"><mat-icon style="color:#EF4444">delete</mat-icon></button>
+                      </div>
+                    </td>
                   </tr>
                 } @empty {
-                  <tr><td colspan="5" class="empty-msg">{{ 'clinical.clients.empty' | translate }}</td></tr>
+                  <tr><td colspan="6" class="empty-msg">{{ 'clinical.clients.empty' | translate }}</td></tr>
                 }
               </tbody>
             </table>
@@ -300,6 +307,13 @@
                       <div class="tl-section">
                         <div class="tl-label">{{ sec.label }}</div>
                         <p class="tl-text">{{ sec['content'] }}</p>
+                      </div>
+                    }
+                    @if (!r.cerrada) {
+                      <div class="tl-footer">
+                        <button mat-stroked-button class="btn-sm-tratamiento" (click)="openTratamiento(r.consultaId)">
+                          <mat-icon>medication</mat-icon> {{ 'clinical.history.addTreatment' | translate }}
+                        </button>
                       </div>
                     }
                   </div>

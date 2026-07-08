@@ -39,6 +39,10 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['admin'] },
         loadComponent: () => import('./admin/presentation/views/admin-dashboard/admin-dashboard').then(m => m.AdminDashboard)
+      },
+      {
+        path: 'iot',
+        loadComponent: () => import('./iot/presentation/views/iot-dashboard/iot-dashboard').then(m => m.IotDashboard)
       }
     ]
   },
