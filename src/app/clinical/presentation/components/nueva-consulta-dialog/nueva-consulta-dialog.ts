@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClinicalStore } from '../../../application/clinical.store';
 import { ClinicalService } from '../../../infrastructure/services/clinical.service';
+import { AuthStore } from '../../../../iam/application/auth.store';
 
 @Component({
   selector: 'app-nueva-consulta-dialog',
@@ -18,6 +19,7 @@ export class NuevaConsultaDialog {
   private ref    = inject(MatDialogRef<NuevaConsultaDialog>);
   private svc    = inject(ClinicalService);
   private snack  = inject(MatSnackBar);
+  private auth   = inject(AuthStore);
   readonly store = inject(ClinicalStore);
   readonly data  = inject(MAT_DIALOG_DATA, { optional: true }) as { patientId?: string } | null;
 
@@ -41,10 +43,7 @@ export class NuevaConsultaDialog {
     this.submitting = true;
     const v = this.form.value;
     const today = new Date().toISOString().split('T')[0];
-    const existingIds = this.store.consultations().map(c => parseInt(c.id?.replace('C-', '') ?? '0', 10)).filter(n => !isNaN(n));
-    const nextNum = (existingIds.length ? Math.max(...existingIds) : 1240) + 1;
-    const id = `C-${nextNum}`;
-    const body = { id, mascotaId: v.mascotaId, veterinarioId: 1, fecha: `${today}T${v.hora}:00`, tipo: v.tipo, temperatura: v.temperatura, subjetivo: v.subjetivo, objetivo: v.objetivo, evaluacion: v.evaluacion, diagnostico: v.evaluacion, plan: v.plan, estado: 'Completada', cerrada: false };
+    const body ={ mascotaId: Number(v.mascotaId), veterinarioId: Number(this.auth.user()?.id ?? 0), fecha: `${today}T${v.hora}:00`, tipo: v.tipo, temperatura: v.temperatura, subjetivo: v.subjetivo, objetivo: v.objetivo, evaluacion: v.evaluacion, diagnostico: v.evaluacion, plan: v.plan, estado: 'Abierta', cerrada: false };
     this.svc.createConsulta(body).subscribe({
       next: () => { this.snack.open('Consulta registrada', 'OK', { duration: 3000 }); this.ref.close(true); },
       error: () => { this.snack.open('Error al guardar', '', { duration: 3000 }); this.submitting = false; },

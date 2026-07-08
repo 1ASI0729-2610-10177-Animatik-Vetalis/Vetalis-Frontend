@@ -13,6 +13,14 @@
         </select>
       </div>
     </div>
+    <div class="dlg-field">
+      <label>Tipo de cita *</label>
+      <select formControlName="tipo">
+        @for (t of tipos; track t) {
+          <option [value]="t">{{ t }}</option>
+        }
+      </select>
+    </div>
     <div class="dlg-row">
       <div class="dlg-field">
         <label>Fecha *</label>
@@ -24,7 +32,7 @@
       </div>
     </div>
     <div class="dlg-field">
-      <label>Motivo / Tipo de consulta *</label>
+      <label>Motivo *</label>
       <input type="text" formControlName="motivo" placeholder="Ej: Vacunación anual, Revisión general..." />
     </div>
   </form>

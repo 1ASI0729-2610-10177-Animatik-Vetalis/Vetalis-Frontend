@@ -28,16 +28,17 @@ export class RegistrarPacienteDialog {
     nombre:          [this.data?.patient?.name ?? '', Validators.required],
     sexo:            ['Macho', Validators.required],
     fechaNacimiento: ['', Validators.required],
-    peso:            [this.data?.patient ? parseFloat(this.data.patient.weight) : 0, [Validators.required, Validators.min(0.1)]],
-    especieId:       [1, Validators.required],
-    razaId:          [1, Validators.required],
-    clienteId:       [1, Validators.required],
+    peso:            [this.data?.patient ? parseFloat(this.data.patient.weight) : null, [Validators.required, Validators.min(0.1)]],
+    especieId:       [null as number | null, Validators.required],
+    razaId:          [null as number | null, Validators.required],
+    clienteId:       [null as number | null, Validators.required],
     alergias:        [this.data?.patient?.alergias ?? ''],
   });
 
-  razasFiltradas = computed(() =>
-    this.store.rawRazas().filter(r => r.especieId === this.form.value.especieId)
-  );
+  razasFiltradas = computed(() => {
+    const eid = Number(this.form.value.especieId ?? 0);
+    return this.store.rawRazas().filter(r => Number(r.especieId) === eid);
+  });
 
   submitting = false;
 
@@ -45,10 +46,16 @@ export class RegistrarPacienteDialog {
     if (this.form.invalid) return;
     this.submitting = true;
     const v = this.form.value;
-    const existingIds = this.store.rawMascotas().map(m => parseInt(m.id?.replace('P-', '') ?? '0', 10)).filter(n => !isNaN(n));
-    const nextNum = (existingIds.length ? Math.max(...existingIds) : 0) + 1;
-    const id = `P-${String(nextNum).padStart(3, '0')}`;
-    const body = { id, nombre: v.nombre, sexo: v.sexo, fechaNacimiento: v.fechaNacimiento, peso: v.peso, clienteId: v.clienteId, especieId: v.especieId, razaId: v.razaId, estado: 'Activo', alergias: v.alergias ?? '' };
+    const body = {
+      nombre:          v.nombre,
+      sexo:            v.sexo,
+      fechaNacimiento: v.fechaNacimiento,
+      peso:            Number(v.peso),
+      clienteId:       Number(v.clienteId),
+      razaId:          Number(v.razaId),
+      estado:          'Activo',
+      alergias:        v.alergias ?? '',
+    };
     const req = this.isEdit
       ? this.svc.updateMascota(this.data!.patient!.id, body)
       : this.svc.createMascota(body);

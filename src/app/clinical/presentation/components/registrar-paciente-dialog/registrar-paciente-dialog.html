@@ -29,6 +29,7 @@
       <div class="dlg-field">
         <label>Especie *</label>
         <select formControlName="especieId">
+          <option [value]="null">Seleccionar especie...</option>
           @for (e of store.rawEspecies(); track e.id) {
             <option [value]="e.id">{{ e.nombre }}</option>
           }

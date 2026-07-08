@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClinicalStore } from '../../../application/clinical.store';
 import { ClinicalService } from '../../../infrastructure/services/clinical.service';
+import { AuthStore } from '../../../../iam/application/auth.store';
 
 @Component({
   selector: 'app-nueva-cita-dialog',
@@ -18,11 +19,15 @@ export class NuevaCitaDialog {
   private ref      = inject(MatDialogRef<NuevaCitaDialog>);
   private svc      = inject(ClinicalService);
   private snack    = inject(MatSnackBar);
+  private auth     = inject(AuthStore);
   readonly store   = inject(ClinicalStore);
   readonly data    = inject(MAT_DIALOG_DATA, { optional: true }) as { patientId?: string } | null;
 
+  tipos = ['Consulta General', 'Vacunación', 'Control', 'Urgencia', 'Cirugía', 'Desparasitación'];
+
   form = this.fb.group({
     mascotaId: [this.data?.patientId ?? '', Validators.required],
+    tipo:      ['Consulta General', Validators.required],
     fecha:     [new Date().toISOString().split('T')[0], Validators.required],
     hora:      ['09:00', Validators.required],
     motivo:    ['', Validators.required],
@@ -34,10 +39,14 @@ export class NuevaCitaDialog {
     if (this.form.invalid) return;
     this.submitting = true;
     const v = this.form.value;
-    const existingIds = this.store.rawCitas().map(c => parseInt(c.id?.replace('CIT-', '') ?? '0', 10)).filter(n => !isNaN(n));
-    const nextNum = (existingIds.length ? Math.max(...existingIds) : 0) + 1;
-    const id = `CIT-${String(nextNum).padStart(3, '0')}`;
-    const body = { id, fecha: `${v.fecha}T${v.hora}:00`, motivo: v.motivo, estado: 'PENDIENTE', mascotaId: v.mascotaId, veterinarioId: 1 };
+    const body = {
+      mascotaId:    Number(v.mascotaId),
+      veterinarioId: Number(this.auth.user()?.id ?? 0),
+      fecha:        `${v.fecha}T${v.hora}:00`,
+      motivo:       v.motivo,
+      tipo:         v.tipo,
+      estado:       'PENDIENTE',
+    };
     this.svc.createCita(body).subscribe({
       next: () => { this.snack.open('Cita creada correctamente', 'OK', { duration: 3000 }); this.ref.close(true); },
       error: () => { this.snack.open('Error al crear la cita', '', { duration: 3000 }); this.submitting = false; },

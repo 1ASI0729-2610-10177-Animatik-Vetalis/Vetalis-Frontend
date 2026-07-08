@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClinicalStore } from '../../../application/clinical.store';
 import { ClinicalService } from '../../../infrastructure/services/clinical.service';
+import { AuthStore } from '../../../../iam/application/auth.store';
 
 @Component({
   selector: 'app-registrar-vacuna-dialog',
@@ -18,6 +19,7 @@ export class RegistrarVacunaDialog {
   private ref   = inject(MatDialogRef<RegistrarVacunaDialog>);
   private svc   = inject(ClinicalService);
   private snack = inject(MatSnackBar);
+  private auth  = inject(AuthStore);
   readonly store = inject(ClinicalStore);
   readonly data  = inject(MAT_DIALOG_DATA, { optional: true }) as { patientId?: string } | null;
 
@@ -30,7 +32,7 @@ export class RegistrarVacunaDialog {
     mascotaId:       [this.data?.patientId ?? '', Validators.required],
     medicamentoId:   ['', Validators.required],
     fechaAplicacion: [this.today, Validators.required],
-    proximaDosis:    ['', Validators.required],
+    proximaDosis:    [''],
     lote:            [''],
     observaciones:   [''],
   });
@@ -57,9 +59,6 @@ export class RegistrarVacunaDialog {
     this.submitting = true;
     const v   = this.form.value;
     const med = this.selectedMed;
-    // Backend's CreateVacunaResource: mascotaId, tipoVacunaId (medicamentoId), nombreVacuna,
-    //   lote, fechaAplicacion, proximaDosis, estado, veterinarioId
-    // VacunaCommandServiceImpl deducts stock automatically when tipoVacunaId is set
     const body = {
       mascotaId:       Number(v.mascotaId),
       tipoVacunaId:    Number(v.medicamentoId),
@@ -68,7 +67,7 @@ export class RegistrarVacunaDialog {
       fechaAplicacion: v.fechaAplicacion,
       proximaDosis:    v.proximaDosis || null,
       estado:          'Aplicada',
-      veterinarioId:   1,
+      veterinarioId:   Number(this.auth.user()?.id ?? 0),
     };
     this.svc.createVacuna(body).subscribe({
       next: () => {

@@ -48,8 +48,8 @@ export class TratamientoDialog {
     this.submitting = true;
     const v = this.form.value;
     const body = {
-      consultaId:    v.consultaId,
-      medicamentoId: v.medicamentoId || null,
+      consultaId:    Number(v.consultaId),
+      medicamentoId: v.medicamentoId ? Number(v.medicamentoId) : null,
       cantidad:      v.medicamentoId ? (v.cantidad ?? 1) : null,
       descripcion:   v.descripcion,
       dosis:         v.dosis,

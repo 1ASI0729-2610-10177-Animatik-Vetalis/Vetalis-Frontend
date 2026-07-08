@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClinicalStore } from '../../../application/clinical.store';
 import { ClinicalService } from '../../../infrastructure/services/clinical.service';
+import { AuthStore } from '../../../../iam/application/auth.store';
 
 @Component({
   selector: 'app-registrar-ingreso-dialog',
@@ -18,6 +19,7 @@ export class RegistrarIngresoDialog {
   private ref   = inject(MatDialogRef<RegistrarIngresoDialog>);
   private svc   = inject(ClinicalService);
   private snack = inject(MatSnackBar);
+  private auth  = inject(AuthStore);
   readonly store = inject(ClinicalStore);
   readonly data  = inject(MAT_DIALOG_DATA, { optional: true }) as { patientId?: string } | null;
 
@@ -39,14 +41,14 @@ export class RegistrarIngresoDialog {
     if (this.form.invalid) return;
     this.submitting = true;
     const v = this.form.value;
-    const existingIds = this.store.hospitalizations().map(h => parseInt(h.id?.replace('H-', '') ?? '0', 10)).filter(n => !isNaN(n));
-    const nextNum = (existingIds.length ? Math.max(...existingIds) : 0) + 1;
-    const id = `H-${String(nextNum).padStart(3, '0')}`;
     const body = {
-      id, mascotaId: v.mascotaId, veterinarioId: 1,
-      fechaIngreso: v.fechaIngreso, diagnostico: v.diagnostico,
-      tratamientos: [v.tratamiento], estado: v.estado,
-      observaciones: v.observaciones,
+      mascotaId:    Number(v.mascotaId),
+      veterinarioId: Number(this.auth.user()?.id ?? 0),
+      fechaIngreso: `${v.fechaIngreso}T00:00:00`,
+      motivo:       v.diagnostico,
+      diagnostico:  v.diagnostico,
+      tratamiento:  v.tratamiento,
+      estado:       v.estado,
     };
     this.svc.createHospitalizacion(body).subscribe({
       next: () => { this.snack.open('Ingreso registrado', 'OK', { duration: 3000 }); this.ref.close(true); },
