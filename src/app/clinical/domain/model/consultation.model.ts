@@ -12,6 +12,8 @@ export interface Consultation {
   date: string;
   time: string;
   status: string;
+  temperatura?: number;
+  cerrada?: boolean;
   subjetivo?: string;
   objetivo?: string;
   plan?: string;

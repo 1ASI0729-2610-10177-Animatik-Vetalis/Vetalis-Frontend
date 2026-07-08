@@ -31,6 +31,7 @@ export class PatientAssembler {
       owner:       cliente?.nombre ?? '—',
       status:      raw.estado,
       avatarColor: COLORS[hash(raw.id) % COLORS.length],
+      alergias:    raw.alergias ?? '',
     };
   }
 

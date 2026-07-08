@@ -356,5 +356,280 @@
       </div>
     </mat-tab>
 
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 4: PAGOS (US024, US027, US028)                     -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">receipt_long</mat-icon> {{ 'admin.tabs.payments' | translate }}
+      </ng-template>
+      <div class="tab-content">
+        <div class="section-header">
+          <div>
+            <h2>{{ 'admin.payments.title' | translate }}</h2>
+            <p>{{ 'admin.payments.subtitle' | translate }}</p>
+          </div>
+          <button mat-raised-button class="btn-primary" (click)="abrirRegistrarPago()">
+            <mat-icon>add</mat-icon> {{ 'admin.payments.register' | translate }}
+          </button>
+        </div>
+
+        <div class="filters-row">
+          <div class="search-wrap">
+            <mat-icon>search</mat-icon>
+            <input [(ngModel)]="pagoSearch" [placeholder]="'admin.payments.searchPlaceholder' | translate" class="filter-input" />
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:0 12px;">
+            <mat-icon style="color:#94A3B8;font-size:18px">calendar_today</mat-icon>
+            <input type="date" [(ngModel)]="pagoDateFilter" style="border:none;outline:none;font-size:13px;padding:10px 0;background:transparent" />
+          </div>
+        </div>
+
+        @if (loading()) {
+          <div class="loading-msg">{{ 'admin.payments.loading' | translate }}</div>
+        } @else {
+          <div class="pago-summary-row">
+            <div class="pago-stat" style="--c:#06B6D4;--bg:#ECFEFF">
+              <mat-icon>receipt_long</mat-icon>
+              <div>
+                <div class="ps-val">{{ pagos().filter(p => p.estado === 'Pagado').length }}</div>
+                <div class="ps-lbl">{{ 'admin.payments.statPaid' | translate }}</div>
+              </div>
+            </div>
+            <div class="pago-stat" style="--c:#EF4444;--bg:#FEF2F2">
+              <mat-icon>block</mat-icon>
+              <div>
+                <div class="ps-val">{{ pagos().filter(p => p.estado === 'Anulado').length }}</div>
+                <div class="ps-lbl">{{ 'admin.payments.statVoided' | translate }}</div>
+              </div>
+            </div>
+            <div class="pago-stat" style="--c:#22C55E;--bg:#F0FDF4">
+              <mat-icon>payments</mat-icon>
+              <div>
+                <div class="ps-val">S/ {{ pagos().filter(p=>p.estado==='Pagado').reduce((s,p)=>s+p.monto,0) | number:'1.2-2' }}</div>
+                <div class="ps-lbl">{{ 'admin.payments.statTotal' | translate }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card table-card">
+            <table class="data-table">
+              <thead><tr>
+                <th>#</th>
+                <th>{{ 'admin.payments.colPatient' | translate }}</th>
+                <th>{{ 'admin.payments.colClient' | translate }}</th>
+                <th>{{ 'admin.payments.colDescription' | translate }}</th>
+                <th>{{ 'admin.payments.colAmount' | translate }}</th>
+                <th>{{ 'admin.payments.colDiscount' | translate }}</th>
+                <th>{{ 'admin.payments.colMethod' | translate }}</th>
+                <th>{{ 'admin.payments.colDate' | translate }}</th>
+                <th>{{ 'admin.payments.colStatus' | translate }}</th>
+                <th>{{ 'admin.payments.colActions' | translate }}</th>
+              </tr></thead>
+              <tbody>
+                @for (p of pagosFiltered; track p.id) {
+                  <tr [ngClass]="{'pago-anulado': p.estado === 'Anulado'}">
+                    <td class="td-id">{{ p.id }}</td>
+                    <td><div class="td-name">{{ getMascotaNombre(p.mascotaId) }}</div></td>
+                    <td><div class="td-sub">{{ getClienteNombre(p.mascotaId) }}</div></td>
+                    <td>{{ p.descripcion ?? '—' }}</td>
+                    <td><strong>S/ {{ p.monto | number:'1.2-2' }}</strong>
+                      @if (p.montoOriginal && p.montoOriginal !== p.monto) {
+                        <div class="td-sub" style="text-decoration:line-through">S/ {{ p.montoOriginal | number:'1.2-2' }}</div>
+                      }
+                    </td>
+                    <td>
+                      @if (p.descuento > 0) {
+                        <span class="badge badge-pendiente">-{{ p.descuento }}%</span>
+                      } @else { — }
+                    </td>
+                    <td>
+                      <div class="td-name">{{ p.metodoPago }}</div>
+                      @if (p.metodoPago2) {
+                        <div class="td-sub">+ {{ p.metodoPago2 }} (S/ {{ p.monto2 | number:'1.2-2' }})</div>
+                      }
+                    </td>
+                    <td>{{ pagoFechaFmt(p) }}</td>
+                    <td>
+                      <span class="badge" [ngClass]="p.estado === 'Pagado' ? 'badge-completada' : 'badge-cancelada'">
+                        {{ p.estado }}
+                      </span>
+                    </td>
+                    <td>
+                      @if (p.estado === 'Pagado') {
+                        <button mat-stroked-button class="btn-void" (click)="voidPago(p)">
+                          <mat-icon>block</mat-icon> {{ 'admin.payments.void' | translate }}
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="10" class="empty-msg">{{ 'admin.payments.empty' | translate }}</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 5: REPORTES (US029)                                -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">bar_chart</mat-icon> {{ 'admin.tabs.reports' | translate }}
+      </ng-template>
+      <div class="tab-content">
+        <div class="section-header">
+          <div>
+            <h2>{{ 'admin.reports.title' | translate }}</h2>
+            <p>{{ 'admin.reports.subtitle' | translate }}</p>
+          </div>
+          <button mat-raised-button class="btn-primary" (click)="exportarReporte()">
+            <mat-icon>download</mat-icon> {{ 'admin.reports.export' | translate }}
+          </button>
+        </div>
+
+        <div class="report-date-row">
+          <div class="report-date-field">
+            <label>{{ 'admin.reports.startDate' | translate }}</label>
+            <input type="date" [(ngModel)]="reportStart" class="date-input" />
+          </div>
+          <div class="report-date-field">
+            <label>{{ 'admin.reports.endDate' | translate }}</label>
+            <input type="date" [(ngModel)]="reportEnd" class="date-input" />
+          </div>
+        </div>
+
+        @if (loading()) {
+          <div class="loading-msg">{{ 'admin.reports.loading' | translate }}</div>
+        } @else {
+          <div class="report-stats-row">
+            <div class="report-stat">
+              <mat-icon style="color:#06B6D4">payments</mat-icon>
+              <div class="rs-val">S/ {{ reporteTotalIngresos | number:'1.2-2' }}</div>
+              <div class="rs-lbl">{{ 'admin.reports.totalRevenue' | translate }}</div>
+            </div>
+            <div class="report-stat">
+              <mat-icon style="color:#8B5CF6">receipt</mat-icon>
+              <div class="rs-val">{{ reporteTransacciones }}</div>
+              <div class="rs-lbl">{{ 'admin.reports.transactions' | translate }}</div>
+            </div>
+            <div class="report-stat">
+              <mat-icon style="color:#22C55E">trending_up</mat-icon>
+              <div class="rs-val">S/ {{ reporteTicketPromedio | number:'1.2-2' }}</div>
+              <div class="rs-lbl">{{ 'admin.reports.avgTicket' | translate }}</div>
+            </div>
+          </div>
+
+          <div class="report-charts-row">
+            <div class="card chart-card">
+              <h3 class="table-title">{{ 'admin.reports.dailyRevenue' | translate }}</h3>
+              <div class="admin-chart-box">
+                @if (pagosReporte.length > 0) {
+                  <app-chart type="bar" [data]="reporteChartData" [options]="reporteChartOptions"></app-chart>
+                } @else {
+                  <div class="empty-msg">{{ 'admin.reports.noData' | translate }}</div>
+                }
+              </div>
+            </div>
+
+            <div class="card table-card">
+              <h3 class="table-title">{{ 'admin.reports.byMethod' | translate }}</h3>
+              <table class="data-table">
+                <thead><tr>
+                  <th>{{ 'admin.cashClosing.colMethod' | translate }}</th>
+                  <th>{{ 'admin.cashClosing.colTransactions' | translate }}</th>
+                  <th>{{ 'admin.cashClosing.colTotal' | translate }}</th>
+                </tr></thead>
+                <tbody>
+                  @for (r of reportePorMetodo; track r.metodo) {
+                    <tr>
+                      <td>{{ r.metodo }}</td>
+                      <td>{{ r.count }}</td>
+                      <td class="td-money">S/ {{ r.total | number:'1.2-2' }}</td>
+                    </tr>
+                  } @empty {
+                    <tr><td colspan="3" class="empty-msg">{{ 'admin.reports.noData' | translate }}</td></tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 6: COMISIONES (US030)                              -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">people</mat-icon> {{ 'admin.tabs.commissions' | translate }}
+      </ng-template>
+      <div class="tab-content">
+        <div class="section-header">
+          <div>
+            <h2>{{ 'admin.commissions.title' | translate }}</h2>
+            <p>{{ 'admin.commissions.subtitle' | translate }}</p>
+          </div>
+        </div>
+
+        <div class="commission-rate-row">
+          <label class="date-label">{{ 'admin.commissions.rateLabel' | translate }}</label>
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="number" class="efectivo-input" [(ngModel)]="commissionRate" min="1" max="100" step="1" style="width:80px" />
+            <span style="color:#475569;font-size:14px">%</span>
+          </div>
+        </div>
+
+        @if (loading()) {
+          <div class="loading-msg">{{ 'admin.commissions.loading' | translate }}</div>
+        } @else if (comisionesPorVet.length === 0) {
+          <div class="empty-state-inline">
+            <mat-icon>people</mat-icon>
+            <p>{{ 'admin.commissions.empty' | translate }}</p>
+          </div>
+        } @else {
+          <div class="card table-card">
+            <table class="data-table">
+              <thead><tr>
+                <th>{{ 'admin.commissions.colDoctor' | translate }}</th>
+                <th>{{ 'admin.commissions.colConsultations' | translate }}</th>
+                <th>{{ 'admin.commissions.colRevenue' | translate }}</th>
+                <th>{{ 'admin.commissions.colRate' | translate }}</th>
+                <th>{{ 'admin.commissions.colCommission' | translate }}</th>
+              </tr></thead>
+              <tbody>
+                @for (v of comisionesPorVet; track v.id) {
+                  <tr>
+                    <td>
+                      <div class="td-patient">
+                        <div class="td-avatar" style="background:#6366F1"><mat-icon>person</mat-icon></div>
+                        <div class="td-name">{{ v.nombre }}</div>
+                      </div>
+                    </td>
+                    <td>{{ v.consultas }}</td>
+                    <td>S/ {{ v.total | number:'1.2-2' }}</td>
+                    <td><span class="badge badge-en-proceso">{{ commissionRate }}%</span></td>
+                    <td><strong style="color:#06B6D4">S/ {{ v.comision | number:'1.2-2' }}</strong></td>
+                  </tr>
+                }
+                <tr class="total-row">
+                  <td><strong>{{ 'admin.commissions.total' | translate }}</strong></td>
+                  <td><strong>{{ comisionesPorVet.reduce((s,v)=>s+v.consultas, 0) }}</strong></td>
+                  <td><strong>S/ {{ comisionesPorVet.reduce((s,v)=>s+v.total,0) | number:'1.2-2' }}</strong></td>
+                  <td></td>
+                  <td><strong style="color:#06B6D4">S/ {{ comisionesPorVet.reduce((s,v)=>s+v.comision,0) | number:'1.2-2' }}</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </mat-tab>
+
   </mat-tab-group>
 </div>

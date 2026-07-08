@@ -53,8 +53,10 @@ export class ClinicalService {
   updateMascota(id: string, b: any) { return this.http.put(`${this.base}/mascotas/${id}`, b); }
   deleteMascota(id: string)         { return this.http.delete(`${this.base}/mascotas/${id}`); }
   createConsulta(body: any)         { return this.http.post(`${this.base}/consultas`, body); }
+  closeConsulta(id: string)         { return this.http.put(`${this.base}/consultas/${id}/close`, {}); }
   createVacuna(body: any)           { return this.http.post(`${this.base}/vacunas`, body); }
   createHospitalizacion(body: any)  { return this.http.post(`${this.base}/hospitalizacion`, body); }
   createCliente(body: any)          { return this.http.post(`${this.base}/clientes`, body); }
   updateVeterinario(id: number, b: any) { return this.http.put(`${this.base}/veterinarios/${id}`, b); }
+  getVeterinarios()                 { return this.http.get<any[]>(`${this.base}/veterinarios`); }
 }

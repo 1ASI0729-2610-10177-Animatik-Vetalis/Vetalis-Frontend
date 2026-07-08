@@ -8,5 +8,6 @@ export interface Patient {
   owner: string;
   status: string;
   avatarColor: string;
+  alergias?: string;
   icon?: string;
 }

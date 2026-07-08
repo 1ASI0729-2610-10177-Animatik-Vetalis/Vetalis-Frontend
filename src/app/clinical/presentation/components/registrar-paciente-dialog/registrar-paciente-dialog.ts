@@ -32,6 +32,7 @@ export class RegistrarPacienteDialog {
     especieId:       [1, Validators.required],
     razaId:          [1, Validators.required],
     clienteId:       [1, Validators.required],
+    alergias:        [this.data?.patient?.alergias ?? ''],
   });
 
   razasFiltradas = computed(() =>
@@ -47,7 +48,7 @@ export class RegistrarPacienteDialog {
     const existingIds = this.store.rawMascotas().map(m => parseInt(m.id?.replace('P-', '') ?? '0', 10)).filter(n => !isNaN(n));
     const nextNum = (existingIds.length ? Math.max(...existingIds) : 0) + 1;
     const id = `P-${String(nextNum).padStart(3, '0')}`;
-    const body = { id, nombre: v.nombre, sexo: v.sexo, fechaNacimiento: v.fechaNacimiento, peso: v.peso, clienteId: v.clienteId, especieId: v.especieId, razaId: v.razaId, estado: 'Activo', alergias: [] };
+    const body = { id, nombre: v.nombre, sexo: v.sexo, fechaNacimiento: v.fechaNacimiento, peso: v.peso, clienteId: v.clienteId, especieId: v.especieId, razaId: v.razaId, estado: 'Activo', alergias: v.alergias ?? '' };
     const req = this.isEdit
       ? this.svc.updateMascota(this.data!.patient!.id, body)
       : this.svc.createMascota(body);
