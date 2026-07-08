@@ -211,6 +211,8 @@
                 <th>{{ 'admin.inventory.colStock' | translate }}</th>
                 <th>{{ 'admin.inventory.colReorder' | translate }}</th>
                 <th>{{ 'admin.inventory.colStatus' | translate }}</th>
+                <th>{{ 'admin.inventory.colPrice' | translate }}</th>
+                <th>{{ 'admin.inventory.colActions' | translate }}</th>
               </tr></thead>
               <tbody>
                 @for (item of inventarioFiltrado; track item.id; let i = $index) {
@@ -232,9 +234,20 @@
                         'badge-critico':    stockStatus(item) === 'Sin Stock'
                       }">{{ stockStatusKey(item) | translate }}</span>
                     </td>
+                    <td>S/ {{ item.precioUnitario | number:'1.2-2' }}</td>
+                    <td>
+                      <div class="td-actions">
+                        <button mat-icon-button class="btn-icon-edit" (click)="abrirEditarProducto(item)" matTooltip="Editar">
+                          <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button class="btn-icon-delete" (click)="eliminarProducto(item)" matTooltip="Eliminar">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 } @empty {
-                  <tr><td colspan="7" class="empty-msg">{{ 'admin.inventory.empty' | translate }}</td></tr>
+                  <tr><td colspan="9" class="empty-msg">{{ 'admin.inventory.empty' | translate }}</td></tr>
                 }
               </tbody>
             </table>

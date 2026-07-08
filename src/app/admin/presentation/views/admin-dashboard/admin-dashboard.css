@@ -285,3 +285,8 @@
   display: flex; align-items: center; gap: 16px; margin-bottom: 24px;
   background: #fff; border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px 20px;
 }
+
+/* ── Inventory action buttons ─────────────────────────────── */
+.td-actions { display: flex; gap: 4px; justify-content: center; }
+.btn-icon-edit   { color: #06B6D4 !important; }
+.btn-icon-delete { color: #EF4444 !important; }

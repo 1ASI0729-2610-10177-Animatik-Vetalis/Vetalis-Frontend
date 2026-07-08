@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ChartConfiguration } from 'chart.js';
 import { AdminService } from '../../../infrastructure/services/admin.service';
@@ -20,7 +21,7 @@ const METODO_COLORS: Record<string, string> = {
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [NgClass, DecimalPipe, FormsModule, MatIconModule, MatButtonModule, MatTabsModule, MatDialogModule, TranslatePipe, ChartComponent],
+  imports: [NgClass, DecimalPipe, FormsModule, MatIconModule, MatButtonModule, MatTabsModule, MatDialogModule, MatTooltipModule, TranslatePipe, ChartComponent],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
 })
@@ -200,6 +201,21 @@ export class AdminDashboard {
       width: '520px',
       data: { medicamentos: this.medicamentos(), inventario: this.inventario() },
     }).afterClosed().subscribe(ok => { if (ok) this.reload(); });
+  }
+
+  abrirEditarProducto(item: any) {
+    this.dialog.open(AgregarProductoDialog, {
+      width: '520px',
+      data: { medicamentos: this.medicamentos(), inventario: this.inventario(), editando: item },
+    }).afterClosed().subscribe(ok => { if (ok) this.reload(); });
+  }
+
+  eliminarProducto(item: any) {
+    if (!confirm(`¿Eliminar "${item.nombre}" del inventario?`)) return;
+    this.svc.deleteMedicamento(item.id).subscribe({
+      next: () => { this.snack.open('Producto eliminado', 'OK', { duration: 3000 }); this.reload(); },
+      error: () => this.snack.open('Error al eliminar', '', { duration: 3000 }),
+    });
   }
 
   // ── US024/027/028: Payments ───────────────────────────────────

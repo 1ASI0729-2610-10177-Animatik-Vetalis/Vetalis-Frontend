@@ -410,7 +410,9 @@
       "empty": "No se encontraron productos.",
       "statusNormal": "Normal",
       "statusLow": "Stock Bajo",
-      "statusZero": "Sin Stock"
+      "statusZero": "Sin Stock",
+      "colPrice": "Precio",
+      "colActions": "Acciones"
     },
     "alerts": {
       "title": "Alertas de Stock Bajo",
