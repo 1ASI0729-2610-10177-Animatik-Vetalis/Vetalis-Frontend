@@ -20,6 +20,7 @@
       "dashboard": "Dashboard",
       "clinical": "Gestión Clínica",
       "schedule": "Agenda",
+      "iot": "Dispensadores IoT",
       "communication": "Comunicación",
       "profile": "Perfil",
       "admin": "Administración"
@@ -92,7 +93,8 @@
       "weight": "Peso:",
       "owner": "Propietario:",
       "viewFile": "Ver Ficha",
-      "empty": "No se encontraron pacientes."
+      "empty": "No se encontraron pacientes.",
+      "allergies": "Alergias:"
     },
     "clients": {
       "title": "Clientes Registrados",
@@ -122,7 +124,12 @@
       "colDate": "Fecha",
       "colStatus": "Estado",
       "showing": "Mostrando {{current}} de {{total}} consultas",
-      "empty": "No hay consultas."
+      "empty": "No hay consultas.",
+      "colActions": "Acciones",
+      "closeConsult": "Cerrar Consulta",
+      "statusClosed": "Cerrada",
+      "confirmClose": "¿Cerrar esta consulta? Una vez cerrada no podrá ser editada.",
+      "closedSuccess": "Consulta cerrada correctamente"
     },
     "history": {
       "selectPatient": "Selecciona un paciente",
@@ -132,10 +139,13 @@
       "fullHistory": "Historial Médico Completo",
       "empty": "No hay consultas registradas para este paciente.",
       "newConsult": "Nueva Consulta",
+      "allergyBannerTitle": "¡Alerta de Alergias!",
+      "noAllergies": "Sin alergias conocidas",
       "statTotalConsults": "Total Consultas",
       "statVaccinesApplied": "Vacunas Aplicadas",
       "statHospitalizations": "Hospitalizaciones",
-      "statLastVisit": "Última Visita"
+      "statLastVisit": "Última Visita",
+      "addTreatment": "Registrar Tratamiento"
     },
     "vaccines": {
       "register": "Registrar Vacuna",
@@ -312,6 +322,39 @@
       "passwordMismatch": "Las contraseñas no coinciden"
     }
   },
+  "iot": {
+    "title": "Dispensadores IoT",
+    "subtitle": "Gestiona los dispensadores automáticos de alimento",
+    "refresh": "Actualizar",
+    "addDevice": "Agregar Dispensador",
+    "loading": "Cargando dispositivos...",
+    "empty": "No hay dispensadores registrados.",
+    "foodLevel": "Nivel de alimento",
+    "lowLevel": "Nivel bajo — reabastecer pronto",
+    "criticalLevel": "Nivel crítico — reabastecer ahora",
+    "lastConnection": "Última conexión",
+    "dispense": "Dispensar",
+    "quantityPlaceholder": "Cantidad",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "stats": {
+      "total": "Total Dispositivos",
+      "active": "Activos",
+      "low": "Nivel Bajo",
+      "maintenance": "En Mantenimiento"
+    },
+    "dialog": {
+      "addTitle": "Registrar Dispensador",
+      "editTitle": "Editar Dispensador",
+      "serialLabel": "Número de Serie",
+      "modelLabel": "Modelo",
+      "statusLabel": "Estado",
+      "foodLevelLabel": "Nivel de Alimento",
+      "cancel": "Cancelar",
+      "submit": "Registrar",
+      "update": "Actualizar"
+    }
+  },
   "admin": {
     "title": "Administración",
     "subtitle": "Gestión financiera e inventario de la clínica",
@@ -319,7 +362,10 @@
     "tabs": {
       "cashClosing": "Cierre de Caja",
       "inventory": "Inventario",
-      "stockAlerts": "Alertas de Stock"
+      "stockAlerts": "Alertas de Stock",
+      "payments": "Pagos",
+      "reports": "Reportes",
+      "commissions": "Comisiones"
     },
     "cashClosing": {
       "title": "Cierre de Caja Diario",
@@ -401,6 +447,81 @@
       "successMsg": "Producto agregado correctamente",
       "errorInventory": "Error al guardar inventario",
       "errorProduct": "Error al guardar producto"
+    },
+    "payments": {
+      "title": "Registro de Pagos",
+      "subtitle": "Gestiona los pagos, descuentos y métodos de pago",
+      "register": "Registrar Pago",
+      "searchPlaceholder": "Buscar por paciente o ID...",
+      "loading": "Cargando pagos...",
+      "statPaid": "Pagos Realizados",
+      "statVoided": "Pagos Anulados",
+      "statTotal": "Total Recaudado",
+      "colPatient": "Paciente",
+      "colClient": "Cliente",
+      "colDescription": "Descripción",
+      "colAmount": "Monto",
+      "colDiscount": "Descuento",
+      "colMethod": "Método",
+      "colDate": "Fecha",
+      "colStatus": "Estado",
+      "colActions": "Acciones",
+      "void": "Anular",
+      "empty": "No hay pagos registrados.",
+      "dialogTitle": "Registrar Pago",
+      "patient": "Paciente",
+      "selectPatient": "Seleccionar paciente...",
+      "client": "Cliente",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Ej: Consulta general, Vacunación...",
+      "amount": "Monto Total",
+      "discount": "Descuento",
+      "discountMax": "máx. 50%",
+      "originalAmount": "Monto original",
+      "discountApplied": "Descuento",
+      "finalAmount": "Total a pagar",
+      "paymentMethods": "Métodos de Pago",
+      "method1": "Método Principal",
+      "amount1": "Monto 1",
+      "method2": "Método Secundario",
+      "amount2": "Monto 2",
+      "optional": "opcional",
+      "none": "Ninguno",
+      "balanced": "Monto balanceado ✓",
+      "pending": "Monto pendiente",
+      "excess": "Exceso",
+      "unbalanced": "El monto total no coincide. Diferencia: S/ {{amount}}",
+      "submit": "Registrar Pago",
+      "successMsg": "Pago registrado correctamente",
+      "errorMsg": "Error al registrar el pago"
+    },
+    "reports": {
+      "title": "Reportes de Ventas",
+      "subtitle": "Analiza los ingresos de la clínica por rango de fechas",
+      "export": "Exportar CSV",
+      "startDate": "Fecha inicio",
+      "endDate": "Fecha fin",
+      "load": "Cargar reporte",
+      "loading": "Generando reporte...",
+      "totalRevenue": "Ingresos Totales",
+      "transactions": "Transacciones",
+      "avgTicket": "Ticket Promedio",
+      "dailyRevenue": "Ingresos Diarios",
+      "byMethod": "Por Método de Pago",
+      "noData": "No hay datos para el período seleccionado."
+    },
+    "commissions": {
+      "title": "Comisiones de Doctores",
+      "subtitle": "Calcula la producción y comisiones de cada veterinario",
+      "rateLabel": "Tasa de comisión:",
+      "loading": "Calculando comisiones...",
+      "empty": "No hay veterinarios con consultas registradas.",
+      "colDoctor": "Veterinario",
+      "colConsultations": "Consultas",
+      "colRevenue": "Ingresos Asociados",
+      "colRate": "Tasa",
+      "colCommission": "Comisión",
+      "total": "TOTAL"
     }
   }
 }
