@@ -6,9 +6,14 @@
       <h1>{{ 'admin.title' | translate }}</h1>
       <p>{{ 'admin.subtitle' | translate }}</p>
     </div>
-    <button mat-stroked-button (click)="reload()">
-      <mat-icon>refresh</mat-icon> {{ 'admin.refresh' | translate }}
-    </button>
+    <div style="display:flex;gap:8px">
+      <button mat-stroked-button routerLink="/clinical">
+        <mat-icon>medical_services</mat-icon> Ver Vista Clínica
+      </button>
+      <button mat-stroked-button (click)="reload()">
+        <mat-icon>refresh</mat-icon> {{ 'admin.refresh' | translate }}
+      </button>
+    </div>
   </div>
 
   <mat-tab-group class="admin-tabs" animationDuration="0ms" [(selectedIndex)]="activeTab">

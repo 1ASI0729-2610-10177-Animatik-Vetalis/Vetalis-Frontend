@@ -1,5 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { NgClass } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -10,6 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ClinicalStore } from '../../../application/clinical.store';
 import { ClinicalService } from '../../../infrastructure/services/clinical.service';
+import { AuthStore } from '../../../../iam/application/auth.store';
 import { Patient } from '../../../domain/model/patient.model';
 import { NuevaCitaDialog } from '../../components/nueva-cita-dialog/nueva-cita-dialog';
 import { NuevaConsultaDialog } from '../../components/nueva-consulta-dialog/nueva-consulta-dialog';
@@ -23,7 +25,7 @@ const PAGE_SIZE = 5;
 
 @Component({
   selector: 'app-clinical-management',
-  imports: [NgClass, MatIconModule, MatButtonModule, MatTabsModule, MatSelectModule, FormsModule, MatDialogModule, TranslatePipe],
+  imports: [NgClass, RouterLink, MatIconModule, MatButtonModule, MatTabsModule, MatSelectModule, FormsModule, MatDialogModule, TranslatePipe],
   templateUrl: './clinical-management.html',
   styleUrl: './clinical-management.css'
 })
@@ -33,6 +35,9 @@ export class ClinicalManagement {
   private dialog = inject(MatDialog);
   private snack  = inject(MatSnackBar);
   private translate = inject(TranslateService);
+  private auth   = inject(AuthStore);
+
+  isAdmin = computed(() => this.auth.hasRole('admin'));
 
   activeTab = 0;
 

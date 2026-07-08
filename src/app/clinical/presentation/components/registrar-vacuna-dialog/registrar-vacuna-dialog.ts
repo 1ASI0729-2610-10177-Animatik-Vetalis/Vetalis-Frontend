@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,9 +23,12 @@ export class RegistrarVacunaDialog {
 
   today = new Date().toISOString().split('T')[0];
 
+  medicamentos = signal<any[]>([]);
+  loadingMeds  = signal(true);
+
   form = this.fb.group({
     mascotaId:       [this.data?.patientId ?? '', Validators.required],
-    tipoVacunaId:    ['', Validators.required],
+    medicamentoId:   ['', Validators.required],
     fechaAplicacion: [this.today, Validators.required],
     proximaDosis:    ['', Validators.required],
     lote:            [''],
@@ -34,20 +37,44 @@ export class RegistrarVacunaDialog {
 
   submitting = false;
 
+  constructor() {
+    this.svc.getMedicamentos().subscribe({
+      next: meds => {
+        this.medicamentos.set(meds.filter((m: any) => m.stockActual > 0));
+        this.loadingMeds.set(false);
+      },
+      error: () => this.loadingMeds.set(false),
+    });
+  }
+
+  get selectedMed(): any {
+    const id = this.form.value.medicamentoId;
+    return this.medicamentos().find(m => String(m.id) === String(id)) ?? null;
+  }
+
   submit() {
     if (this.form.invalid) return;
     this.submitting = true;
-    const v = this.form.value;
-    const existingIds = this.store.vaccines().map(v => parseInt(v.id?.replace('V-', '') ?? '0', 10)).filter(n => !isNaN(n));
-    const nextNum = (existingIds.length ? Math.max(...existingIds) : 0) + 1;
-    const id = `V-${String(nextNum).padStart(3, '0')}`;
+    const v   = this.form.value;
+    const med = this.selectedMed;
+    // Backend's CreateVacunaResource: mascotaId, tipoVacunaId (medicamentoId), nombreVacuna,
+    //   lote, fechaAplicacion, proximaDosis, estado, veterinarioId
+    // VacunaCommandServiceImpl deducts stock automatically when tipoVacunaId is set
     const body = {
-      id, mascotaId: v.mascotaId, tipoVacunaId: v.tipoVacunaId,
-      fechaAplicacion: v.fechaAplicacion, proximaDosis: v.proximaDosis,
-      lote: v.lote, observaciones: v.observaciones, veterinarioId: 1,
+      mascotaId:       Number(v.mascotaId),
+      tipoVacunaId:    Number(v.medicamentoId),
+      nombreVacuna:    med?.nombre ?? 'Vacuna',
+      lote:            v.lote || null,
+      fechaAplicacion: v.fechaAplicacion,
+      proximaDosis:    v.proximaDosis || null,
+      estado:          'Aplicada',
+      veterinarioId:   1,
     };
     this.svc.createVacuna(body).subscribe({
-      next: () => { this.snack.open('Vacuna registrada', 'OK', { duration: 3000 }); this.ref.close(true); },
+      next: () => {
+        this.snack.open('Vacuna registrada y stock actualizado', 'OK', { duration: 3000 });
+        this.ref.close(true);
+      },
       error: () => { this.snack.open('Error al guardar', '', { duration: 3000 }); this.submitting = false; },
     });
   }

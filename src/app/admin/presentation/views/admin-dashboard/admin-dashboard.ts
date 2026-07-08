@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { NgClass, DecimalPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,7 +22,7 @@ const METODO_COLORS: Record<string, string> = {
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [NgClass, DecimalPipe, FormsModule, MatIconModule, MatButtonModule, MatTabsModule, MatDialogModule, MatTooltipModule, TranslatePipe, ChartComponent],
+  imports: [NgClass, DecimalPipe, RouterLink, FormsModule, MatIconModule, MatButtonModule, MatTabsModule, MatDialogModule, MatTooltipModule, TranslatePipe, ChartComponent],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
 })

@@ -1,5 +1,13 @@
 .clinical { min-height: 100%; }
 
+.admin-readonly-banner {
+  display: flex; align-items: center; gap: 12px;
+  background: #ECFEFF; border-bottom: 1px solid #06B6D4;
+  padding: 10px 28px; font-size: 13px; color: #0E7490; font-weight: 500;
+}
+.admin-readonly-banner mat-icon { color: #06B6D4; }
+.admin-readonly-banner button { margin-left: auto; }
+
 .page-header {
   display: flex; justify-content: space-between; align-items: center;
   padding: 20px 28px; background: #fff; border-bottom: 1px solid #E2E8F0;

@@ -12,13 +12,28 @@
       </select>
     </div>
     <div class="dlg-field">
-      <label>Tipo de Vacuna *</label>
-      <select formControlName="tipoVacunaId">
-        <option value="">Seleccionar vacuna...</option>
-        @for (t of store.rawTiposVacuna(); track t.id) {
-          <option [value]="t.id">{{ t.nombre }}</option>
+      <label>Vacuna / Medicamento *</label>
+      @if (loadingMeds()) {
+        <p style="font-size:12px;color:#94A3B8">Cargando inventario...</p>
+      } @else {
+        <select formControlName="medicamentoId">
+          <option value="">Seleccionar del inventario...</option>
+          @for (m of medicamentos(); track m.id) {
+            <option [value]="m.id">{{ m.nombre }} — Stock disponible: {{ m.stockActual }} {{ m.unidad }}</option>
+          }
+        </select>
+        @if (medicamentos().length === 0) {
+          <p style="font-size:12px;color:#EF4444;margin-top:4px">
+            Sin stock disponible. El administrador debe ingresar vacunas en el inventario.
+          </p>
         }
-      </select>
+        @if (selectedMed) {
+          <div style="margin-top:6px;padding:8px 12px;background:#ECFEFF;border-radius:8px;font-size:12px;color:#0E7490">
+            <strong>{{ selectedMed.nombre }}</strong> — Stock: {{ selectedMed.stockActual }} {{ selectedMed.unidad }}
+            @if (selectedMed.descripcion) { — {{ selectedMed.descripcion }} }
+          </div>
+        }
+      }
     </div>
     <div class="dlg-row">
       <div class="dlg-field">
@@ -43,7 +58,7 @@
 
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancelar</button>
-  <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting">
-    <mat-icon>vaccines</mat-icon> Registrar Vacuna
+  <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting || loadingMeds()">
+    <mat-icon>vaccines</mat-icon> {{ submitting ? 'Guardando...' : 'Registrar Vacuna' }}
   </button>
 </mat-dialog-actions>

@@ -1,4 +1,15 @@
 <div class="clinical">
+  <!-- Admin read-only banner -->
+  @if (isAdmin()) {
+    <div class="admin-readonly-banner">
+      <mat-icon>admin_panel_settings</mat-icon>
+      <span>Vista de solo lectura — Administrador</span>
+      <button mat-stroked-button routerLink="/admin">
+        <mat-icon>arrow_back</mat-icon> Volver a Administración
+      </button>
+    </div>
+  }
+
   <!-- Header -->
   <div class="page-header">
     <div>
@@ -23,9 +34,11 @@
             <h2>{{ 'clinical.patients.title' | translate }}</h2>
             <p>{{ 'clinical.patients.subtitle' | translate }}</p>
           </div>
-          <button mat-raised-button class="btn-primary" (click)="openRegistrarPaciente()">
-            <mat-icon>add</mat-icon> {{ 'clinical.patients.register' | translate }}
-          </button>
+          @if (!isAdmin()) {
+            <button mat-raised-button class="btn-primary" (click)="openRegistrarPaciente()">
+              <mat-icon>add</mat-icon> {{ 'clinical.patients.register' | translate }}
+            </button>
+          }
         </div>
         <div class="filters-row">
           <div class="search-wrap">
@@ -71,12 +84,14 @@
                   <button mat-button class="btn-ver-ficha" (click)="verFicha(p.id)">
                     <mat-icon>visibility</mat-icon> {{ 'clinical.patients.viewFile' | translate }}
                   </button>
-                  <button mat-icon-button (click)="openRegistrarPaciente(p)" title="Editar">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                  <button mat-icon-button (click)="deletePatient(p)" title="Eliminar">
-                    <mat-icon>delete</mat-icon>
-                  </button>
+                  @if (!isAdmin()) {
+                    <button mat-icon-button (click)="openRegistrarPaciente(p)" title="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="deletePatient(p)" title="Eliminar">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  }
                 </div>
               </div>
             } @empty {
@@ -96,9 +111,11 @@
             <h2>{{ 'clinical.clients.title' | translate }}</h2>
             <p>{{ 'clinical.clients.subtitle' | translate }}</p>
           </div>
-          <button mat-raised-button class="btn-primary" (click)="openRegistrarCliente()">
-            <mat-icon>add</mat-icon> {{ 'clinical.clients.register' | translate }}
-          </button>
+          @if (!isAdmin()) {
+            <button mat-raised-button class="btn-primary" (click)="openRegistrarCliente()">
+              <mat-icon>add</mat-icon> {{ 'clinical.clients.register' | translate }}
+            </button>
+          }
         </div>
         <div class="filters-row">
           <div class="search-wrap">
@@ -133,10 +150,12 @@
                     <td>{{ c.email }}</td>
                     <td>{{ c.direccion }}</td>
                     <td>
-                      <div class="td-actions">
-                        <button mat-icon-button (click)="openEditarCliente(c)" title="Editar"><mat-icon>edit</mat-icon></button>
-                        <button mat-icon-button (click)="deleteCliente(c)" title="Eliminar"><mat-icon style="color:#EF4444">delete</mat-icon></button>
-                      </div>
+                      @if (!isAdmin()) {
+                        <div class="td-actions">
+                          <button mat-icon-button (click)="openEditarCliente(c)" title="Editar"><mat-icon>edit</mat-icon></button>
+                          <button mat-icon-button (click)="deleteCliente(c)" title="Eliminar"><mat-icon style="color:#EF4444">delete</mat-icon></button>
+                        </div>
+                      }
                     </td>
                   </tr>
                 } @empty {
@@ -158,9 +177,11 @@
             <h2>{{ 'clinical.consultations.title' | translate }}</h2>
             <p>{{ 'clinical.consultations.subtitle' | translate }}</p>
           </div>
-          <button mat-raised-button class="btn-primary" (click)="openNuevaConsulta()">
-            <mat-icon>add</mat-icon> {{ 'clinical.consultations.newConsult' | translate }}
-          </button>
+          @if (!isAdmin()) {
+            <button mat-raised-button class="btn-primary" (click)="openNuevaConsulta()">
+              <mat-icon>add</mat-icon> {{ 'clinical.consultations.newConsult' | translate }}
+            </button>
+          }
         </div>
         <div class="card table-card">
           <div class="table-top">
@@ -207,11 +228,11 @@
                     }
                   </td>
                   <td>
-                    @if (!c.cerrada) {
+                    @if (!c.cerrada && !isAdmin()) {
                       <button mat-icon-button (click)="closeConsulta(c.id)" [title]="'clinical.consultations.closeConsult' | translate">
                         <mat-icon style="color:#64748B">lock</mat-icon>
                       </button>
-                    } @else {
+                    } @else if (c.cerrada) {
                       <mat-icon style="color:#94A3B8;font-size:20px">lock</mat-icon>
                     }
                   </td>
@@ -258,9 +279,11 @@
               <p>{{ historyPatient.breed }} · {{ historyPatient.age }} · {{ 'clinical.history.owner' | translate }} {{ historyPatient.owner }}</p>
             </div>
             <div class="hist-actions">
-              <button mat-raised-button class="btn-primary" (click)="openNuevaConsulta(store.selectedPatientId()!)">
-                <mat-icon>add</mat-icon> {{ 'clinical.history.newConsult' | translate }}
-              </button>
+              @if (!isAdmin()) {
+                <button mat-raised-button class="btn-primary" (click)="openNuevaConsulta(store.selectedPatientId()!)">
+                  <mat-icon>add</mat-icon> {{ 'clinical.history.newConsult' | translate }}
+                </button>
+              }
               <button mat-icon-button><mat-icon>bookmark_border</mat-icon></button>
             </div>
           </div>
@@ -309,7 +332,7 @@
                         <p class="tl-text">{{ sec['content'] }}</p>
                       </div>
                     }
-                    @if (!r.cerrada) {
+                    @if (!r.cerrada && !isAdmin()) {
                       <div class="tl-footer">
                         <button mat-stroked-button class="btn-sm-tratamiento" (click)="openTratamiento(r.consultaId)">
                           <mat-icon>medication</mat-icon> {{ 'clinical.history.addTreatment' | translate }}
@@ -337,9 +360,11 @@
               </button>
             }
           </div>
-          <button mat-raised-button class="btn-primary" (click)="openRegistrarVacuna()">
-            <mat-icon>add</mat-icon> {{ 'clinical.vaccines.register' | translate }}
-          </button>
+          @if (!isAdmin()) {
+            <button mat-raised-button class="btn-primary" (click)="openRegistrarVacuna()">
+              <mat-icon>add</mat-icon> {{ 'clinical.vaccines.register' | translate }}
+            </button>
+          }
         </div>
         <div class="vsummary-grid">
           @for (s of vaccineSummary; track s.labelKey) {
@@ -373,11 +398,13 @@
                   <td [class.text-danger]="v.nextDoseHighlight">{{ v.nextDose }}</td>
                   <td><span class="badge" [ngClass]="getVaccineBadge(v.status)">{{ v.status }}</span></td>
                   <td>
-                    <button mat-button class="action-link" (click)="openRegistrarVacuna(v.mascotaId)">
-                      @if (v.status === 'Al Día') { {{ 'clinical.vaccines.actionViewDetails' | translate }} }
-                      @else if (v.status === 'Próxima') { {{ 'clinical.vaccines.actionSchedule' | translate }} }
-                      @else { {{ 'clinical.vaccines.actionApplyNow' | translate }} }
-                    </button>
+                    @if (!isAdmin()) {
+                      <button mat-button class="action-link" (click)="openRegistrarVacuna(v.mascotaId)">
+                        @if (v.status === 'Al Día') { {{ 'clinical.vaccines.actionViewDetails' | translate }} }
+                        @else if (v.status === 'Próxima') { {{ 'clinical.vaccines.actionSchedule' | translate }} }
+                        @else { {{ 'clinical.vaccines.actionApplyNow' | translate }} }
+                      </button>
+                    }
                   </td>
                 </tr>
               } @empty {
@@ -398,9 +425,11 @@
             <h2>{{ 'clinical.hospitalization.title' | translate }}</h2>
             <p>{{ 'clinical.hospitalization.subtitle' | translate }}</p>
           </div>
-          <button mat-raised-button class="btn-primary" (click)="openRegistrarIngreso()">
-            <mat-icon>add</mat-icon> {{ 'clinical.hospitalization.register' | translate }}
-          </button>
+          @if (!isAdmin()) {
+            <button mat-raised-button class="btn-primary" (click)="openRegistrarIngreso()">
+              <mat-icon>add</mat-icon> {{ 'clinical.hospitalization.register' | translate }}
+            </button>
+          }
         </div>
         <div class="hosp-stats-row">
           @for (s of hospitalStats; track s.labelKey) {
@@ -449,9 +478,11 @@
                     <button mat-icon-button (click)="verFicha(h.mascotaId)" title="Ver ficha">
                       <mat-icon>visibility</mat-icon>
                     </button>
-                    <button mat-icon-button (click)="openRegistrarIngreso(h.mascotaId)" title="Editar ingreso">
-                      <mat-icon>edit</mat-icon>
-                    </button>
+                    @if (!isAdmin()) {
+                      <button mat-icon-button (click)="openRegistrarIngreso(h.mascotaId)" title="Editar ingreso">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                    }
                   </div></td>
                 </tr>
               } @empty {
