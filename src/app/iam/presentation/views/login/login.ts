@@ -26,6 +26,7 @@ export class Login {
   currentLang = signal('es');
 
   demoAccounts = [
+    { label: 'Admin',       email: 'admin@vetalis.com',       password: 'Admin123'   },
     { label: 'Veterinario', email: 'test.vetalis@vetalis.com', password: 'Vetalis123' },
   ];
 

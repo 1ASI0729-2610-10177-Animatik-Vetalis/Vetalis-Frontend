@@ -202,6 +202,14 @@
 }
 .no-allergy-banner mat-icon { color: #22C55E; font-size: 18px; width: 18px; height: 18px; }
 
+/* Tratamiento footer in timeline */
+.tl-footer { padding-top: 12px; border-top: 1px solid #F1F5F9; }
+.btn-sm-tratamiento {
+  font-size: 12px !important; height: 30px !important; color: #06B6D4 !important;
+  border-color: #06B6D4 !important; border-radius: 6px !important;
+}
+.btn-sm-tratamiento mat-icon { font-size: 16px !important; width: 16px !important; height: 16px !important; vertical-align: middle; }
+
 /* Allergy in patient card */
 .pc-allergy-alert {
   display: flex; align-items: center; gap: 5px;

@@ -1,0 +1,116 @@
+.iot { min-height: 100%; }
+
+.page-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 24px 28px 20px; background: #fff; border-bottom: 1px solid #E2E8F0;
+  gap: 16px;
+}
+.page-header h1 { font-size: 22px; font-weight: 700; margin: 0 0 4px; color: #1E293B; }
+.page-header p  { font-size: 13px; color: #94A3B8; margin: 0; }
+.header-actions { display: flex; gap: 10px; align-items: center; }
+.btn-primary { background: #06B6D4 !important; color: #fff !important; border-radius: 8px !important; font-weight: 500 !important; }
+
+.stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px; padding: 20px 28px 0;
+}
+.stat-card {
+  background: #fff; border-radius: 12px; padding: 16px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06); border: 1px solid #E2E8F0;
+}
+.stat-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.stat-value { font-size: 24px; font-weight: 700; line-height: 1; }
+.stat-label { font-size: 12px; color: #64748B; margin-top: 4px; }
+
+.loading-msg { padding: 60px; text-align: center; color: #94A3B8; font-size: 14px; }
+
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 300px; gap: 12px; color: #94A3B8;
+  margin: 28px;
+}
+.empty-state mat-icon { font-size: 56px; width: 56px; height: 56px; }
+.empty-state h3 { font-size: 18px; color: #475569; margin: 0; }
+
+.devices-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 16px; padding: 20px 28px 28px;
+}
+
+.device-card {
+  background: #fff; border-radius: 12px; padding: 18px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06); border: 1px solid #E2E8F0;
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+.device-top { display: flex; align-items: center; gap: 12px; }
+.device-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.icon-active  { background: #E0F2FE; color: #06B6D4; }
+.icon-inactive { background: #F1F5F9; color: #94A3B8; }
+.device-icon mat-icon { font-size: 22px; }
+.device-info { flex: 1; min-width: 0; }
+.device-name  { font-size: 14px; font-weight: 700; color: #1E293B; }
+.device-model { font-size: 12px; color: #94A3B8; }
+
+.badge {
+  display: inline-flex; align-items: center; border-radius: 20px;
+  padding: 3px 10px; font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.badge-activo       { background: #DCFCE7; color: #16A34A; }
+.badge-inactivo     { background: #F1F5F9; color: #64748B; }
+.badge-mantenimiento { background: #FEF9C3; color: #CA8A04; }
+
+.food-section { display: flex; flex-direction: column; gap: 6px; }
+.food-header { display: flex; justify-content: space-between; align-items: center; }
+.food-label { font-size: 12px; color: #64748B; font-weight: 500; }
+.food-pct   { font-size: 14px; font-weight: 700; }
+.food-bar-bg { background: #E2E8F0; border-radius: 4px; height: 8px; overflow: hidden; }
+.food-bar-fill { height: 100%; border-radius: 4px; transition: width .3s; }
+.food-alert {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px; color: #F59E0B; font-weight: 600;
+}
+.food-alert mat-icon { font-size: 14px; width: 14px; height: 14px; }
+
+.connection-row {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: #94A3B8;
+}
+.conn-icon { font-size: 14px; width: 14px; height: 14px; color: #06B6D4; }
+
+.dispense-row {
+  display: flex; align-items: center; gap: 6px;
+  background: #F8FAFC; border-radius: 8px; padding: 8px 10px;
+}
+.dispense-input {
+  width: 80px; border: 1px solid #E2E8F0; border-radius: 6px;
+  padding: 6px 8px; font-size: 13px; outline: none; background: #fff;
+}
+.dispense-input:focus { border-color: #06B6D4; }
+.dispense-unit { font-size: 13px; color: #64748B; }
+.btn-dispense {
+  background: #06B6D4 !important; color: #fff !important;
+  border-radius: 8px !important; font-size: 12px !important;
+  height: 32px; line-height: 32px; padding: 0 12px !important;
+}
+
+.device-actions {
+  display: flex; justify-content: flex-end; gap: 4px;
+  border-top: 1px solid #F1F5F9; padding-top: 10px;
+}
+
+@media (max-width: 1100px) {
+  .devices-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-row    { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .devices-grid { grid-template-columns: 1fr; }
+  .stats-row    { grid-template-columns: 1fr; }
+}

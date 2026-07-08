@@ -1,0 +1,44 @@
+<div class="dialog-wrap">
+  <div mat-dialog-title class="dialog-header">
+    <mat-icon class="d-icon">medication</mat-icon>
+    <span>{{ isEdit ? 'Editar Tratamiento' : 'Registrar Tratamiento' }}</span>
+    <button mat-icon-button mat-dialog-close class="close-btn"><mat-icon>close</mat-icon></button>
+  </div>
+
+  <mat-dialog-content>
+    <form [formGroup]="form" class="dialog-form">
+      <div class="form-group">
+        <label>Medicamento (opcional)</label>
+        <select formControlName="medicamentoId" class="form-select">
+          <option [value]="null">— Sin medicamento —</option>
+          <option *ngFor="let m of medicamentos()" [value]="m.id">{{ m.nombre }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Descripción del tratamiento</label>
+        <textarea formControlName="descripcion" class="form-textarea" rows="3" placeholder="Descripción del tratamiento prescrito..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Dosis</label>
+          <input formControlName="dosis" class="form-input" placeholder="Ej: 250mg" />
+        </div>
+        <div class="form-group">
+          <label>Frecuencia</label>
+          <input formControlName="frecuencia" class="form-input" placeholder="Ej: Cada 8 horas" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Duración</label>
+        <input formControlName="duracion" class="form-input" placeholder="Ej: 7 días" />
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button mat-dialog-close>Cancelar</button>
+    <button mat-raised-button class="btn-submit" (click)="submit()" [disabled]="form.invalid || submitting">
+      <mat-icon>save</mat-icon> {{ isEdit ? 'Actualizar' : 'Registrar Tratamiento' }}
+    </button>
+  </mat-dialog-actions>
+</div>

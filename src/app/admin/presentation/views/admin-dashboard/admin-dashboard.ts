@@ -5,6 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ChartConfiguration } from 'chart.js';
 import { AdminService } from '../../../infrastructure/services/admin.service';
@@ -19,13 +21,14 @@ const METODO_COLORS: Record<string, string> = {
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [NgClass, DecimalPipe, FormsModule, MatIconModule, MatButtonModule, MatTabsModule, MatDialogModule, TranslatePipe, ChartComponent],
+  imports: [NgClass, DecimalPipe, FormsModule, MatIconModule, MatButtonModule, MatTabsModule, MatDialogModule, MatTooltipModule, TranslatePipe, ChartComponent],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
 })
 export class AdminDashboard {
   private svc    = inject(AdminService);
   private dialog = inject(MatDialog);
+  private snack  = inject(MatSnackBar);
 
   Math = Math;
   activeTab = 0;
@@ -37,14 +40,15 @@ export class AdminDashboard {
   mascotas     = signal<any[]>([]);
   clientes     = signal<any[]>([]);
   consultas    = signal<any[]>([]);
-  veterinarios = signal<any[]>([]);
 
   acknowledgedIds = signal<string[]>([]);
 
-  // US021: Cash closing
-  fechaCierre     = new Date().toISOString().split('T')[0];
-  efectivoFisico  = 0;
-  cierreProcesado = false;
+  // US021: Cash closing — resultado del backend
+  fechaCierre       = new Date().toISOString().split('T')[0];
+  efectivoFisico    = 0;
+  cierreProcesado   = false;
+  cierreBackend     = signal<any>(null);
+  loadingCierre     = signal(false);
 
   // US026: Inventory search
   invSearch = '';
@@ -53,16 +57,18 @@ export class AdminDashboard {
   pagoSearch      = '';
   pagoDateFilter  = '';
 
-  // US029: Reports
-  reportStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-  reportEnd   = new Date().toISOString().split('T')[0];
+  // US029: Reports — resultado del backend
+  reportStart   = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+  reportEnd     = new Date().toISOString().split('T')[0];
+  reporteBackend = signal<any>(null);
+  loadingReporte = signal(false);
 
   // US030: Commissions
   commissionRate = 20;
 
   constructor() { this.load(); }
 
-  reload() { this.loading.set(true); this.cierreProcesado = false; this.load(); }
+  reload() { this.loading.set(true); this.cierreProcesado = false; this.cierreBackend.set(null); this.load(); }
 
   private load() {
     this.svc.loadAll().subscribe({
@@ -73,7 +79,6 @@ export class AdminDashboard {
         this.mascotas.set(d.mascotas ?? []);
         this.clientes.set(d.clientes ?? []);
         this.consultas.set(d.consultas ?? []);
-        this.veterinarios.set(d.veterinarios ?? []);
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
@@ -107,7 +112,7 @@ export class AdminDashboard {
     return 'admin.inventory.statusNormal';
   }
 
-  // ── US023: Low stock alerts ───────────────────────────────────
+  // ── US023: Low stock alerts — usa el endpoint del backend ─────
   get alertasStock(): any[] {
     return this.inventarioConNombre.filter(i => i.stockActual <= i.puntoReorden);
   }
@@ -120,7 +125,7 @@ export class AdminDashboard {
   acknowledge(id: string) { this.acknowledgedIds.update(ids => [...ids, id]); }
   acknowledgeAll()        { this.acknowledgedIds.update(ids => [...ids, ...this.alertasVisibles.map(i => i.id)]); }
 
-  // ── US021: Cash closing ───────────────────────────────────────
+  // ── US021: Cierre de Caja — usa POST /pagos/cierre-caja ──────
   get pagosFecha(): any[] {
     return this.pagos().filter(p =>
       (p.fechaPago ?? p.fecha ?? '').split('T')[0] === this.fechaCierre && p.estado === 'Pagado'
@@ -128,16 +133,27 @@ export class AdminDashboard {
   }
 
   get totalesPorMetodo(): { metodo: string; total: number; count: number }[] {
+    const cb = this.cierreBackend();
+    if (cb?.porMetodoPago) {
+      return Object.entries(cb.porMetodoPago as Record<string, number>).map(([metodo, total]) => ({
+        metodo, total, count: 0,
+      }));
+    }
+    // fallback local
     const map = new Map<string, { total: number; count: number }>();
     for (const p of this.pagosFecha) {
-      const m = p.metodoPago ?? p.metodo ?? 'Sin método';
+      const m = p.metodoPago ?? 'Sin método';
       const cur = map.get(m) ?? { total: 0, count: 0 };
       map.set(m, { total: cur.total + p.monto, count: cur.count + 1 });
     }
     return Array.from(map.entries()).map(([metodo, v]) => ({ metodo, ...v }));
   }
 
-  get totalSistema(): number { return this.pagosFecha.reduce((s, p) => s + p.monto, 0); }
+  get totalSistema(): number {
+    const cb = this.cierreBackend();
+    if (cb?.totalIngresos != null) return cb.totalIngresos;
+    return this.pagosFecha.reduce((s, p) => s + p.monto, 0);
+  }
 
   get pagosChartData(): ChartConfiguration<'doughnut'>['data'] {
     const rows = this.totalesPorMetodo;
@@ -160,8 +176,24 @@ export class AdminDashboard {
     if (!this.cierreProcesado) return null;
     return this.discrepancia === 0 ? 'Cerrado' : 'Cerrado con Discrepancia';
   }
-  procesarCierre() { this.cierreProcesado = true; }
-  resetCierre()    { this.cierreProcesado = false; this.efectivoFisico = 0; }
+
+  procesarCierre() {
+    this.loadingCierre.set(true);
+    this.svc.cierreCaja(this.fechaCierre).subscribe({
+      next: result => {
+        this.cierreBackend.set(result);
+        this.cierreProcesado = true;
+        this.loadingCierre.set(false);
+      },
+      error: () => {
+        // fallback: usar cálculo local si el endpoint falla
+        this.cierreProcesado = true;
+        this.loadingCierre.set(false);
+      },
+    });
+  }
+
+  resetCierre() { this.cierreProcesado = false; this.efectivoFisico = 0; this.cierreBackend.set(null); }
 
   // ── US026: Add product ────────────────────────────────────────
   abrirAgregarProducto() {
@@ -169,6 +201,21 @@ export class AdminDashboard {
       width: '520px',
       data: { medicamentos: this.medicamentos(), inventario: this.inventario() },
     }).afterClosed().subscribe(ok => { if (ok) this.reload(); });
+  }
+
+  abrirEditarProducto(item: any) {
+    this.dialog.open(AgregarProductoDialog, {
+      width: '520px',
+      data: { medicamentos: this.medicamentos(), inventario: this.inventario(), editando: item },
+    }).afterClosed().subscribe(ok => { if (ok) this.reload(); });
+  }
+
+  eliminarProducto(item: any) {
+    if (!confirm(`¿Eliminar "${item.nombre}" del inventario?`)) return;
+    this.svc.deleteMedicamento(item.id).subscribe({
+      next: () => { this.snack.open('Producto eliminado', 'OK', { duration: 3000 }); this.reload(); },
+      error: () => this.snack.open('Error al eliminar', '', { duration: 3000 }),
+    });
   }
 
   // ── US024/027/028: Payments ───────────────────────────────────
@@ -203,9 +250,9 @@ export class AdminDashboard {
 
   voidPago(pago: any) {
     if (!confirm(`¿Anular el pago #${pago.id}? Esta acción quedará registrada en auditoría.`)) return;
-    this.svc.voidPago(pago.id, { ...pago, estado: 'Anulado' }).subscribe({
-      next: () => this.reload(),
-      error: () => {},
+    this.svc.anularPago(pago.id, 'Anulado por administrador').subscribe({
+      next: () => { this.snack.open('Pago anulado', 'OK', { duration: 3000 }); this.reload(); },
+      error: () => this.snack.open('Error al anular el pago', '', { duration: 3000 }),
     });
   }
 
@@ -216,17 +263,37 @@ export class AdminDashboard {
     }).afterClosed().subscribe(ok => { if (ok) this.reload(); });
   }
 
-  // ── US029: Reports ────────────────────────────────────────────
-  get pagosReporte(): any[] {
-    return this.pagos().filter(p => {
-      const date = (p.fechaPago ?? p.fecha ?? '').split('T')[0];
-      return p.estado === 'Pagado' && date >= this.reportStart && date <= this.reportEnd;
+  // ── US029: Reportes — usa GET /pagos/reporte ─────────────────
+  cargarReporte() {
+    this.loadingReporte.set(true);
+    this.svc.getReporte(this.reportStart, this.reportEnd).subscribe({
+      next: result => { this.reporteBackend.set(result); this.loadingReporte.set(false); },
+      error: () => { this.reporteBackend.set(null); this.loadingReporte.set(false); },
     });
   }
 
-  get reporteTotalIngresos(): number  { return this.pagosReporte.reduce((s, p) => s + (p.monto ?? 0), 0); }
-  get reporteTransacciones(): number  { return this.pagosReporte.length; }
-  get reporteTicketPromedio(): number { return this.reporteTransacciones ? this.reporteTotalIngresos / this.reporteTransacciones : 0; }
+  get pagosReporte(): any[] {
+    const rb = this.reporteBackend();
+    if (rb?.pagos) return rb.pagos;
+    return this.pagos().filter(p => {
+      const date = (p.fechaPago ?? p.fecha ?? '').split('T')[0];
+      return !p.anulado && date >= this.reportStart && date <= this.reportEnd;
+    });
+  }
+
+  get reporteTotalIngresos(): number {
+    const rb = this.reporteBackend();
+    if (rb?.totalNeto != null) return rb.totalNeto;
+    return this.pagosReporte.reduce((s, p) => s + (p.monto ?? 0), 0);
+  }
+  get reporteTransacciones(): number {
+    const rb = this.reporteBackend();
+    if (rb?.totalTransacciones != null) return rb.totalTransacciones;
+    return this.pagosReporte.length;
+  }
+  get reporteTicketPromedio(): number {
+    return this.reporteTransacciones ? this.reporteTotalIngresos / this.reporteTransacciones : 0;
+  }
 
   get reportePorMetodo(): { metodo: string; total: number; count: number }[] {
     const map = new Map<string, { total: number; count: number }>();
@@ -277,19 +344,19 @@ export class AdminDashboard {
     URL.revokeObjectURL(url);
   }
 
-  // ── US030: Commissions ────────────────────────────────────────
+  // ── US030: Comisiones — calcula por veterinarioId de consultas ─
   get comisionesPorVet(): { id: any; nombre: string; consultas: number; total: number; comision: number }[] {
-    const vets = this.veterinarios();
-    return vets.map(v => {
-      const consultasVet = this.consultas().filter(c => String(c.veterinarioId) === String(v.id));
+    const vetIds = [...new Set(this.consultas().map(c => c.veterinarioId).filter(Boolean))];
+    return vetIds.map(vid => {
+      const consultasVet = this.consultas().filter(c => String(c.veterinarioId) === String(vid));
       const pagosVet = this.pagos().filter(p =>
-        p.estado === 'Pagado' &&
+        !p.anulado && p.estado === 'Pagado' &&
         consultasVet.some(c => String(c.mascotaId) === String(p.mascotaId) &&
           (c.fecha ?? '').split('T')[0] === (p.fechaPago ?? p.fecha ?? '').split('T')[0])
       );
       const total    = pagosVet.reduce((s, p) => s + (p.monto ?? 0), 0);
       const comision = total * (this.commissionRate / 100);
-      return { id: v.id, nombre: v.nombre ?? `Vet #${v.id}`, consultas: consultasVet.length, total, comision };
-    }).filter(v => v.consultas > 0 || vets.length <= 3);
+      return { id: vid, nombre: `Veterinario #${vid}`, consultas: consultasVet.length, total, comision };
+    });
   }
 }

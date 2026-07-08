@@ -1,4 +1,4 @@
-<h2 mat-dialog-title class="dlg-title">Registrar Cliente</h2>
+<h2 mat-dialog-title class="dlg-title">{{ isEdit ? 'Editar Cliente' : 'Registrar Cliente' }}</h2>
 
 <mat-dialog-content>
   <form [formGroup]="form" class="dlg-form">
@@ -32,6 +32,7 @@
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancelar</button>
   <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting">
-    <mat-icon>person_add</mat-icon> Registrar Cliente
+    <mat-icon>{{ isEdit ? 'save' : 'person_add' }}</mat-icon>
+    {{ isEdit ? 'Guardar Cambios' : 'Registrar Cliente' }}
   </button>
 </mat-dialog-actions>

@@ -20,6 +20,7 @@
       "dashboard": "Dashboard",
       "clinical": "Clinical Management",
       "schedule": "Schedule",
+      "iot": "IoT Dispensers",
       "communication": "Communication",
       "profile": "Profile",
       "admin": "Administration"
@@ -143,7 +144,8 @@
       "statTotalConsults": "Total Consultations",
       "statVaccinesApplied": "Vaccines Applied",
       "statHospitalizations": "Hospitalizations",
-      "statLastVisit": "Last Visit"
+      "statLastVisit": "Last Visit",
+      "addTreatment": "Register Treatment"
     },
     "vaccines": {
       "register": "Register Vaccine",
@@ -320,6 +322,39 @@
       "passwordMismatch": "Passwords do not match"
     }
   },
+  "iot": {
+    "title": "IoT Dispensers",
+    "subtitle": "Manage automatic food dispensers",
+    "refresh": "Refresh",
+    "addDevice": "Add Dispenser",
+    "loading": "Loading devices...",
+    "empty": "No dispensers registered.",
+    "foodLevel": "Food level",
+    "lowLevel": "Low level — restock soon",
+    "criticalLevel": "Critical level — restock now",
+    "lastConnection": "Last connection",
+    "dispense": "Dispense",
+    "quantityPlaceholder": "Amount",
+    "edit": "Edit",
+    "delete": "Delete",
+    "stats": {
+      "total": "Total Devices",
+      "active": "Active",
+      "low": "Low Level",
+      "maintenance": "Under Maintenance"
+    },
+    "dialog": {
+      "addTitle": "Register Dispenser",
+      "editTitle": "Edit Dispenser",
+      "serialLabel": "Serial Number",
+      "modelLabel": "Model",
+      "statusLabel": "Status",
+      "foodLevelLabel": "Food Level",
+      "cancel": "Cancel",
+      "submit": "Register",
+      "update": "Update"
+    }
+  },
   "admin": {
     "title": "Administration",
     "subtitle": "Financial management and clinic inventory",
@@ -375,7 +410,9 @@
       "empty": "No products found.",
       "statusNormal": "Normal",
       "statusLow": "Low Stock",
-      "statusZero": "No Stock"
+      "statusZero": "No Stock",
+      "colPrice": "Price",
+      "colActions": "Actions"
     },
     "alerts": {
       "title": "Low Stock Alerts",
@@ -466,6 +503,7 @@
       "export": "Export CSV",
       "startDate": "Start date",
       "endDate": "End date",
+      "load": "Load report",
       "loading": "Generating report...",
       "totalRevenue": "Total Revenue",
       "transactions": "Transactions",

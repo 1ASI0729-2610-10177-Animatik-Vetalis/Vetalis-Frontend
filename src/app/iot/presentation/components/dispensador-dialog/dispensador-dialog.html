@@ -1,0 +1,39 @@
+<div class="dialog-wrap">
+  <div mat-dialog-title class="dialog-header">
+    <mat-icon class="d-icon">router</mat-icon>
+    <span>{{ isEdit ? ('iot.dialog.editTitle' | translate) : ('iot.dialog.addTitle' | translate) }}</span>
+    <button mat-icon-button mat-dialog-close class="close-btn"><mat-icon>close</mat-icon></button>
+  </div>
+
+  <mat-dialog-content>
+    <form [formGroup]="form" class="dialog-form">
+      <div class="form-group">
+        <label>{{ 'iot.dialog.serialLabel' | translate }} *</label>
+        <input formControlName="numeroSerie" class="form-input" placeholder="Ej: DISP-001" />
+      </div>
+      <div class="form-group">
+        <label>{{ 'iot.dialog.modelLabel' | translate }} *</label>
+        <input formControlName="modelo" class="form-input" placeholder="Ej: VetFeeder Pro" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>{{ 'iot.dialog.statusLabel' | translate }}</label>
+          <select formControlName="estado" class="form-select">
+            <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>{{ 'iot.dialog.foodLevelLabel' | translate }} (%)</label>
+          <input formControlName="nivelAlimento" type="number" min="0" max="100" class="form-input" />
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button mat-dialog-close>{{ 'iot.dialog.cancel' | translate }}</button>
+    <button mat-raised-button class="btn-submit" (click)="submit()" [disabled]="form.invalid || submitting">
+      <mat-icon>save</mat-icon> {{ isEdit ? ('iot.dialog.update' | translate) : ('iot.dialog.submit' | translate) }}
+    </button>
+  </mat-dialog-actions>
+</div>

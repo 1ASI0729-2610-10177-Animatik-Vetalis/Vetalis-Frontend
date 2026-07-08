@@ -1,4 +1,4 @@
-<h2 mat-dialog-title class="dlg-title">{{ 'admin.dialog.title' | translate }}</h2>
+<h2 mat-dialog-title class="dlg-title">{{ isEdit ? 'Editar Producto' : ('admin.dialog.title' | translate) }}</h2>
 
 <mat-dialog-content>
   <form [formGroup]="form" class="dlg-form">
@@ -20,13 +20,19 @@
         </select>
       </div>
       <div class="dlg-field">
-        <label>{{ 'admin.dialog.stockLabel' | translate }}</label>
-        <input type="number" formControlName="stockInicial" min="0" placeholder="0" />
+        <label>Precio Unitario (S/)</label>
+        <input type="number" formControlName="precioUnitario" min="0" step="0.01" placeholder="10.00" />
       </div>
     </div>
-    <div class="dlg-field">
-      <label>{{ 'admin.dialog.reorderLabel' | translate }}</label>
-      <input type="number" formControlName="puntoReorden" min="1" placeholder="10" />
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>{{ isEdit ? 'Stock Actual' : ('admin.dialog.stockLabel' | translate) }}</label>
+        <input type="number" formControlName="stockInicial" min="0" placeholder="0" />
+      </div>
+      <div class="dlg-field">
+        <label>{{ 'admin.dialog.reorderLabel' | translate }}</label>
+        <input type="number" formControlName="puntoReorden" min="1" placeholder="10" />
+      </div>
     </div>
   </form>
 </mat-dialog-content>
@@ -34,6 +40,7 @@
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>{{ 'admin.dialog.cancel' | translate }}</button>
   <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting">
-    <mat-icon>add</mat-icon> {{ 'admin.dialog.submit' | translate }}
+    <mat-icon>{{ isEdit ? 'save' : 'add' }}</mat-icon>
+    {{ isEdit ? 'Guardar Cambios' : ('admin.dialog.submit' | translate) }}
   </button>
 </mat-dialog-actions>

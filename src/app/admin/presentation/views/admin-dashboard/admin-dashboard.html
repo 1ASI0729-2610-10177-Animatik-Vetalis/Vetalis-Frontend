@@ -61,7 +61,7 @@
           </div>
 
           <!-- Payments by method table -->
-          @if (pagosFecha.length === 0) {
+          @if (totalesPorMetodo.length === 0) {
             <div class="empty-state-inline">
               <mat-icon>receipt_long</mat-icon>
               <p>{{ 'admin.cashClosing.noPayments' | translate: {date: fechaCierre} }}</p>
@@ -91,7 +91,7 @@
                     }
                     <tr class="total-row">
                       <td><strong>{{ 'admin.cashClosing.totalRow' | translate }}</strong></td>
-                      <td><strong>{{ pagosFecha.length }}</strong></td>
+                      <td><strong>{{ pagosFecha.length || totalesPorMetodo.length }}</strong></td>
                       <td class="td-money"><strong>S/ {{ totalSistema | number:'1.2-2' }}</strong></td>
                     </tr>
                   </tbody>
@@ -134,8 +134,8 @@
 
             <div class="cierre-actions">
               @if (!cierreProcesado) {
-                <button mat-raised-button class="btn-primary" (click)="procesarCierre()" [disabled]="pagosFecha.length === 0">
-                  <mat-icon>lock</mat-icon> {{ 'admin.cashClosing.process' | translate }}
+                <button mat-raised-button class="btn-primary" (click)="procesarCierre()" [disabled]="loadingCierre()">
+                  <mat-icon>lock</mat-icon> {{ loadingCierre() ? 'Procesando...' : ('admin.cashClosing.process' | translate) }}
                 </button>
               } @else {
                 <button mat-stroked-button (click)="resetCierre()">
@@ -211,6 +211,8 @@
                 <th>{{ 'admin.inventory.colStock' | translate }}</th>
                 <th>{{ 'admin.inventory.colReorder' | translate }}</th>
                 <th>{{ 'admin.inventory.colStatus' | translate }}</th>
+                <th>{{ 'admin.inventory.colPrice' | translate }}</th>
+                <th>{{ 'admin.inventory.colActions' | translate }}</th>
               </tr></thead>
               <tbody>
                 @for (item of inventarioFiltrado; track item.id; let i = $index) {
@@ -232,9 +234,20 @@
                         'badge-critico':    stockStatus(item) === 'Sin Stock'
                       }">{{ stockStatusKey(item) | translate }}</span>
                     </td>
+                    <td>S/ {{ item.precioUnitario | number:'1.2-2' }}</td>
+                    <td>
+                      <div class="td-actions">
+                        <button mat-icon-button class="btn-icon-edit" (click)="abrirEditarProducto(item)" matTooltip="Editar">
+                          <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button class="btn-icon-delete" (click)="eliminarProducto(item)" matTooltip="Eliminar">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 } @empty {
-                  <tr><td colspan="7" class="empty-msg">{{ 'admin.inventory.empty' | translate }}</td></tr>
+                  <tr><td colspan="9" class="empty-msg">{{ 'admin.inventory.empty' | translate }}</td></tr>
                 }
               </tbody>
             </table>
@@ -501,6 +514,9 @@
             <label>{{ 'admin.reports.endDate' | translate }}</label>
             <input type="date" [(ngModel)]="reportEnd" class="date-input" />
           </div>
+          <button mat-stroked-button (click)="cargarReporte()" [disabled]="loadingReporte()">
+            <mat-icon>refresh</mat-icon> {{ loadingReporte() ? ('admin.reports.loading' | translate) : ('admin.reports.load' | translate) }}
+          </button>
         </div>
 
         @if (loading()) {
