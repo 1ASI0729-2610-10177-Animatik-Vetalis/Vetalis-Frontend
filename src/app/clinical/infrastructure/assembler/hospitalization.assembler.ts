@@ -5,7 +5,7 @@ const MN = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','D
 
 function hash(id: string): number {
   let h = 0;
-  for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return h;
 }
 
@@ -30,23 +30,27 @@ function daysAgo(fecha: string): string {
 
 export class HospitalizationAssembler {
   static toDomain(raw: any, mascotas: any[], clientes: any[], razas: any[]): Hospitalization {
-    const m = mascotas.find(x => x.id === raw.mascotaId);
-    const c = clientes.find(x => x.id === m?.clienteId);
-    const r = razas.find(x => x.id === m?.razaId);
+    const m = mascotas.find(x => String(x.id) === String(raw.mascotaId));
+    const c = clientes.find(x => String(x.id) === String(m?.clienteId));
+    const r = razas.find(x => String(x.id) === String(m?.razaId));
+    const ingreso = (raw.fechaIngreso ?? '').split('T')[0];
     return {
       id:                 raw.id,
       mascotaId:          raw.mascotaId,
       patientName:        m?.nombre ?? '—',
       patientBreed:       r?.nombre ?? '—',
       patientAge:         m ? calcAge(m.fechaNacimiento) : '—',
-      patientAvatarColor: COLORS[hash(raw.mascotaId) % COLORS.length],
+      patientAvatarColor: COLORS[hash(String(raw.mascotaId)) % COLORS.length],
       ownerName:          c?.nombre ?? '—',
       ownerPhone:         c?.telefono ?? '—',
       status:             raw.estado,
-      admissionDate:      fmt(raw.fechaIngreso),
-      daysAgo:            daysAgo(raw.fechaIngreso),
+      admissionDate:      fmt(ingreso),
+      daysAgo:            daysAgo(ingreso),
       diagnosis:          raw.diagnostico,
-      treatments:         raw.tratamientos ?? [],
+      // Backend: tratamiento (string separado por comas). json-server: tratamientos (array).
+      treatments:         Array.isArray(raw.tratamientos)
+                            ? raw.tratamientos
+                            : (raw.tratamiento ? String(raw.tratamiento).split(',').map((s: string) => s.trim()).filter(Boolean) : []),
     };
   }
 

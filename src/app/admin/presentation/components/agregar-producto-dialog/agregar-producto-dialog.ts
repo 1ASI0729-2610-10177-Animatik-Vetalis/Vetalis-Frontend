@@ -45,13 +45,15 @@ export class AgregarProductoDialog {
     }
 
     this.submitting = true;
-    this.svc.createMedicamento({ nombre: v.nombre!.trim(), descripcion: v.descripcion, unidad: v.unidad }).subscribe({
-      next: (med: any) => {
-        this.svc.createInventario({ medicamentoId: med.id, stockActual: v.stockInicial, puntoReorden: v.puntoReorden }).subscribe({
-          next: () => { this.snack.open(this.translate.instant('admin.dialog.successMsg'), 'OK', { duration: 3000 }); this.ref.close(true); },
-          error: () => { this.snack.open(this.translate.instant('admin.dialog.errorInventory'), '', { duration: 3000 }); this.submitting = false; },
-        });
-      },
+    // El medicamento ya incluye el stock (stockActual, puntoReorden, precioUnitario).
+    this.svc.createMedicamento({
+      nombre:         v.nombre!.trim(),
+      descripcion:    v.descripcion ?? '',
+      precioUnitario: 10,
+      stockActual:    v.stockInicial,
+      puntoReorden:   v.puntoReorden,
+    }).subscribe({
+      next: () => { this.snack.open(this.translate.instant('admin.dialog.successMsg'), 'OK', { duration: 3000 }); this.ref.close(true); },
       error: () => { this.snack.open(this.translate.instant('admin.dialog.errorProduct'), '', { duration: 3000 }); this.submitting = false; },
     });
   }

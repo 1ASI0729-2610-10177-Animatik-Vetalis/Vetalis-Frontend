@@ -5,7 +5,7 @@ const MN = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','D
 
 function hash(id: string): number {
   let h = 0;
-  for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return h;
 }
 
@@ -16,23 +16,26 @@ function fmt(fecha: string): string {
 
 export class ConsultationAssembler {
   static toDomain(raw: any, mascotas: any[], clientes: any[], razas: any[], vets: any[]): Consultation {
-    const m = mascotas.find(x => x.id === raw.mascotaId);
-    const c = clientes.find(x => x.id === m?.clienteId);
-    const r = razas.find(x => x.id === m?.razaId);
-    const v = vets.find(x => x.id === raw.veterinarioId);
+    const m = mascotas.find(x => String(x.id) === String(raw.mascotaId));
+    const c = clientes.find(x => String(x.id) === String(m?.clienteId));
+    const r = razas.find(x => String(x.id) === String(m?.razaId));
+    const v = vets.find(x => String(x.id) === String(raw.veterinarioId));
+    // Backend: fecha es date-time combinado. json-server (reshaped) también.
+    const fechaDate = (raw.fecha ?? '').split('T')[0];
+    const fechaTime = (raw.fecha ?? '').includes('T') ? raw.fecha.split('T')[1].slice(0, 5) : (raw.hora ?? '');
     return {
       id:                 raw.id,
       mascotaId:          raw.mascotaId,
-      rawDate:            raw.fecha,
+      rawDate:            fechaDate,
       patientName:        m?.nombre ?? '—',
       patientBreed:       r?.nombre ?? '—',
-      patientAvatarColor: COLORS[hash(raw.mascotaId) % COLORS.length],
+      patientAvatarColor: COLORS[hash(String(raw.mascotaId)) % COLORS.length],
       clientName:         c?.nombre ?? '—',
       clientPhone:        c?.telefono ?? '—',
       type:               raw.tipo,
-      diagnosis:          raw.evaluacion,
-      date:               fmt(raw.fecha),
-      time:               raw.hora,
+      diagnosis:          raw.diagnostico ?? raw.evaluacion,
+      date:               fmt(fechaDate),
+      time:               fechaTime,
       status:             raw.estado,
       subjetivo:          raw.subjetivo,
       objetivo:           raw.objetivo,

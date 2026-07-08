@@ -12,7 +12,7 @@
 
   <!-- Navigation -->
   <nav class="sidebar-nav">
-    @for (item of navItems; track item.path) {
+    @for (item of navItems(); track item.path) {
       <a
         [routerLink]="item.path"
         routerLinkActive="nav-item--active"
@@ -42,13 +42,15 @@
 
   <!-- User profile -->
   <div class="sidebar-user">
-    <div class="user-avatar">
-      <mat-icon>person</mat-icon>
+    <div class="user-avatar" [style.background]="user()?.avatarColor || '#E0F2FE'">
+      <span class="user-initials">{{ initials() }}</span>
     </div>
     <div class="user-info">
-      <span class="user-name">Dr. Carlos Méndez</span>
-      <span class="user-role">{{ 'sidebar.user.role' | translate }}</span>
+      <span class="user-name">{{ fullName() || 'Vetalis Pro' }}</span>
+      <span class="user-role">{{ roleLabel() }}</span>
     </div>
-    <mat-icon class="user-menu">more_vert</mat-icon>
+    <button class="user-menu-btn" (click)="logout()" [title]="'auth.logout' | translate">
+      <mat-icon>logout</mat-icon>
+    </button>
   </div>
 </aside>

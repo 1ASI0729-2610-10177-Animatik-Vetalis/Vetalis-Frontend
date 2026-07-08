@@ -106,6 +106,29 @@
   color: #64748B;
 }
 
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 20px;
+}
+
+.chart-card { display: flex; flex-direction: column; }
+
+.chart-hint {
+  font-size: 12px;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+.chart-box {
+  position: relative;
+  height: 260px;
+}
+
+@media (max-width: 1100px) {
+  .charts-grid { grid-template-columns: 1fr; }
+}
+
 .lower-grid {
   display: grid;
   grid-template-columns: 1fr 320px;

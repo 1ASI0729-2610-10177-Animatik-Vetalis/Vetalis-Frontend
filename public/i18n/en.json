@@ -1,4 +1,19 @@
 {
+  "auth": {
+    "logout": "Log out",
+    "login": {
+      "subtitle": "Veterinary management system",
+      "email": "Email",
+      "emailPlaceholder": "email@example.com",
+      "emailError": "Enter a valid email",
+      "password": "Password",
+      "passwordPlaceholder": "Your password",
+      "passwordError": "Password is required",
+      "submit": "Sign In",
+      "invalidCredentials": "Incorrect email or password",
+      "demoTitle": "Demo accounts"
+    }
+  },
   "sidebar": {
     "systemName": "Veterinary System",
     "nav": {
@@ -16,6 +31,11 @@
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Welcome to the Vetalis Pro control panel",
+    "charts": {
+      "consultsByMonth": "Consultations by Month",
+      "last6Months": "Last 6 months",
+      "patientsBySpecies": "Patients by Species"
+    },
     "actions": {
       "newConsult": "New Consultation",
       "newAppointment": "New Appointment",
@@ -176,6 +196,7 @@
     "viewDay": "Day",
     "viewWeek": "Week",
     "viewMonth": "Month",
+    "today": "Today",
     "dayMon": "Mon",
     "dayTue": "Tue",
     "dayWed": "Wed",
@@ -322,7 +343,8 @@
       "surplus": "surplus",
       "shortage": "shortage",
       "process": "Process Closing",
-      "newClosing": "New Closing"
+      "newClosing": "New Closing",
+      "chartTitle": "Breakdown by Method"
     },
     "inventory": {
       "title": "Medication Inventory",

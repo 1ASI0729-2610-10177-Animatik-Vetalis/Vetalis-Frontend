@@ -1,10 +1,17 @@
 import { Routes } from '@angular/router';
 import { Layout } from './shared/presentation/layout/layout';
+import { authGuard, guestGuard, roleGuard } from './iam/presentation/guards/auth.guard';
 
 export const routes: Routes = [
   {
+    path: 'login',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./iam/presentation/views/login/login').then(m => m.Login)
+  },
+  {
     path: '',
     component: Layout,
+    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
@@ -29,6 +36,8 @@ export const routes: Routes = [
       },
       {
         path: 'admin',
+        canActivate: [roleGuard],
+        data: { roles: ['admin'] },
         loadComponent: () => import('./admin/presentation/views/admin-dashboard/admin-dashboard').then(m => m.AdminDashboard)
       }
     ]

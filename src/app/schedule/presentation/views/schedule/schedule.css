@@ -15,10 +15,66 @@
 .cal-card { padding: 20px; }
 .cal-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
 .cal-nav h2 { font-size: 16px; font-weight: 600; color: #1E293B; flex: 1; text-align: center; margin: 0; }
-.view-toggle { display: flex; align-items: center; gap: 4px; background: #F8FAFC; border-radius: 8px; padding: 3px; }
+.today-btn {
+  padding: 6px 14px; border: 1px solid #E2E8F0; border-radius: 8px;
+  background: #fff; font-size: 13px; font-weight: 500; color: #475569; cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.today-btn:hover { border-color: #06B6D4; color: #06B6D4; }
+.view-toggle { display: flex; align-items: center; gap: 4px; background: #F8FAFC; border-radius: 8px; padding: 3px; margin-left: 8px; }
 .vt-btn { padding: 5px 12px; border: none; border-radius: 6px; background: transparent; font-size: 13px; cursor: pointer; color: #64748B; }
 .vt-btn.vt-active { background: #06B6D4; color: #fff; }
-.vt-icon { color: #64748B !important; }
+
+/* ── Week / Day time-grid ──────────────────────────────────── */
+.week-cal { border: 1px solid #F1F5F9; border-radius: 10px; overflow: hidden; }
+
+.wg-head {
+  display: grid;
+  border-bottom: 1px solid #E2E8F0;
+  background: #F8FAFC;
+}
+.wg-corner { border-right: 1px solid #F1F5F9; }
+.wg-day-head {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 10px 4px; border-left: 1px solid #F1F5F9;
+}
+.wg-dow { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; color: #94A3B8; }
+.wg-dnum {
+  font-size: 15px; font-weight: 700; color: #475569;
+  width: 28px; height: 28px; line-height: 28px; text-align: center; border-radius: 50%;
+}
+.wg-today .wg-dow { color: #06B6D4; }
+.wg-today .wg-dnum { background: #06B6D4; color: #fff; }
+
+.wg-body { display: grid; position: relative; }
+
+.wg-rail { border-right: 1px solid #F1F5F9; }
+.wg-hour {
+  height: 56px; position: relative;
+}
+.wg-hour span {
+  position: absolute; top: -7px; right: 8px;
+  font-size: 11px; color: #94A3B8; background: #fff; padding: 0 2px;
+}
+
+.wg-col { position: relative; border-left: 1px solid #F1F5F9; }
+.wg-col-today { background: #F7FDFF; }
+.wg-line { height: 56px; border-bottom: 1px solid #F1F5F9; }
+
+.wg-apt {
+  position: absolute; left: 4px; right: 4px;
+  border-radius: 6px; padding: 4px 8px; overflow: hidden;
+  border-left: 3px solid; cursor: pointer; z-index: 1;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+.wg-apt-time { font-size: 10px; font-weight: 600; opacity: .85; }
+.wg-apt-name { font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wg-apt-type { font-size: 10px; opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.wg-apt.badge-pendiente  { background: #FEF9C3; border-color: #F59E0B; color: #92400E; }
+.wg-apt.badge-confirmada { background: #DBEAFE; border-color: #3B82F6; color: #1E40AF; }
+.wg-apt.badge-completada { background: #DCFCE7; border-color: #22C55E; color: #166534; }
+.wg-apt.badge-cancelada  { background: #F1F5F9; border-color: #94A3B8; color: #64748B; }
 
 .cal-table { width: 100%; border-collapse: collapse; }
 .cal-table th { font-size: 12px; font-weight: 600; color: #94A3B8; text-align: center; padding: 8px 4px; }

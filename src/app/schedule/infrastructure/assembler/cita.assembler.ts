@@ -13,13 +13,18 @@ const PASTEL: Array<{ bg: string; icon: string }> = [
 
 function hash(id: string): number {
   let h = 0;
-  for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   return h;
 }
 
-function toTime(fechaISO: string): string {
+function parseHM(fechaISO: string): { hour: number; minute: number } {
   const t = (fechaISO.split('T')[1] ?? '00:00:00').slice(0, 5);
   const [h, m] = t.split(':').map(Number);
+  return { hour: h || 0, minute: m || 0 };
+}
+
+function toTime(fechaISO: string): string {
+  const { hour: h, minute: m } = parseHM(fechaISO);
   const ampm = h >= 12 ? 'PM' : 'AM';
   const h12 = h % 12 || 12;
   return `${String(h12).padStart(2, '0')}:${String(m).padStart(2, '0')} ${ampm}`;
@@ -37,13 +42,16 @@ const STATUS_BADGE: Record<string, string> = {
 
 export class CitaAssembler {
   static toDomain(raw: any, mascotas: any[], clientes: any[]): CitaDisplay {
-    const m = mascotas.find(x => x.id === raw.mascotaId);
-    const c = clientes.find(x => x.id === m?.clienteId);
+    const m = mascotas.find(x => String(x.id) === String(raw.mascotaId));
+    const c = clientes.find(x => String(x.id) === String(m?.clienteId));
     const p = PASTEL[hash(raw.mascotaId) % PASTEL.length];
+    const { hour, minute } = parseHM(raw.fecha);
     return {
       id:          raw.id,
       date:        raw.fecha.split('T')[0],
       time:        toTime(raw.fecha),
+      hour,
+      minute,
       name:        m?.nombre ?? '—',
       status:      STATUS_LABEL[raw.estado] ?? raw.estado,
       rawStatus:   raw.estado,

@@ -1,4 +1,19 @@
 {
+  "auth": {
+    "logout": "Cerrar sesión",
+    "login": {
+      "subtitle": "Sistema de gestión veterinaria",
+      "email": "Correo Electrónico",
+      "emailPlaceholder": "correo@ejemplo.com",
+      "emailError": "Ingresa un correo válido",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Tu contraseña",
+      "passwordError": "La contraseña es obligatoria",
+      "submit": "Iniciar Sesión",
+      "invalidCredentials": "Correo o contraseña incorrectos",
+      "demoTitle": "Cuentas de prueba"
+    }
+  },
   "sidebar": {
     "systemName": "Sistema Veterinario",
     "nav": {
@@ -16,6 +31,11 @@
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Bienvenido al panel de control de Vetalis Pro",
+    "charts": {
+      "consultsByMonth": "Consultas por Mes",
+      "last6Months": "Últimos 6 meses",
+      "patientsBySpecies": "Pacientes por Especie"
+    },
     "actions": {
       "newConsult": "Nueva Consulta",
       "newAppointment": "Nueva Cita",
@@ -176,6 +196,7 @@
     "viewDay": "Día",
     "viewWeek": "Semana",
     "viewMonth": "Mes",
+    "today": "Hoy",
     "dayMon": "Lun",
     "dayTue": "Mar",
     "dayWed": "Mié",
@@ -322,7 +343,8 @@
       "surplus": "sobrante",
       "shortage": "faltante",
       "process": "Procesar Cierre",
-      "newClosing": "Nuevo Cierre"
+      "newClosing": "Nuevo Cierre",
+      "chartTitle": "Distribución por Método"
     },
     "inventory": {
       "title": "Inventario de Medicamentos",
