@@ -37,6 +37,8 @@ export class ConsultationAssembler {
       date:               fmt(fechaDate),
       time:               fechaTime,
       status:             raw.estado,
+      temperatura:        raw.temperatura,
+      cerrada:            raw.cerrada ?? false,
       subjetivo:          raw.subjetivo,
       objetivo:           raw.objetivo,
       plan:               raw.plan,

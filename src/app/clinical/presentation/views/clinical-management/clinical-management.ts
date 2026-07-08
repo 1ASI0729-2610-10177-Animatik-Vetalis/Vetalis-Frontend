@@ -159,7 +159,12 @@ export class ClinicalManagement {
   get historyRecords() {
     return this.selectedConsultations.map(c => ({
       type: c.type, date: c.date, doctor: c.veterinario ?? 'Veterinario',
-      color: '#22C55E', bg: '#F0FDF4', borderColor: '#22C55E', icon: 'medical_services',
+      color: c.cerrada ? '#64748B' : '#22C55E',
+      bg: c.cerrada ? '#F1F5F9' : '#F0FDF4',
+      borderColor: c.cerrada ? '#94A3B8' : '#22C55E',
+      icon: c.cerrada ? 'lock' : 'medical_services',
+      temperatura: c.temperatura,
+      cerrada: c.cerrada,
       sections: [
         ...(c.subjetivo  ? [{ label: 'Subjetivo (S)',   type: 'text', content: c.subjetivo  }] : []),
         ...(c.objetivo   ? [{ label: 'Objetivo (O)',    type: 'text', content: c.objetivo   }] : []),
@@ -232,5 +237,22 @@ export class ClinicalManagement {
       },
       error: () => this.snack.open(this.translate.instant('clinical.messages.deleteError'), '', { duration: 3000 }),
     });
+  }
+
+  closeConsulta(consultaId: string) {
+    const msg = this.translate.instant('clinical.consultations.confirmClose');
+    if (!confirm(msg)) return;
+    this.svc.closeConsulta(consultaId).subscribe({
+      next: () => {
+        this.snack.open(this.translate.instant('clinical.consultations.closedSuccess'), 'OK', { duration: 3000 });
+        this.store.reload();
+      },
+      error: () => this.snack.open(this.translate.instant('clinical.messages.deleteError'), '', { duration: 3000 }),
+    });
+  }
+
+  get historyAllergyAlert(): string {
+    const p = this.store.selectedPatient();
+    return p?.alergias ?? '';
   }
 }

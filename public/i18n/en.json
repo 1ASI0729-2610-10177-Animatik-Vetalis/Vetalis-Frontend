@@ -92,7 +92,8 @@
       "weight": "Weight:",
       "owner": "Owner:",
       "viewFile": "View File",
-      "empty": "No patients found."
+      "empty": "No patients found.",
+      "allergies": "Allergies:"
     },
     "clients": {
       "title": "Registered Clients",
@@ -122,7 +123,12 @@
       "colDate": "Date",
       "colStatus": "Status",
       "showing": "Showing {{current}} of {{total}} consultations",
-      "empty": "No consultations."
+      "empty": "No consultations.",
+      "colActions": "Actions",
+      "closeConsult": "Close Consultation",
+      "statusClosed": "Closed",
+      "confirmClose": "Close this consultation? Once closed it cannot be edited.",
+      "closedSuccess": "Consultation closed successfully"
     },
     "history": {
       "selectPatient": "Select a patient",
@@ -132,6 +138,8 @@
       "fullHistory": "Complete Medical History",
       "empty": "No consultations registered for this patient.",
       "newConsult": "New Consultation",
+      "allergyBannerTitle": "Allergy Alert!",
+      "noAllergies": "No known allergies",
       "statTotalConsults": "Total Consultations",
       "statVaccinesApplied": "Vaccines Applied",
       "statHospitalizations": "Hospitalizations",
@@ -319,7 +327,10 @@
     "tabs": {
       "cashClosing": "Cash Closing",
       "inventory": "Inventory",
-      "stockAlerts": "Stock Alerts"
+      "stockAlerts": "Stock Alerts",
+      "payments": "Payments",
+      "reports": "Reports",
+      "commissions": "Commissions"
     },
     "cashClosing": {
       "title": "Daily Cash Closing",
@@ -401,6 +412,80 @@
       "successMsg": "Product added successfully",
       "errorInventory": "Error saving inventory",
       "errorProduct": "Error saving product"
+    },
+    "payments": {
+      "title": "Payment Records",
+      "subtitle": "Manage payments, discounts and payment methods",
+      "register": "Register Payment",
+      "searchPlaceholder": "Search by patient or ID...",
+      "loading": "Loading payments...",
+      "statPaid": "Paid",
+      "statVoided": "Voided",
+      "statTotal": "Total Collected",
+      "colPatient": "Patient",
+      "colClient": "Client",
+      "colDescription": "Description",
+      "colAmount": "Amount",
+      "colDiscount": "Discount",
+      "colMethod": "Method",
+      "colDate": "Date",
+      "colStatus": "Status",
+      "colActions": "Actions",
+      "void": "Void",
+      "empty": "No payments registered.",
+      "dialogTitle": "Register Payment",
+      "patient": "Patient",
+      "selectPatient": "Select patient...",
+      "client": "Client",
+      "description": "Description",
+      "descriptionPlaceholder": "e.g. General consultation, Vaccination...",
+      "amount": "Total Amount",
+      "discount": "Discount",
+      "discountMax": "max. 50%",
+      "originalAmount": "Original amount",
+      "discountApplied": "Discount",
+      "finalAmount": "Amount due",
+      "paymentMethods": "Payment Methods",
+      "method1": "Primary Method",
+      "amount1": "Amount 1",
+      "method2": "Secondary Method",
+      "amount2": "Amount 2",
+      "optional": "optional",
+      "none": "None",
+      "balanced": "Amount balanced ✓",
+      "pending": "Pending amount",
+      "excess": "Excess",
+      "unbalanced": "Total amount does not match. Difference: S/ {{amount}}",
+      "submit": "Register Payment",
+      "successMsg": "Payment registered successfully",
+      "errorMsg": "Error registering payment"
+    },
+    "reports": {
+      "title": "Sales Reports",
+      "subtitle": "Analyze clinic revenue by date range",
+      "export": "Export CSV",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "loading": "Generating report...",
+      "totalRevenue": "Total Revenue",
+      "transactions": "Transactions",
+      "avgTicket": "Average Ticket",
+      "dailyRevenue": "Daily Revenue",
+      "byMethod": "By Payment Method",
+      "noData": "No data for the selected period."
+    },
+    "commissions": {
+      "title": "Doctor Commissions",
+      "subtitle": "Calculate production and commissions for each veterinarian",
+      "rateLabel": "Commission rate:",
+      "loading": "Calculating commissions...",
+      "empty": "No veterinarians with registered consultations.",
+      "colDoctor": "Veterinarian",
+      "colConsultations": "Consultations",
+      "colRevenue": "Associated Revenue",
+      "colRate": "Rate",
+      "colCommission": "Commission",
+      "total": "TOTAL"
     }
   }
 }

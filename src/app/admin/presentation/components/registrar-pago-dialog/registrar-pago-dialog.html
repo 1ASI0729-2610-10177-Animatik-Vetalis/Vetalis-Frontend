@@ -1,0 +1,90 @@
+<h2 mat-dialog-title class="dlg-title">{{ 'admin.payments.dialogTitle' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dlg-form">
+    <div class="dlg-row">
+      <div class="dlg-field dlg-field-full">
+        <label>{{ 'admin.payments.patient' | translate }} *</label>
+        <select formControlName="mascotaId">
+          <option value="">{{ 'admin.payments.selectPatient' | translate }}</option>
+          @for (m of data.mascotas; track m.id) {
+            <option [value]="m.id">{{ m.nombre }}</option>
+          }
+        </select>
+        @if (clienteNombre) {
+          <small style="color:#64748B;margin-top:3px">{{ 'admin.payments.client' | translate }}: {{ clienteNombre }}</small>
+        }
+      </div>
+    </div>
+
+    <div class="dlg-field">
+      <label>{{ 'admin.payments.description' | translate }} *</label>
+      <input type="text" formControlName="descripcion" [placeholder]="'admin.payments.descriptionPlaceholder' | translate" />
+    </div>
+
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>{{ 'admin.payments.amount' | translate }} (S/) *</label>
+        <input type="number" formControlName="montoOriginal" step="0.01" min="1" (input)="autoFillPrincipal()" />
+      </div>
+      <div class="dlg-field">
+        <label>{{ 'admin.payments.discount' | translate }} (%) — {{ 'admin.payments.discountMax' | translate }}</label>
+        <input type="number" formControlName="descuento" step="1" min="0" max="50" (input)="autoFillPrincipal()" />
+      </div>
+    </div>
+
+    @if (descuento > 0) {
+      <div class="pago-summary">
+        <span>{{ 'admin.payments.originalAmount' | translate }}: <strong>S/ {{ montoOriginal | number:'1.2-2' }}</strong></span>
+        <span>{{ 'admin.payments.discountApplied' | translate }}: <strong style="color:#EF4444">-{{ descuento }}%</strong></span>
+        <span>{{ 'admin.payments.finalAmount' | translate }}: <strong style="color:#22C55E">S/ {{ montoFinal | number:'1.2-2' }}</strong></span>
+      </div>
+    }
+
+    <div class="dlg-section-label">{{ 'admin.payments.paymentMethods' | translate }}</div>
+
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>{{ 'admin.payments.method1' | translate }} *</label>
+        <select formControlName="metodoPrincipal">
+          @for (m of metodos; track m) { <option [value]="m">{{ m }}</option> }
+        </select>
+      </div>
+      <div class="dlg-field">
+        <label>{{ 'admin.payments.amount1' | translate }} (S/) *</label>
+        <input type="number" formControlName="montoPrincipal" step="0.01" min="0" />
+      </div>
+    </div>
+
+    <div class="dlg-row">
+      <div class="dlg-field">
+        <label>{{ 'admin.payments.method2' | translate }} ({{ 'admin.payments.optional' | translate }})</label>
+        <select formControlName="metodoSecundario">
+          <option value="">{{ 'admin.payments.none' | translate }}</option>
+          @for (m of metodos; track m) { <option [value]="m">{{ m }}</option> }
+        </select>
+      </div>
+      <div class="dlg-field">
+        <label>{{ 'admin.payments.amount2' | translate }} (S/)</label>
+        <input type="number" formControlName="montoSecundario" step="0.01" min="0" />
+      </div>
+    </div>
+
+    <div class="pago-balance" [class.pago-balance-ok]="Math.abs(montoRestante) <= 0.01" [class.pago-balance-warn]="Math.abs(montoRestante) > 0.01">
+      @if (Math.abs(montoRestante) <= 0.01) {
+        <mat-icon>check_circle</mat-icon> {{ 'admin.payments.balanced' | translate }}
+      } @else if (montoRestante > 0) {
+        <mat-icon>warning</mat-icon> {{ 'admin.payments.pending' | translate }}: S/ {{ montoRestante | number:'1.2-2' }}
+      } @else {
+        <mat-icon>error</mat-icon> {{ 'admin.payments.excess' | translate }}: S/ {{ (-montoRestante) | number:'1.2-2' }}
+      }
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'admin.dialog.cancel' | translate }}</button>
+  <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting">
+    <mat-icon>payments</mat-icon> {{ 'admin.payments.submit' | translate }}
+  </button>
+</mat-dialog-actions>

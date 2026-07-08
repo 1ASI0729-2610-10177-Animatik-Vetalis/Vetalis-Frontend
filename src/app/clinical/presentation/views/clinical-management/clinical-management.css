@@ -183,3 +183,35 @@
 .vital strong { font-size: 14px; color: #1E293B; }
 .tl-list { margin: 0; padding: 0 0 0 16px; }
 .tl-list li { font-size: 13px; color: #64748B; padding: 2px 0; }
+.tl-temp { font-size: 12px; color: #3B82F6; font-weight: 500; background: #EFF6FF; border-radius: 4px; padding: 2px 6px; }
+.tl-locked { font-size: 11px !important; padding: 2px 8px !important; display: inline-flex; align-items: center; gap: 2px; }
+
+/* Allergy banners */
+.allergy-banner {
+  display: flex; align-items: center; gap: 10px;
+  background: #FEF2F2; border: 1px solid #FECACA; border-radius: 10px;
+  padding: 12px 16px; margin-bottom: 16px; color: #991B1B;
+}
+.allergy-banner mat-icon { color: #EF4444; flex-shrink: 0; }
+.allergy-banner strong { display: block; font-size: 13px; font-weight: 600; }
+.allergy-banner span { font-size: 13px; }
+.no-allergy-banner {
+  display: flex; align-items: center; gap: 8px;
+  background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 10px;
+  padding: 10px 14px; margin-bottom: 16px; color: #166534; font-size: 13px;
+}
+.no-allergy-banner mat-icon { color: #22C55E; font-size: 18px; width: 18px; height: 18px; }
+
+/* Allergy in patient card */
+.pc-allergy-alert {
+  display: flex; align-items: center; gap: 5px;
+  background: #FEF2F2; border-radius: 6px; padding: 5px 8px; margin-top: 6px;
+  color: #991B1B; font-size: 12px; font-weight: 500;
+}
+.pc-allergy-alert mat-icon { font-size: 14px; width: 14px; height: 14px; color: #EF4444; }
+
+/* Closed consultation row */
+.row-closed td { opacity: .7; }
+
+/* Consultation table actions column */
+.data-table td:last-child, .data-table th:last-child { text-align: center; }
