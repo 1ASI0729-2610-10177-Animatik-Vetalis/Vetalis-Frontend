@@ -14,7 +14,6 @@ export class ClinicalService {
   private base = environment.apiUrl;
 
   loadAll() {
-    // El backend NO tiene /tiposVacuna ni /veterinarios (y usa /hospitalizacion en singular).
     return forkJoin({
       mascotas:        this.http.get<any[]>(`${this.base}/mascotas`),
       clientes:        this.http.get<any[]>(`${this.base}/clientes`),
@@ -34,7 +33,6 @@ export class ClinicalService {
           vaccines:          VaccineAssembler.toDomainList(d.vacunas, d.mascotas, d.razas),
           hospitalizations:  HospitalizationAssembler.toDomainList(d.hospitalizacion, d.mascotas, d.clientes, d.razas),
           todayAppointments: allApts.filter(a => a.date === today && (a.status === 'Pendiente' || a.status === 'Confirmada')),
-          // raw reference data for dialogs
           rawEspecies:     d.especies,
           rawRazas:        d.razas,
           rawClientes:     d.clientes,
@@ -47,24 +45,39 @@ export class ClinicalService {
     );
   }
 
-  // ── CRUD ──────────────────────────────────────────────────
-  createCita(body: any)             { return this.http.post(`${this.base}/citas`, body); }
+  // ── Mascotas ─────────────────────────────────────────────────
   createMascota(body: any)          { return this.http.post(`${this.base}/mascotas`, body); }
   updateMascota(id: string, b: any) { return this.http.put(`${this.base}/mascotas/${id}`, b); }
   deleteMascota(id: string)         { return this.http.delete(`${this.base}/mascotas/${id}`); }
+  getHistorial(mascotaId: string)   { return this.http.get<any>(`${this.base}/historial/${mascotaId}`); }
+
+  // ── Citas ─────────────────────────────────────────────────────
+  createCita(body: any)             { return this.http.post(`${this.base}/citas`, body); }
+  updateCita(id: string, b: any)    { return this.http.put(`${this.base}/citas/${id}`, b); }
+  deleteCita(id: string)            { return this.http.delete(`${this.base}/citas/${id}`); }
+
+  // ── Consultas ─────────────────────────────────────────────────
   createConsulta(body: any)         { return this.http.post(`${this.base}/consultas`, body); }
-  closeConsulta(id: string)         { return this.http.put(`${this.base}/consultas/${id}/close`, {}); }
+  closeConsulta(id: string)         { return this.http.patch(`${this.base}/consultas/${id}/cerrar`, {}); }
+
+  // ── Vacunas ───────────────────────────────────────────────────
   createVacuna(body: any)           { return this.http.post(`${this.base}/vacunas`, body); }
+  getVacunaAlerts()                 { return this.http.get<any[]>(`${this.base}/vacunas/alerts`); }
+
+  // ── Hospitalizacion ───────────────────────────────────────────
   createHospitalizacion(body: any)  { return this.http.post(`${this.base}/hospitalizacion`, body); }
+
+  // ── Clientes ──────────────────────────────────────────────────
   createCliente(body: any)              { return this.http.post(`${this.base}/clientes`, body); }
   updateCliente(id: number, body: any)  { return this.http.put(`${this.base}/clientes/${id}`, body); }
   deleteCliente(id: number)             { return this.http.delete(`${this.base}/clientes/${id}`); }
 
+  // ── Veterinarios (perfil) ─────────────────────────────────────
+  updateVeterinario(id: number, body: any) { return this.http.put(`${this.base}/veterinarios/${id}`, body); }
+
+  // ── Tratamientos ──────────────────────────────────────────────
   getTratamientos(consultaId: string)   { return this.http.get<any[]>(`${this.base}/tratamientos?consultaId=${consultaId}`); }
   createTratamiento(body: any)          { return this.http.post<any>(`${this.base}/tratamientos`, body); }
   updateTratamiento(id: number, b: any) { return this.http.put<any>(`${this.base}/tratamientos/${id}`, b); }
   deleteTratamiento(id: number)         { return this.http.delete(`${this.base}/tratamientos/${id}`); }
-
-  updateVeterinario(id: number, b: any) { return this.http.put(`${this.base}/veterinarios/${id}`, b); }
-  getVeterinarios()                     { return this.http.get<any[]>(`${this.base}/veterinarios`); }
 }

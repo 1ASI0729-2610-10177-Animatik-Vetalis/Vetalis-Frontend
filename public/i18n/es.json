@@ -501,6 +501,7 @@
       "export": "Exportar CSV",
       "startDate": "Fecha inicio",
       "endDate": "Fecha fin",
+      "load": "Cargar reporte",
       "loading": "Generando reporte...",
       "totalRevenue": "Ingresos Totales",
       "transactions": "Transacciones",
