@@ -71,6 +71,19 @@
             }
           </div>
 
+          <!-- Paciente vinculado -->
+          @if (d.mascotaId) {
+            <div class="connection-row" style="background:#EFF6FF;border-radius:8px;padding:6px 10px;margin-bottom:4px;">
+              <mat-icon class="conn-icon" style="color:#3B82F6">pets</mat-icon>
+              <span style="color:#1D4ED8;font-weight:500;">{{ getPatientName(d.mascotaId) }}</span>
+            </div>
+          } @else if (d.estado === 'INACTIVO') {
+            <div class="connection-row" style="background:#F8FAFC;border-radius:8px;padding:6px 10px;margin-bottom:4px;">
+              <mat-icon class="conn-icon" style="color:#94A3B8">radio_button_unchecked</mat-icon>
+              <span style="color:#94A3B8;font-size:12px;">Disponible para asignación</span>
+            </div>
+          }
+
           <!-- Última conexión -->
           @if (d.ultimaConexion) {
             <div class="connection-row">

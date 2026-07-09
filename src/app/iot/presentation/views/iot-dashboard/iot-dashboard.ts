@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslatePipe } from '@ngx-translate/core';
 import { IotService } from '../../../infrastructure/services/iot.service';
 import { DispensadorDialog } from '../../components/dispensador-dialog/dispensador-dialog';
+import { ClinicalStore } from '../../../../clinical/application/clinical.store';
 
 @Component({
   selector: 'app-iot-dashboard',
@@ -15,9 +16,10 @@ import { DispensadorDialog } from '../../components/dispensador-dialog/dispensad
   styleUrl: './iot-dashboard.css',
 })
 export class IotDashboard {
-  private svc    = inject(IotService);
-  private dialog = inject(MatDialog);
-  private snack  = inject(MatSnackBar);
+  private svc         = inject(IotService);
+  private dialog      = inject(MatDialog);
+  private snack       = inject(MatSnackBar);
+  readonly clinicStore = inject(ClinicalStore);
 
   loading      = signal(true);
   dispensadores = signal<any[]>([]);
@@ -93,6 +95,11 @@ export class IotDashboard {
       next: () => { this.snack.open('Dispensador eliminado', 'OK', { duration: 3000 }); this.reload(); },
       error: () => this.snack.open('Error al eliminar', '', { duration: 3000 }),
     });
+  }
+
+  getPatientName(mascotaId: number): string {
+    const p = this.clinicStore.patients().find(p => String(p.id) === String(mascotaId));
+    return p ? `${p.name} (${p.owner})` : `Paciente #${mascotaId}`;
   }
 
   get stats() {

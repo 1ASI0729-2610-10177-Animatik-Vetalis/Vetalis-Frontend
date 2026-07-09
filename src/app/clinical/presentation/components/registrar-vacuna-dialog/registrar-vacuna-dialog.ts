@@ -94,19 +94,21 @@ export class RegistrarVacunaDialog {
     this.svc.createVacuna(body).subscribe({
       next: (vacunaCreada: any) => {
         const monto = med?.precioUnitario ?? 0;
-        const pagoBody = {
-          mascotaId,
-          medicamentoId: Number(v.medicamentoId),
-          monto,
-          metodoPago:    v.metodoPago ?? 'Efectivo',
-          fechaPago:     fecha,
-          estado:        'Pagado',
-          descripcion:   `Vacuna: ${med?.nombre ?? 'Vacuna'}`,
-        };
-        this.svc.createPago(pagoBody).subscribe({
-          next:  () => {},
-          error: (e) => console.warn('Pago no registrado:', e),
-        });
+        if (monto > 0) {
+          const pagoBody = {
+            mascotaId,
+            medicamentoId: Number(v.medicamentoId),
+            monto,
+            metodoPago:    v.metodoPago ?? 'Efectivo',
+            fechaPago:     fecha,
+            estado:        'Pagado',
+            descripcion:   `Vacuna: ${med?.nombre ?? 'Vacuna'}`,
+          };
+          this.svc.createPago(pagoBody).subscribe({
+            next:  () => {},
+            error: (e) => console.warn('Pago no registrado:', e),
+          });
+        }
         if (v.proximaDosis) {
           const patient = this.store.patients().find(p => String(p.id) === String(v.mascotaId));
           this.reminderStore.add({

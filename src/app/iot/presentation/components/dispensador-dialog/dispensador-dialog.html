@@ -1,39 +1,66 @@
-<div class="dialog-wrap">
-  <div mat-dialog-title class="dialog-header">
-    <mat-icon class="d-icon">router</mat-icon>
-    <span>{{ isEdit ? ('iot.dialog.editTitle' | translate) : ('iot.dialog.addTitle' | translate) }}</span>
-    <button mat-icon-button mat-dialog-close class="close-btn"><mat-icon>close</mat-icon></button>
-  </div>
+<h2 mat-dialog-title class="dlg-title">
+  <mat-icon style="vertical-align:middle;margin-right:8px;color:#3B82F6">router</mat-icon>
+  {{ isEdit ? 'Editar Dispensador' : 'Nuevo Dispensador IoT' }}
+</h2>
 
+<form [formGroup]="form" (ngSubmit)="submit()">
   <mat-dialog-content>
-    <form [formGroup]="form" class="dialog-form">
-      <div class="form-group">
-        <label>{{ 'iot.dialog.serialLabel' | translate }} *</label>
-        <input formControlName="numeroSerie" class="form-input" placeholder="Ej: DISP-001" />
-      </div>
-      <div class="form-group">
-        <label>{{ 'iot.dialog.modelLabel' | translate }} *</label>
-        <input formControlName="modelo" class="form-input" placeholder="Ej: VetFeeder Pro" />
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>{{ 'iot.dialog.statusLabel' | translate }}</label>
-          <select formControlName="estado" class="form-select">
-            <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+    <div class="dlg-form">
+      <div class="dlg-row">
+        <div class="dlg-field">
+          <label>Número de Serie *</label>
+          <input formControlName="numeroSerie" placeholder="Ej: DISP-001" />
+        </div>
+        <div class="dlg-field">
+          <label>Estado</label>
+          <select formControlName="estado">
+            @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
           </select>
         </div>
-        <div class="form-group">
-          <label>{{ 'iot.dialog.foodLevelLabel' | translate }} (%)</label>
-          <input formControlName="nivelAlimento" type="number" min="0" max="100" class="form-input" />
-        </div>
       </div>
-    </form>
+
+      <div class="dlg-field">
+        <label>Modelo</label>
+        <select formControlName="modelo">
+          <option value="">— Seleccionar modelo —</option>
+          @for (m of modelos; track m) { <option [value]="m">{{ m }}</option> }
+        </select>
+      </div>
+
+      <div class="dlg-field">
+        <label>Nivel de alimento (%)</label>
+        <input type="number" formControlName="nivelAlimento" min="0" max="100" placeholder="100" />
+        @if (form.controls.nivelAlimento.value !== null) {
+          <div style="margin-top:6px;height:6px;border-radius:4px;background:#E2E8F0;overflow:hidden;">
+            <div [style.width.%]="form.controls.nivelAlimento.value"
+                 [style.background]="(form.controls.nivelAlimento.value ?? 0) <= 10 ? '#EF4444' : (form.controls.nivelAlimento.value ?? 0) <= 30 ? '#F59E0B' : '#22C55E'"
+                 style="height:100%;transition:width .3s"></div>
+          </div>
+        }
+      </div>
+
+      <div style="margin:16px 0 8px;font-size:12px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.5px;border-top:1px solid #E2E8F0;padding-top:16px;">
+        Asignación de paciente
+      </div>
+      <div class="dlg-field">
+        <label>Paciente hospitalizado (opcional)</label>
+        <select formControlName="mascotaId">
+          <option [value]="null">— Sin asignar —</option>
+          @for (p of store.patients(); track p.id) {
+            <option [value]="p.id">{{ p.name }} ({{ p.owner }})</option>
+          }
+        </select>
+        <small style="color:#94A3B8;font-size:11px;margin-top:4px;display:block">
+          Al hospitalizar un paciente, se asigna automáticamente el primer dispensador libre.
+        </small>
+      </div>
+    </div>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button mat-stroked-button mat-dialog-close>{{ 'iot.dialog.cancel' | translate }}</button>
-    <button mat-raised-button class="btn-submit" (click)="submit()" [disabled]="form.invalid || submitting">
-      <mat-icon>save</mat-icon> {{ isEdit ? ('iot.dialog.update' | translate) : ('iot.dialog.submit' | translate) }}
+    <button type="button" mat-button mat-dialog-close>Cancelar</button>
+    <button type="submit" mat-raised-button class="dlg-btn-primary" [disabled]="form.invalid || submitting">
+      <mat-icon>save</mat-icon> {{ submitting ? 'Guardando...' : (isEdit ? 'Actualizar' : 'Registrar') }}
     </button>
   </mat-dialog-actions>
-</div>
+</form>

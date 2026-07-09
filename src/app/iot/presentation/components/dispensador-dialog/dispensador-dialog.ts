@@ -1,17 +1,16 @@
 import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { NgFor } from '@angular/common';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslatePipe } from '@ngx-translate/core';
 import { IotService } from '../../../infrastructure/services/iot.service';
+import { ClinicalStore } from '../../../../clinical/application/clinical.store';
 
 @Component({
   selector: 'app-dispensador-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule, NgFor, MatDialogModule, MatButtonModule, MatIconModule, TranslatePipe],
+  imports: [ReactiveFormsModule, MatDialogModule, MatButtonModule, MatIconModule],
   templateUrl: './dispensador-dialog.html',
 })
 export class DispensadorDialog {
@@ -19,17 +18,20 @@ export class DispensadorDialog {
   private ref   = inject(MatDialogRef<DispensadorDialog>);
   private svc   = inject(IotService);
   private snack = inject(MatSnackBar);
-  readonly data = inject(MAT_DIALOG_DATA, { optional: true }) as { dispensador?: any } | null;
+  readonly store = inject(ClinicalStore);
+  readonly data  = inject(MAT_DIALOG_DATA, { optional: true }) as { dispensador?: any } | null;
 
   isEdit = !!this.data?.dispensador;
 
-  estados = ['ACTIVO', 'INACTIVO', 'MANTENIMIENTO'];
+  estados  = ['ACTIVO', 'INACTIVO', 'MANTENIMIENTO'];
+  modelos  = ['VetFeeder Pro', 'VetFeeder Lite', 'SmartDish V2', 'AutoPet 3000', 'FeedMatic X'];
 
   form = this.fb.group({
-    numeroSerie:    [this.data?.dispensador?.numeroSerie ?? '', Validators.required],
-    modelo:         [this.data?.dispensador?.modelo ?? '', Validators.required],
-    estado:         [this.data?.dispensador?.estado ?? 'INACTIVO'],
-    nivelAlimento:  [this.data?.dispensador?.nivelAlimento ?? 100, [Validators.required, Validators.min(0)]],
+    numeroSerie:   [this.data?.dispensador?.numeroSerie ?? '', Validators.required],
+    modelo:        [this.data?.dispensador?.modelo ?? ''],
+    estado:        [this.data?.dispensador?.estado ?? 'INACTIVO'],
+    nivelAlimento: [this.data?.dispensador?.nivelAlimento ?? 100, [Validators.min(0), Validators.max(100)]],
+    mascotaId:     [this.data?.dispensador?.mascotaId ?? null],
   });
 
   submitting = false;
@@ -38,7 +40,14 @@ export class DispensadorDialog {
     if (this.form.invalid) return;
     this.submitting = true;
     const v = this.form.value;
-    const body = { ...v, ultimaConexion: new Date().toISOString() };
+    const body = {
+      numeroSerie:    v.numeroSerie,
+      modelo:         v.modelo || 'VetFeeder Pro',
+      estado:         v.estado,
+      nivelAlimento:  v.nivelAlimento,
+      ultimaConexion: new Date().toISOString(),
+      mascotaId:      v.mascotaId ? Number(v.mascotaId) : null,
+    };
 
     const op = this.isEdit
       ? this.svc.update(this.data!.dispensador.id, body)
