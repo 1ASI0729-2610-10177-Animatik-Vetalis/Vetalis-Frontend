@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -43,9 +43,9 @@ export class ClinicalManagement {
   activeTab = 0;
 
   // ── Filters ───────────────────────────────────────────────────
-  patientSearch         = '';
-  clientSearch          = '';
-  speciesFilter         = 'Todas';
+  patientSearch         = signal('');
+  clientSearch          = signal('');
+  speciesFilter         = signal('Todas');
   vaccineFilter         = 'Todas';
   hospitalizationFilter = 'Todos';
   consultDateFilter: 'all' | 'today' | 'week' = 'all';
@@ -67,21 +67,22 @@ export class ClinicalManagement {
   consultPage = 1;
 
   // ── Patients ──────────────────────────────────────────────────
-  get filteredPatients() {
-    const s = this.patientSearch.toLowerCase();
+  filteredPatients = computed(() => {
+    const s = this.patientSearch().toLowerCase();
+    const sp = this.speciesFilter();
     return this.store.patients().filter(p =>
       (s === '' || p.name.toLowerCase().includes(s) || p.owner.toLowerCase().includes(s) || String(p.id).includes(s)) &&
-      (this.speciesFilter === 'Todas' || p.species === this.speciesFilter)
+      (sp === 'Todas' || p.species === sp)
     );
-  }
+  });
 
   // ── Clients ───────────────────────────────────────────────────
-  get filteredClients() {
-    const s = this.clientSearch.toLowerCase();
+  filteredClients = computed(() => {
+    const s = this.clientSearch().toLowerCase();
     return this.store.rawClientes().filter(c =>
       s === '' || c.nombre?.toLowerCase().includes(s) || c.dni?.includes(s) || c.email?.toLowerCase().includes(s)
     );
-  }
+  });
 
   // ── Consultations ─────────────────────────────────────────────
   get filteredConsultations() {

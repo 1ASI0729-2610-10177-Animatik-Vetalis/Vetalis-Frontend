@@ -43,10 +43,10 @@
         <div class="filters-row">
           <div class="search-wrap">
             <mat-icon>search</mat-icon>
-            <input [(ngModel)]="patientSearch" [placeholder]="'clinical.patients.search' | translate" class="filter-input" />
+            <input [value]="patientSearch()" (input)="patientSearch.set($any($event.target).value)" [placeholder]="'clinical.patients.search' | translate" class="filter-input" />
           </div>
           <div class="species-wrap">
-            <mat-select [(value)]="speciesFilter" class="species-select">
+            <mat-select [value]="speciesFilter()" (selectionChange)="speciesFilter.set($event.value)" class="species-select">
               <mat-option value="Todas">{{ 'clinical.patients.filterAll' | translate }}</mat-option>
               <mat-option value="Perro">{{ 'clinical.patients.filterDog' | translate }}</mat-option>
               <mat-option value="Gato">{{ 'clinical.patients.filterCat' | translate }}</mat-option>
@@ -58,7 +58,7 @@
           <div class="loading-msg">{{ 'clinical.patients.loading' | translate }}</div>
         } @else {
           <div class="patients-grid">
-            @for (p of filteredPatients; track p.id) {
+            @for (p of filteredPatients(); track p.id) {
               <div class="patient-card">
                 <div class="pc-top">
                   <div class="pc-avatar" [style.background]="p.avatarColor"><mat-icon>pets</mat-icon></div>
@@ -120,7 +120,7 @@
         <div class="filters-row">
           <div class="search-wrap">
             <mat-icon>search</mat-icon>
-            <input [(ngModel)]="clientSearch" [placeholder]="'clinical.clients.search' | translate" class="filter-input" />
+            <input [value]="clientSearch()" (input)="clientSearch.set($any($event.target).value)" [placeholder]="'clinical.clients.search' | translate" class="filter-input" />
           </div>
         </div>
         @if (store.loading()) {
@@ -137,7 +137,7 @@
                 <th>Acciones</th>
               </tr></thead>
               <tbody>
-                @for (c of filteredClients; track c.id) {
+                @for (c of filteredClients(); track c.id) {
                   <tr>
                     <td>
                       <div class="td-patient">
