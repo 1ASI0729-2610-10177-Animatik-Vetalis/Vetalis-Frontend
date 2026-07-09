@@ -1,6 +1,7 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { DecimalPipe } from '@angular/common';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,7 +15,7 @@ import { ReminderStore } from '../../../../communication/application/reminder.st
 @Component({
   selector: 'app-registrar-vacuna-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule, MatDialogModule, MatButtonModule, MatIconModule],
+  imports: [ReactiveFormsModule, DecimalPipe, MatDialogModule, MatButtonModule, MatIconModule],
   templateUrl: './registrar-vacuna-dialog.html',
 })
 export class RegistrarVacunaDialog {
@@ -41,7 +42,6 @@ export class RegistrarVacunaDialog {
     proximaDosis:    [''],
     lote:            [''],
     observaciones:   [''],
-    monto:           [30.00],
     metodoPago:      ['Efectivo'],
   });
 
@@ -93,14 +93,15 @@ export class RegistrarVacunaDialog {
     };
     this.svc.createVacuna(body).subscribe({
       next: (vacunaCreada: any) => {
+        const monto = med?.precioUnitario ?? 0;
         const pagoBody = {
-          vacunaId:    vacunaCreada?.id ?? null,
           mascotaId,
-          monto:       Number(v.monto) || 30,
-          metodoPago:  v.metodoPago ?? 'Efectivo',
-          fechaPago:   fecha,
-          estado:      'Pagado',
-          descripcion: `Vacuna: ${med?.nombre ?? 'Vacuna'}`,
+          medicamentoId: Number(v.medicamentoId),
+          monto,
+          metodoPago:    v.metodoPago ?? 'Efectivo',
+          fechaPago:     fecha,
+          estado:        'Pagado',
+          descripcion:   `Vacuna: ${med?.nombre ?? 'Vacuna'}`,
         };
         this.svc.createPago(pagoBody).subscribe({
           next:  () => {},
