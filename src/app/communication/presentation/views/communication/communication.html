@@ -25,13 +25,13 @@
       </div>
 
       <div class="notif-list">
-        @for (n of notifications; track n.titleKey) {
+        @for (n of notifications; track n.title) {
           <div class="notif-item" [class.unread]="!n.read">
             <div class="notif-icon-wrap notif-{{ n.type }}">
               <mat-icon>{{ n.icon }}</mat-icon>
             </div>
             <div class="notif-content">
-              <div class="notif-title">{{ n.titleKey | translate }}</div>
+              <div class="notif-title">{{ n.title }}</div>
               <div class="notif-desc">{{ n.desc }}</div>
               <div class="notif-time">{{ n.time }}</div>
             </div>
@@ -48,24 +48,23 @@
       <div class="panel-header">
         <div class="panel-title-row">
           <h2>{{ 'communication.reminders.title' | translate }}</h2>
-          <span class="reminder-count">{{ reminders.length }}</span>
+          <span class="reminder-count">{{ reminders().length }}</span>
         </div>
-        <button mat-button class="mark-read-btn">
-          <mat-icon>add</mat-icon> {{ 'communication.reminders.add' | translate }}
-        </button>
       </div>
 
       <div class="reminder-list">
-        @for (r of reminders; track r.titleKey) {
+        @for (r of reminders(); track r.id) {
           <div class="reminder-item">
             <div class="reminder-icon" [style.background]="r.bg">
               <mat-icon [style.color]="r.color">{{ r.icon }}</mat-icon>
             </div>
             <div class="reminder-content">
-              <div class="reminder-title">{{ r.titleKey | translate }}</div>
+              <div class="reminder-title">{{ r.title }}</div>
               <div class="reminder-desc">{{ r.desc }}</div>
             </div>
-            <button mat-icon-button class="reminder-menu"><mat-icon>more_vert</mat-icon></button>
+            <button mat-icon-button class="reminder-menu" (click)="removeReminder(r.id)">
+              <mat-icon>close</mat-icon>
+            </button>
           </div>
         }
       </div>

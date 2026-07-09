@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClinicalStore } from '../../../application/clinical.store';
 import { ClinicalService } from '../../../infrastructure/services/clinical.service';
 import { AuthStore } from '../../../../iam/application/auth.store';
+import { ReminderStore } from '../../../../communication/application/reminder.store';
 
 @Component({
   selector: 'app-nueva-cita-dialog',
@@ -15,13 +16,14 @@ import { AuthStore } from '../../../../iam/application/auth.store';
   templateUrl: './nueva-cita-dialog.html',
 })
 export class NuevaCitaDialog {
-  private fb       = inject(FormBuilder);
-  private ref      = inject(MatDialogRef<NuevaCitaDialog>);
-  private svc      = inject(ClinicalService);
-  private snack    = inject(MatSnackBar);
-  private auth     = inject(AuthStore);
-  readonly store   = inject(ClinicalStore);
-  readonly data    = inject(MAT_DIALOG_DATA, { optional: true }) as { patientId?: string } | null;
+  private fb            = inject(FormBuilder);
+  private ref           = inject(MatDialogRef<NuevaCitaDialog>);
+  private svc           = inject(ClinicalService);
+  private snack         = inject(MatSnackBar);
+  private auth          = inject(AuthStore);
+  private reminderStore = inject(ReminderStore);
+  readonly store        = inject(ClinicalStore);
+  readonly data         = inject(MAT_DIALOG_DATA, { optional: true }) as { patientId?: string } | null;
 
   tipos = ['Consulta General', 'Vacunación', 'Control', 'Urgencia', 'Cirugía', 'Desparasitación'];
 
@@ -40,15 +42,26 @@ export class NuevaCitaDialog {
     this.submitting = true;
     const v = this.form.value;
     const body = {
-      mascotaId:    Number(v.mascotaId),
+      mascotaId:     Number(v.mascotaId),
       veterinarioId: Number(this.auth.user()?.id ?? 0),
-      fecha:        `${v.fecha}T${v.hora}:00`,
-      motivo:       v.motivo,
-      tipo:         v.tipo,
-      estado:       'PENDIENTE',
+      fecha:         `${v.fecha}T${v.hora}:00`,
+      motivo:        v.motivo,
+      tipo:          v.tipo,
+      estado:        'PENDIENTE',
     };
     this.svc.createCita(body).subscribe({
-      next: () => { this.snack.open('Cita creada correctamente', 'OK', { duration: 3000 }); this.ref.close(true); },
+      next: () => {
+        const patient = this.store.patients().find(p => String(p.id) === String(v.mascotaId));
+        this.reminderStore.add({
+          icon: 'event',
+          title: `Cita: ${v.tipo}`,
+          desc: `${patient?.name ?? 'Paciente'} · ${v.fecha} ${v.hora} · ${v.motivo}`,
+          color: '#06B6D4',
+          bg: '#E0F2FE',
+        });
+        this.snack.open('Cita creada correctamente', 'OK', { duration: 3000 });
+        this.ref.close(true);
+      },
       error: () => { this.snack.open('Error al crear la cita', '', { duration: 3000 }); this.submitting = false; },
     });
   }

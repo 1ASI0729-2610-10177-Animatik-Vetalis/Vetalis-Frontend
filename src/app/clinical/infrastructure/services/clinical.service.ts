@@ -57,7 +57,7 @@ export class ClinicalService {
   deleteCita(id: string)            { return this.http.delete(`${this.base}/citas/${id}`); }
 
   // ── Consultas ─────────────────────────────────────────────────
-  createConsulta(body: any)         { return this.http.post(`${this.base}/consultas`, body); }
+  createConsulta(body: any)         { return this.http.post<any>(`${this.base}/consultas`, body); }
   closeConsulta(id: string)         { return this.http.patch(`${this.base}/consultas/${id}/cerrar`, {}); }
 
   // ── Vacunas ───────────────────────────────────────────────────
@@ -84,4 +84,8 @@ export class ClinicalService {
   createTratamiento(body: any)          { return this.http.post<any>(`${this.base}/tratamientos`, body); }
   updateTratamiento(id: number, b: any) { return this.http.put<any>(`${this.base}/tratamientos/${id}`, b); }
   deleteTratamiento(id: number)         { return this.http.delete(`${this.base}/tratamientos/${id}`); }
+
+  // ── Pagos ─────────────────────────────────────────────────────
+  createPago(body: any) { return this.http.post<any>(`${this.base}/pagos`, body); }
+  getPagos()            { return this.http.get<any[]>(`${this.base}/pagos`); }
 }

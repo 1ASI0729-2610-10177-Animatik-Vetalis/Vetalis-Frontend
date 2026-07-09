@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,32 +21,79 @@ export class NuevaConsultaDialog {
   private snack  = inject(MatSnackBar);
   private auth   = inject(AuthStore);
   readonly store = inject(ClinicalStore);
-  readonly data  = inject(MAT_DIALOG_DATA, { optional: true }) as { patientId?: string } | null;
+  readonly data  = inject(MAT_DIALOG_DATA, { optional: true }) as { patientId?: string | number } | null;
 
-  tipos = ['Consulta General','Vacunación','Emergencia','Cirugía','Control','Dermatología','Post-Operatorio'];
+  tipos   = ['Consulta General','Vacunación','Emergencia','Cirugía','Control','Dermatología','Post-Operatorio'];
+  metodos = ['Efectivo','Tarjeta','Transferencia','QR/Yape'];
 
   form = this.fb.group({
-    mascotaId:   [this.data?.patientId ?? '', Validators.required],
-    tipo:        ['Consulta General', Validators.required],
+    mascotaId:   [this.data?.patientId ?? ''],
+    tipo:        ['Consulta General'],
     hora:        ['09:00'],
     temperatura: [null as number | null],
     subjetivo:   [''],
     objetivo:    [''],
-    evaluacion:  ['', Validators.required],
+    evaluacion:  [''],
     plan:        [''],
+    monto:       [50.00],
+    metodoPago:  ['Efectivo'],
   });
 
   submitting = false;
 
   submit() {
-    if (this.form.invalid) return;
-    this.submitting = true;
     const v = this.form.value;
+    const mascotaId = Number(v.mascotaId);
+    if (!mascotaId) {
+      this.snack.open('Debes seleccionar un paciente', 'OK', { duration: 3000 });
+      return;
+    }
+    const veterinarioId = Number(this.auth.user()?.id ?? 0);
+    if (!veterinarioId) {
+      this.snack.open('Sesión expirada. Vuelve a iniciar sesión.', 'OK', { duration: 4000 });
+      return;
+    }
+    this.submitting = true;
     const today = new Date().toISOString().split('T')[0];
-    const body ={ mascotaId: Number(v.mascotaId), veterinarioId: Number(this.auth.user()?.id ?? 0), fecha: `${today}T${v.hora}:00`, tipo: v.tipo, temperatura: v.temperatura, subjetivo: v.subjetivo, objetivo: v.objetivo, evaluacion: v.evaluacion, diagnostico: v.evaluacion, plan: v.plan, estado: 'Abierta', cerrada: false };
-    this.svc.createConsulta(body).subscribe({
-      next: () => { this.snack.open('Consulta registrada', 'OK', { duration: 3000 }); this.ref.close(true); },
-      error: () => { this.snack.open('Error al guardar', '', { duration: 3000 }); this.submitting = false; },
+    const hora  = v.hora ?? '09:00';
+    const fecha = `${today}T${hora}:00`;
+    const consultaBody = {
+      mascotaId,
+      veterinarioId,
+      fecha,
+      tipo:        v.tipo ?? 'Consulta General',
+      temperatura: v.temperatura ?? null,
+      subjetivo:   v.subjetivo  || null,
+      objetivo:    v.objetivo   || null,
+      evaluacion:  v.evaluacion || null,
+      diagnostico: v.evaluacion || null,
+      plan:        v.plan       || null,
+      estado:      'Abierta',
+    };
+    this.svc.createConsulta(consultaBody).subscribe({
+      next: (consultaCreada: any) => {
+        const pagoBody = {
+          consultaId:  consultaCreada?.id ?? null,
+          mascotaId,
+          monto:       Number(v.monto) || 50,
+          metodoPago:  v.metodoPago ?? 'Efectivo',
+          fechaPago:   fecha,
+          estado:      'Pagado',
+          descripcion: `Consulta ${v.tipo ?? 'General'}`,
+        };
+        this.svc.createPago(pagoBody).subscribe({
+          next:  () => {},
+          error: (e) => console.warn('Pago no registrado:', e),
+        });
+        this.snack.open('Consulta y cobro registrados', 'OK', { duration: 3000 });
+        this.ref.close(true);
+      },
+      error: (err) => {
+        const msg = err?.error?.message ?? JSON.stringify(err?.error) ?? `HTTP ${err?.status}`;
+        console.error('Error al crear consulta:', err);
+        this.snack.open(`Error: ${msg}`, '', { duration: 6000 });
+        this.submitting = false;
+      },
     });
   }
 }

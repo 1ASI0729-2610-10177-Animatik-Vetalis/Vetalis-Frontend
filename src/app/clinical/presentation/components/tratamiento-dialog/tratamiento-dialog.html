@@ -7,6 +7,12 @@
 
   <mat-dialog-content>
     <form [formGroup]="form" class="dialog-form">
+      @if (allergyWarning()) {
+        <div style="display:flex;align-items:center;gap:8px;background:#FEF3C7;border:1px solid #F59E0B;border-radius:8px;padding:10px 14px;margin-bottom:16px;color:#92400E;font-size:13px;">
+          <mat-icon style="color:#F59E0B;font-size:20px;min-width:20px">warning</mat-icon>
+          <span><strong>Alergia conocida:</strong> {{ allergyWarning() }}</span>
+        </div>
+      }
       <div class="form-row">
         <div class="form-group" style="flex:2">
           <label>Medicamento (opcional)</label>

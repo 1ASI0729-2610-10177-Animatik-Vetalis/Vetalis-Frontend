@@ -1,64 +1,88 @@
 <h2 mat-dialog-title class="dlg-title">Registrar Vacuna</h2>
 
-<mat-dialog-content>
-  <form [formGroup]="form" class="dlg-form">
-    <div class="dlg-field">
-      <label>Paciente *</label>
-      <select formControlName="mascotaId">
-        <option value="">Seleccionar paciente...</option>
-        @for (p of store.patients(); track p.id) {
-          <option [value]="p.id">{{ p.name }} ({{ p.owner }})</option>
-        }
-      </select>
-    </div>
-    <div class="dlg-field">
-      <label>Vacuna / Medicamento *</label>
-      @if (loadingMeds()) {
-        <p style="font-size:12px;color:#94A3B8">Cargando inventario...</p>
-      } @else {
-        <select formControlName="medicamentoId">
-          <option value="">Seleccionar del inventario...</option>
-          @for (m of medicamentos(); track m.id) {
-            <option [value]="m.id">{{ m.nombre }} — Stock disponible: {{ m.stockActual }} {{ m.unidad }}</option>
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content>
+    <div class="dlg-form">
+      <div class="dlg-field">
+        <label>Paciente *</label>
+        <select formControlName="mascotaId">
+          <option value="">Seleccionar paciente...</option>
+          @for (p of store.patients(); track p.id) {
+            <option [value]="p.id">{{ p.name }} ({{ p.owner }})</option>
           }
         </select>
-        @if (medicamentos().length === 0) {
-          <p style="font-size:12px;color:#EF4444;margin-top:4px">
-            Sin stock disponible. El administrador debe ingresar vacunas en el inventario.
-          </p>
-        }
-        @if (selectedMed) {
-          <div style="margin-top:6px;padding:8px 12px;background:#ECFEFF;border-radius:8px;font-size:12px;color:#0E7490">
-            <strong>{{ selectedMed.nombre }}</strong> — Stock: {{ selectedMed.stockActual }} {{ selectedMed.unidad }}
-            @if (selectedMed.descripcion) { — {{ selectedMed.descripcion }} }
-          </div>
-        }
+      </div>
+      @if (allergyWarning()) {
+        <div style="display:flex;align-items:center;gap:8px;background:#FEF3C7;border:1px solid #F59E0B;border-radius:8px;padding:10px 14px;margin-bottom:12px;color:#92400E;font-size:13px;">
+          <mat-icon style="color:#F59E0B;font-size:20px;min-width:20px">warning</mat-icon>
+          <span><strong>Alergia conocida:</strong> {{ allergyWarning() }}</span>
+        </div>
       }
-    </div>
-    <div class="dlg-row">
       <div class="dlg-field">
-        <label>Fecha de Aplicación *</label>
-        <input type="date" formControlName="fechaAplicacion" />
+        <label>Vacuna / Medicamento *</label>
+        @if (loadingMeds()) {
+          <p style="font-size:12px;color:#94A3B8">Cargando inventario...</p>
+        } @else {
+          <select formControlName="medicamentoId">
+            <option value="">Seleccionar del inventario...</option>
+            @for (m of medicamentos(); track m.id) {
+              <option [value]="m.id">{{ m.nombre }} — Stock disponible: {{ m.stockActual }} {{ m.unidad }}</option>
+            }
+          </select>
+          @if (medicamentos().length === 0) {
+            <p style="font-size:12px;color:#EF4444;margin-top:4px">
+              Sin stock disponible. El administrador debe ingresar vacunas en el inventario.
+            </p>
+          }
+          @if (selectedMed) {
+            <div style="margin-top:6px;padding:8px 12px;background:#ECFEFF;border-radius:8px;font-size:12px;color:#0E7490">
+              <strong>{{ selectedMed.nombre }}</strong> — Stock: {{ selectedMed.stockActual }} {{ selectedMed.unidad }}
+              @if (selectedMed.descripcion) { — {{ selectedMed.descripcion }} }
+            </div>
+          }
+        }
+      </div>
+      <div class="dlg-row">
+        <div class="dlg-field">
+          <label>Fecha de Aplicación *</label>
+          <input type="date" formControlName="fechaAplicacion" />
+        </div>
+        <div class="dlg-field">
+          <label>Próxima Dosis</label>
+          <input type="date" formControlName="proximaDosis" />
+        </div>
       </div>
       <div class="dlg-field">
-        <label>Próxima Dosis *</label>
-        <input type="date" formControlName="proximaDosis" />
+        <label>Número de Lote</label>
+        <input type="text" formControlName="lote" placeholder="Ej: LOT-2025-001" />
       </div>
-    </div>
-    <div class="dlg-field">
-      <label>Número de Lote</label>
-      <input type="text" formControlName="lote" placeholder="Ej: LOT-2025-001" />
-    </div>
-    <div class="dlg-field">
-      <label>Observaciones</label>
-      <textarea formControlName="observaciones" placeholder="Reacciones adversas, notas..."></textarea>
-    </div>
-  </form>
-</mat-dialog-content>
+      <div class="dlg-field">
+        <label>Observaciones</label>
+        <textarea formControlName="observaciones" placeholder="Reacciones adversas, notas..."></textarea>
+      </div>
 
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cancelar</button>
-  <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting || loadingMeds()">
-    <mat-icon>vaccines</mat-icon> {{ submitting ? 'Guardando...' : 'Registrar Vacuna' }}
-  </button>
-</mat-dialog-actions>
+      <div style="margin:16px 0 8px;font-size:12px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.5px;border-top:1px solid #E2E8F0;padding-top:16px;">
+        Cobro
+      </div>
+      <div class="dlg-row">
+        <div class="dlg-field">
+          <label>Monto (S/) *</label>
+          <input type="number" formControlName="monto" min="0" step="0.50" placeholder="30.00" />
+        </div>
+        <div class="dlg-field">
+          <label>Método de pago</label>
+          <select formControlName="metodoPago">
+            @for (m of metodos; track m) { <option [value]="m">{{ m }}</option> }
+          </select>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button type="button" mat-button mat-dialog-close>Cancelar</button>
+    <button type="submit" mat-raised-button class="dlg-btn-primary" [disabled]="submitting || loadingMeds()">
+      <mat-icon>vaccines</mat-icon> {{ submitting ? 'Guardando...' : 'Registrar Vacuna' }}
+    </button>
+  </mat-dialog-actions>
+</form>

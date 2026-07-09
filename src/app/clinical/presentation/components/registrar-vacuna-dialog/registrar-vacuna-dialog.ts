@@ -1,12 +1,15 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { startWith } from 'rxjs';
 import { ClinicalStore } from '../../../application/clinical.store';
 import { ClinicalService } from '../../../infrastructure/services/clinical.service';
 import { AuthStore } from '../../../../iam/application/auth.store';
+import { ReminderStore } from '../../../../communication/application/reminder.store';
 
 @Component({
   selector: 'app-registrar-vacuna-dialog',
@@ -15,18 +18,21 @@ import { AuthStore } from '../../../../iam/application/auth.store';
   templateUrl: './registrar-vacuna-dialog.html',
 })
 export class RegistrarVacunaDialog {
-  private fb    = inject(FormBuilder);
-  private ref   = inject(MatDialogRef<RegistrarVacunaDialog>);
-  private svc   = inject(ClinicalService);
-  private snack = inject(MatSnackBar);
-  private auth  = inject(AuthStore);
-  readonly store = inject(ClinicalStore);
-  readonly data  = inject(MAT_DIALOG_DATA, { optional: true }) as { patientId?: string } | null;
+  private fb            = inject(FormBuilder);
+  private ref           = inject(MatDialogRef<RegistrarVacunaDialog>);
+  private svc           = inject(ClinicalService);
+  private snack         = inject(MatSnackBar);
+  private auth          = inject(AuthStore);
+  private reminderStore = inject(ReminderStore);
+  readonly store        = inject(ClinicalStore);
+  readonly data         = inject(MAT_DIALOG_DATA, { optional: true }) as { patientId?: string } | null;
 
   today = new Date().toISOString().split('T')[0];
 
   medicamentos = signal<any[]>([]);
   loadingMeds  = signal(true);
+
+  metodos = ['Efectivo','Tarjeta','Transferencia','QR/Yape'];
 
   form = this.fb.group({
     mascotaId:       [this.data?.patientId ?? '', Validators.required],
@@ -35,6 +41,20 @@ export class RegistrarVacunaDialog {
     proximaDosis:    [''],
     lote:            [''],
     observaciones:   [''],
+    monto:           [30.00],
+    metodoPago:      ['Efectivo'],
+  });
+
+  private mascotaIdValue = toSignal(
+    this.form.controls.mascotaId.valueChanges.pipe(startWith(this.data?.patientId ?? null)),
+    { initialValue: this.data?.patientId ?? null }
+  );
+
+  allergyWarning = computed(() => {
+    const mid = this.mascotaIdValue();
+    if (!mid) return null;
+    const patient = this.store.patients().find(p => String(p.id) === String(mid));
+    return patient?.alergias || null;
   });
 
   submitting = false;
@@ -59,8 +79,10 @@ export class RegistrarVacunaDialog {
     this.submitting = true;
     const v   = this.form.value;
     const med = this.selectedMed;
+    const mascotaId = Number(v.mascotaId);
+    const fecha = `${v.fechaAplicacion}T09:00:00`;
     const body = {
-      mascotaId:       Number(v.mascotaId),
+      mascotaId,
       tipoVacunaId:    Number(v.medicamentoId),
       nombreVacuna:    med?.nombre ?? 'Vacuna',
       lote:            v.lote || null,
@@ -70,8 +92,31 @@ export class RegistrarVacunaDialog {
       veterinarioId:   Number(this.auth.user()?.id ?? 0),
     };
     this.svc.createVacuna(body).subscribe({
-      next: () => {
-        this.snack.open('Vacuna registrada y stock actualizado', 'OK', { duration: 3000 });
+      next: (vacunaCreada: any) => {
+        const pagoBody = {
+          vacunaId:    vacunaCreada?.id ?? null,
+          mascotaId,
+          monto:       Number(v.monto) || 30,
+          metodoPago:  v.metodoPago ?? 'Efectivo',
+          fechaPago:   fecha,
+          estado:      'Pagado',
+          descripcion: `Vacuna: ${med?.nombre ?? 'Vacuna'}`,
+        };
+        this.svc.createPago(pagoBody).subscribe({
+          next:  () => {},
+          error: (e) => console.warn('Pago no registrado:', e),
+        });
+        if (v.proximaDosis) {
+          const patient = this.store.patients().find(p => String(p.id) === String(v.mascotaId));
+          this.reminderStore.add({
+            icon: 'vaccines',
+            title: `Próxima dosis: ${med?.nombre ?? 'Vacuna'}`,
+            desc: `${patient?.name ?? 'Paciente'} · ${v.proximaDosis}`,
+            color: '#EF4444',
+            bg: '#FEE2E2',
+          });
+        }
+        this.snack.open('Vacuna y cobro registrados', 'OK', { duration: 3000 });
         this.ref.close(true);
       },
       error: () => { this.snack.open('Error al guardar', '', { duration: 3000 }); this.submitting = false; },

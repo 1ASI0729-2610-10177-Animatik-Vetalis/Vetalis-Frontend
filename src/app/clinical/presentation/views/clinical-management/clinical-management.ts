@@ -1,6 +1,6 @@
 import { Component, inject, computed } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -36,6 +36,7 @@ export class ClinicalManagement {
   private snack  = inject(MatSnackBar);
   private translate = inject(TranslateService);
   private auth   = inject(AuthStore);
+  private router = inject(Router);
 
   isAdmin = computed(() => this.auth.hasRole('admin'));
 
@@ -69,7 +70,7 @@ export class ClinicalManagement {
   get filteredPatients() {
     const s = this.patientSearch.toLowerCase();
     return this.store.patients().filter(p =>
-      (s === '' || p.name.toLowerCase().includes(s) || p.owner.toLowerCase().includes(s) || p.id.includes(s)) &&
+      (s === '' || p.name.toLowerCase().includes(s) || p.owner.toLowerCase().includes(s) || String(p.id).includes(s)) &&
       (this.speciesFilter === 'Todas' || p.species === this.speciesFilter)
     );
   }
@@ -216,7 +217,7 @@ export class ClinicalManagement {
 
   openNuevaCita(patientId?: string) {
     this.dialog.open(NuevaCitaDialog, { width: '520px', data: { patientId } })
-      .afterClosed().subscribe(ok => { if (ok) this.store.reload(); });
+      .afterClosed().subscribe(ok => { if (ok) { this.store.reload(); this.router.navigate(['/schedule']); } });
   }
 
   openRegistrarVacuna(patientId?: string) {

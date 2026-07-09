@@ -1,56 +1,75 @@
 <h2 mat-dialog-title class="dlg-title">Nueva Consulta Médica</h2>
 
-<mat-dialog-content>
-  <form [formGroup]="form" class="dlg-form">
-    <div class="dlg-row">
-      <div class="dlg-field">
-        <label>Paciente *</label>
-        <select formControlName="mascotaId">
-          <option value="">Seleccionar paciente...</option>
-          @for (p of store.patients(); track p.id) {
-            <option [value]="p.id">{{ p.name }} ({{ p.owner }})</option>
-          }
-        </select>
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content>
+    <div class="dlg-form">
+      <div class="dlg-row">
+        <div class="dlg-field">
+          <label>Paciente *</label>
+          <select formControlName="mascotaId">
+            <option value="">— Seleccionar paciente —</option>
+            @for (p of store.patients(); track p.id) {
+              <option [value]="p.id">{{ p.name }} ({{ p.owner }})</option>
+            }
+          </select>
+        </div>
+        <div class="dlg-field">
+          <label>Tipo</label>
+          <select formControlName="tipo">
+            @for (t of tipos; track t) { <option [value]="t">{{ t }}</option> }
+          </select>
+        </div>
+      </div>
+      <div class="dlg-row">
+        <div class="dlg-field">
+          <label>Hora</label>
+          <input type="time" formControlName="hora" />
+        </div>
+        <div class="dlg-field">
+          <label>Temperatura (°C)</label>
+          <input type="number" formControlName="temperatura" step="0.1" min="35" max="43" placeholder="38.5" />
+        </div>
       </div>
       <div class="dlg-field">
-        <label>Tipo *</label>
-        <select formControlName="tipo">
-          @for (t of tipos; track t) { <option [value]="t">{{ t }}</option> }
-        </select>
-      </div>
-    </div>
-    <div class="dlg-row">
-      <div class="dlg-field">
-        <label>Hora</label>
-        <input type="time" formControlName="hora" />
+        <label>Subjetivo (motivo)</label>
+        <textarea formControlName="subjetivo" rows="2" placeholder="Lo que reporta el propietario..."></textarea>
       </div>
       <div class="dlg-field">
-        <label>Temperatura (°C)</label>
-        <input type="number" formControlName="temperatura" step="0.1" min="35" max="43" placeholder="Ej: 38.5" />
+        <label>Objetivo (hallazgos)</label>
+        <textarea formControlName="objetivo" rows="2" placeholder="Signos vitales, examen físico..."></textarea>
       </div>
-    </div>
-    <div class="dlg-field">
-      <label>Subjetivo (motivo de consulta)</label>
-      <textarea formControlName="subjetivo" placeholder="Lo que reporta el propietario..."></textarea>
-    </div>
-    <div class="dlg-field">
-      <label>Objetivo (hallazgos clínicos)</label>
-      <textarea formControlName="objetivo" placeholder="Signos vitales, examen físico..."></textarea>
-    </div>
-    <div class="dlg-field">
-      <label>Evaluación / Diagnóstico *</label>
-      <textarea formControlName="evaluacion" placeholder="Diagnóstico presuntivo..."></textarea>
-    </div>
-    <div class="dlg-field">
-      <label>Plan de tratamiento</label>
-      <textarea formControlName="plan" placeholder="Medicamentos, indicaciones, seguimiento..."></textarea>
-    </div>
-  </form>
-</mat-dialog-content>
+      <div class="dlg-field">
+        <label>Evaluación / Diagnóstico</label>
+        <textarea formControlName="evaluacion" rows="2" placeholder="Diagnóstico presuntivo..."></textarea>
+      </div>
+      <div class="dlg-field">
+        <label>Plan de tratamiento</label>
+        <textarea formControlName="plan" rows="2" placeholder="Medicamentos, indicaciones..."></textarea>
+      </div>
 
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cancelar</button>
-  <button mat-raised-button class="dlg-btn-primary" (click)="submit()" [disabled]="form.invalid || submitting">
-    <mat-icon>medical_services</mat-icon> Registrar Consulta
-  </button>
-</mat-dialog-actions>
+      <div style="margin:16px 0 8px;font-size:12px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.5px;border-top:1px solid #E2E8F0;padding-top:16px;">
+        Cobro de consulta
+      </div>
+      <div class="dlg-row">
+        <div class="dlg-field">
+          <label>Monto (S/) *</label>
+          <input type="number" formControlName="monto" min="0" step="0.50" placeholder="50.00" />
+        </div>
+        <div class="dlg-field">
+          <label>Método de pago</label>
+          <select formControlName="metodoPago">
+            @for (m of metodos; track m) { <option [value]="m">{{ m }}</option> }
+          </select>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button type="button" mat-button mat-dialog-close>Cancelar</button>
+    <button type="submit" mat-raised-button class="dlg-btn-primary" [disabled]="submitting">
+      <mat-icon>medical_services</mat-icon>
+      {{ submitting ? 'Guardando...' : 'Registrar Consulta' }}
+    </button>
+  </mat-dialog-actions>
+</form>
