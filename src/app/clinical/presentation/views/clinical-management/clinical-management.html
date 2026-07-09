@@ -17,8 +17,6 @@
       <p>{{ 'clinical.subtitle' | translate }}</p>
     </div>
     <div class="header-search">
-      <mat-icon class="search-icon">search</mat-icon>
-      <input [placeholder]="'clinical.search.placeholder' | translate" class="header-search-input" />
       <mat-icon class="notif-icon">notifications</mat-icon>
     </div>
   </div>
@@ -264,7 +262,7 @@
     <mat-tab>
       <ng-template mat-tab-label><mat-icon class="tab-icon">assignment</mat-icon> {{ 'clinical.tabs.history' | translate }}</ng-template>
       <div class="tab-content">
-        @if (!historyPatient) {
+        @if (!historyPatient()) {
           <div class="empty-tab">
             <mat-icon>assignment_ind</mat-icon>
             <h3>{{ 'clinical.history.selectPatient' | translate }}</h3>
@@ -273,10 +271,10 @@
           </div>
         } @else {
           <div class="history-header">
-            <div class="hist-avatar" [style.background]="historyPatient.avatarColor"><mat-icon>pets</mat-icon></div>
+            <div class="hist-avatar" [style.background]="historyPatient()!.avatarColor"><mat-icon>pets</mat-icon></div>
             <div class="hist-info">
-              <h2>{{ historyPatient.name }}</h2>
-              <p>{{ historyPatient.breed }} · {{ historyPatient.age }} · {{ 'clinical.history.owner' | translate }} {{ historyPatient.owner }}</p>
+              <h2>{{ historyPatient()!.name }}</h2>
+              <p>{{ historyPatient()!.breed }} · {{ historyPatient()!.age }} · {{ 'clinical.history.owner' | translate }} {{ historyPatient()!.owner }}</p>
             </div>
             <div class="hist-actions">
               @if (!isAdmin()) {
@@ -302,16 +300,16 @@
             </div>
           }
           <div class="hist-stats">
-            @for (s of historyPatient.stats; track s.labelKey) {
+            @for (s of historyPatient()!.stats; track s.labelKey) {
               <div class="hist-stat"><div class="hs-val">{{ s.value }}</div><div class="hs-lbl">{{ s.labelKey | translate }}</div></div>
             }
           </div>
           <div class="hist-section-title">{{ 'clinical.history.fullHistory' | translate }}</div>
-          @if (historyRecords.length === 0) {
+          @if (historyRecords().length === 0) {
             <p class="empty-msg">{{ 'clinical.history.empty' | translate }}</p>
           } @else {
             <div class="timeline">
-              @for (r of historyRecords; track r.date) {
+              @for (r of historyRecords(); track r.date) {
                 <div class="tl-card" [style.border-left]="'4px solid ' + r.borderColor">
                   <div class="tl-header" [style.background]="r.bg">
                     <mat-icon [style.color]="r.color">{{ r.icon }}</mat-icon>
@@ -387,7 +385,7 @@
               <th>{{ 'clinical.vaccines.colActions' | translate }}</th>
             </tr></thead>
             <tbody>
-              @for (v of filteredVaccines; track v.id) {
+              @for (v of filteredVaccines(); track v.id) {
                 <tr>
                   <td><div class="td-patient">
                     <div class="td-avatar" [style.background]="v.patientAvatarColor"><mat-icon>pets</mat-icon></div>

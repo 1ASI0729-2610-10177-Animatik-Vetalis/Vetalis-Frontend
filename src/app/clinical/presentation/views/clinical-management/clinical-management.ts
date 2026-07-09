@@ -107,11 +107,13 @@ export class ClinicalManagement {
   setConsultFilter(f: 'all' | 'today' | 'week') { this.consultDateFilter = f; this.consultPage = 1; }
 
   // ── Vaccines ─────────────────────────────────────────────────
-  get filteredVaccines() {
-    if (this.vaccineFilter === 'Próximas') return this.store.vaccines().filter(v => v.status === 'Próxima');
-    if (this.vaccineFilter === 'Vencidas') return this.store.vaccines().filter(v => v.status === 'Vencida');
-    return this.store.vaccines();
-  }
+  filteredVaccines = computed(() => {
+    const f = this.vaccineFilter;
+    const all = this.store.vaccines();
+    if (f === 'Próximas') return all.filter(v => v.status === 'Próxima');
+    if (f === 'Vencidas') return all.filter(v => v.status === 'Vencida');
+    return all;
+  });
 
   get vaccineSummary() {
     const vs = this.store.vaccines();
@@ -143,16 +145,16 @@ export class ClinicalManagement {
   }
 
   // ── Historial ─────────────────────────────────────────────────
-  get selectedConsultations() {
+  selectedConsultations = computed(() => {
     const p = this.store.selectedPatient();
     if (!p) return [];
     return this.store.consultations().filter(c => c.mascotaId === p.id);
-  }
+  });
 
-  get historyPatient() {
+  historyPatient = computed(() => {
     const p = this.store.selectedPatient();
     if (!p) return null;
-    const sc = this.selectedConsultations;
+    const sc = this.selectedConsultations();
     return {
       name: p.name, breed: p.breed, age: p.age, owner: p.owner, avatarColor: p.avatarColor,
       stats: [
@@ -162,10 +164,10 @@ export class ClinicalManagement {
         { labelKey: 'clinical.history.statLastVisit',        value: sc.length > 0 ? sc[0].date : '—' },
       ]
     };
-  }
+  });
 
-  get historyRecords() {
-    return this.selectedConsultations.map(c => ({
+  historyRecords = computed(() => {
+    return this.selectedConsultations().map(c => ({
       consultaId: c.id,
       type: c.type, date: c.date, doctor: c.veterinario ?? 'Veterinario',
       color: c.cerrada ? '#64748B' : '#22C55E',
@@ -175,13 +177,13 @@ export class ClinicalManagement {
       temperatura: c.temperatura,
       cerrada: c.cerrada,
       sections: [
-        ...(c.subjetivo  ? [{ label: 'Subjetivo (S)',   type: 'text', content: c.subjetivo  }] : []),
-        ...(c.objetivo   ? [{ label: 'Objetivo (O)',    type: 'text', content: c.objetivo   }] : []),
-        ...(c.diagnosis  ? [{ label: 'Evaluación (A)',  type: 'text', content: c.diagnosis  }] : []),
-        ...(c.plan       ? [{ label: 'Plan (P)',        type: 'text', content: c.plan       }] : []),
+        ...(c.subjetivo  ? [{ label: 'Subjetivo (S)',   type: 'text', content: c.subjetivo  }] : [] as { label: string; type: string; content: string }[]),
+        ...(c.objetivo   ? [{ label: 'Objetivo (O)',    type: 'text', content: c.objetivo   }] : [] as { label: string; type: string; content: string }[]),
+        ...(c.diagnosis  ? [{ label: 'Evaluación (A)',  type: 'text', content: c.diagnosis  }] : [] as { label: string; type: string; content: string }[]),
+        ...(c.plan       ? [{ label: 'Plan (P)',        type: 'text', content: c.plan       }] : [] as { label: string; type: string; content: string }[]),
       ],
     }));
-  }
+  });
 
   // ── Badge helpers ─────────────────────────────────────────────
   getConsultBadge(status: string): string {
