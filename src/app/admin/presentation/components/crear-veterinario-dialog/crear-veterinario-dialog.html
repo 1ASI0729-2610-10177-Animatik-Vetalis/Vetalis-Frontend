@@ -1,0 +1,80 @@
+<h2 mat-dialog-title class="dlg-title">
+  <mat-icon style="vertical-align:middle;margin-right:8px;color:#6366F1">medical_services</mat-icon>
+  Nuevo Veterinario
+</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content>
+    <div class="dlg-form">
+      <div class="dlg-row">
+        <div class="dlg-field">
+          <label>Nombre *</label>
+          <input formControlName="firstName" placeholder="Ej: Carlos" />
+          @if (form.controls.firstName.invalid && form.controls.firstName.touched) {
+            <small style="color:#EF4444">Requerido</small>
+          }
+        </div>
+        <div class="dlg-field">
+          <label>Apellido *</label>
+          <input formControlName="lastName" placeholder="Ej: Méndez" />
+          @if (form.controls.lastName.invalid && form.controls.lastName.touched) {
+            <small style="color:#EF4444">Requerido</small>
+          }
+        </div>
+      </div>
+
+      <div class="dlg-field">
+        <label>Correo electrónico *</label>
+        <input formControlName="email" type="email" placeholder="carlos@vetalis.com" />
+        @if (form.controls.email.errors?.['email'] && form.controls.email.touched) {
+          <small style="color:#EF4444">Formato de email inválido</small>
+        } @else if (form.controls.email.errors?.['required'] && form.controls.email.touched) {
+          <small style="color:#EF4444">Requerido</small>
+        }
+      </div>
+
+      <div class="dlg-field">
+        <label>Contraseña * (mín. 8 caracteres)</label>
+        <div style="position:relative">
+          <input formControlName="password" [type]="showPassword ? 'text' : 'password'" placeholder="Mínimo 8 caracteres" style="padding-right:40px;width:100%;box-sizing:border-box" />
+          <button type="button" (click)="showPassword=!showPassword"
+            style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#64748B;padding:0">
+            <mat-icon style="font-size:18px">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
+        @if (form.controls.password.errors?.['minlength'] && form.controls.password.touched) {
+          <small style="color:#EF4444">Mínimo 8 caracteres</small>
+        }
+      </div>
+
+      <div class="dlg-row">
+        <div class="dlg-field">
+          <label>DNI * (8 dígitos)</label>
+          <input formControlName="dni" placeholder="12345678" maxlength="8" />
+          @if (form.controls.dni.invalid && form.controls.dni.touched) {
+            <small style="color:#EF4444">Debe tener exactamente 8 dígitos numéricos</small>
+          }
+        </div>
+        <div class="dlg-field">
+          <label>Teléfono</label>
+          <input formControlName="telefono" placeholder="999888777" />
+        </div>
+      </div>
+
+      <div class="dlg-field">
+        <label>Especialidad</label>
+        <select formControlName="especialidad">
+          @for (e of especialidades; track e) { <option [value]="e">{{ e }}</option> }
+        </select>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button type="button" mat-button mat-dialog-close>Cancelar</button>
+    <button type="submit" mat-raised-button class="dlg-btn-primary" [disabled]="form.invalid || submitting">
+      <mat-icon>person_add</mat-icon>
+      {{ submitting ? 'Creando...' : 'Crear Veterinario' }}
+    </button>
+  </mat-dialog-actions>
+</form>
