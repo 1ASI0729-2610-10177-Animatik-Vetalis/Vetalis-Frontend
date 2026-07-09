@@ -652,5 +652,69 @@
       </div>
     </mat-tab>
 
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">medical_services</mat-icon> Equipo
+      </ng-template>
+      <div class="tab-content">
+        <div class="section-header">
+          <div>
+            <h2>Equipo de Veterinarios</h2>
+            <p>Gestiona los veterinarios registrados en el sistema</p>
+          </div>
+          <button mat-raised-button class="btn-primary" (click)="abrirCrearVeterinario()">
+            <mat-icon>person_add</mat-icon> Nuevo Veterinario
+          </button>
+        </div>
+
+        @if (loading()) {
+          <div class="loading-msg">Cargando equipo...</div>
+        } @else if (veterinarios().length === 0) {
+          <div class="empty-state-inline">
+            <mat-icon>people</mat-icon>
+            <p>No hay veterinarios registrados aún.</p>
+            <button mat-stroked-button (click)="abrirCrearVeterinario()">Agregar el primero</button>
+          </div>
+        } @else {
+          <div class="card table-card">
+            <table class="data-table">
+              <thead><tr>
+                <th>Veterinario</th>
+                <th>Email</th>
+                <th>Especialidad</th>
+                <th>Consultas</th>
+                <th>Acciones</th>
+              </tr></thead>
+              <tbody>
+                @for (v of veterinarios(); track v.id) {
+                  <tr>
+                    <td>
+                      <div class="td-patient">
+                        <div class="td-avatar" style="background:#6366F1"><mat-icon>person</mat-icon></div>
+                        <div>
+                          <div class="td-name">{{ v.nombre ?? v.displayName ?? (v.firstName + ' ' + v.lastName) }}</div>
+                          <div class="td-sub">ID: {{ v.id }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>{{ v.email ?? v.username ?? '—' }}</td>
+                    <td>
+                      <span class="badge badge-en-proceso">{{ v.especialidad ?? 'General' }}</span>
+                    </td>
+                    <td>{{ consultas().filter(c => String(c.veterinarioId) === String(v.id)).length }}</td>
+                    <td>
+                      <button mat-icon-button (click)="eliminarVeterinario(v)" matTooltip="Eliminar">
+                        <mat-icon style="color:#EF4444">delete</mat-icon>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </mat-tab>
+
   </mat-tab-group>
 </div>

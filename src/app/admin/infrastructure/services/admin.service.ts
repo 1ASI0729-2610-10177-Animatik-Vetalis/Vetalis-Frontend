@@ -26,6 +26,10 @@ export class AdminService {
   deleteMedicamento(id: any)            { return this.http.delete(`${this.base}/medicamentos/${id}`); }
   getMedicamentoAlerts()                { return this.http.get<any[]>(`${this.base}/medicamentos/alerts`); }
 
+  // ── Veterinarios ─────────────────────────────────────────────
+  createVeterinario(body: any) { return this.http.post<any>(`${this.base}/auth/signup`, body); }
+  deleteVeterinario(id: any)   { return this.http.delete(`${this.base}/veterinarios/${id}`); }
+
   // ── Pagos ─────────────────────────────────────────────────────
   createPago(body: any)                 { return this.http.post<any>(`${this.base}/pagos`, body); }
   anularPago(id: any, motivo = '')      { return this.http.delete<void>(`${this.base}/pagos/${id}?motivo=${encodeURIComponent(motivo)}`); }

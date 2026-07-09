@@ -14,6 +14,7 @@ import { AdminService } from '../../../infrastructure/services/admin.service';
 import { ChartComponent } from '../../../../shared/presentation/components/chart/chart';
 import { AgregarProductoDialog } from '../../components/agregar-producto-dialog/agregar-producto-dialog';
 import { RegistrarPagoDialog } from '../../components/registrar-pago-dialog/registrar-pago-dialog';
+import { CrearVeterinarioDialog } from '../../components/crear-veterinario-dialog/crear-veterinario-dialog';
 
 const METODO_COLORS: Record<string, string> = {
   'Efectivo': '#22C55E', 'Tarjeta': '#3B82F6', 'Transferencia': '#8B5CF6',
@@ -256,6 +257,19 @@ export class AdminDashboard {
     this.svc.anularPago(pago.id, 'Anulado por administrador').subscribe({
       next: () => { this.snack.open('Pago anulado', 'OK', { duration: 3000 }); this.reload(); },
       error: () => this.snack.open('Error al anular el pago', '', { duration: 3000 }),
+    });
+  }
+
+  abrirCrearVeterinario() {
+    this.dialog.open(CrearVeterinarioDialog, { width: '560px' })
+      .afterClosed().subscribe(ok => { if (ok) this.reload(); });
+  }
+
+  eliminarVeterinario(vet: any) {
+    if (!confirm(`¿Eliminar al veterinario ${vet.nombre ?? vet.displayName}? Esta acción no se puede deshacer.`)) return;
+    this.svc.deleteVeterinario(vet.id).subscribe({
+      next: () => { this.snack.open('Veterinario eliminado', 'OK', { duration: 3000 }); this.reload(); },
+      error: () => this.snack.open('No se pudo eliminar. Puede tener consultas asociadas.', '', { duration: 4000 }),
     });
   }
 
